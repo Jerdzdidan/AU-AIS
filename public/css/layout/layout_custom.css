@@ -1,0 +1,25 @@
+/* LOGO */
+.app-brand-logo img {
+  width: calc(30px + 2vw);
+  max-width: 50px;
+  height: auto;
+}
+
+#layout-menu{
+  border-radius: 0px 30px 30px 0px;
+  box-shadow: 5px 0px 10px #00000028;
+}
+
+#layout-menu i {
+  font-size: calc(0.9rem + 0.25vw); /* adjust for desired size */
+  line-height: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.2em;  /* relative to font-size for consistency */
+  height: 1.2em;
+}
+
+#layout-navbar{
+  box-shadow: 0px 1px 10px #00000028;
+}
