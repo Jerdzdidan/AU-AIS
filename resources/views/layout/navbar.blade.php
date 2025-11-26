@@ -29,7 +29,7 @@
         </li>-->
         <li class="nav-item lh-1 me-4 text-end">
             <h6 class="mb-0">{{ auth()->user()->name }}</h6>
-            <small class="text-body-secondary">{{ auth()->user()->usertype }}</small>
+            <small class="text-body-secondary">{{ auth()->user()->user_type }}</small>
         </li>
 
         <!-- User -->
@@ -52,8 +52,8 @@
                     </div>
                     </div>
                     <div class="flex-grow-1">
-                    <h6 class="mb-0">NAME</h6>
-                    <small class="text-body-secondary">{{ auth()->user()->usertype }}</small><br>
+                    <h6 class="mb-0">{{ auth()->user()->name }}</h6>
+                    <small class="text-body-secondary">{{ auth()->user()->user_type }}</small><br>
                     </div>
                 </div>
                 </a>
