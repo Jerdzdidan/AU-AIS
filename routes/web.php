@@ -22,6 +22,14 @@ Route::prefix('auth/admin')->group(function () {
     Route::get('logout', [AdminAuthController::class, 'logout'])->name('auth.admin.logout');
 });
 
+// STUDENT LOGIN/AUTHENTICATION
+Route::prefix('auth/student')->group(function () {
+    // Route::get('login', [AdminAuthController::class, 'index'])->name('auth.login');
+    // Route::post('authenticate', [AdminAuthController::class, 'authenticate'])->name('auth.authenticate');
+});
+
+
+// ADMIN PANEL
 Route::prefix('admin')->namespace()->group(function () {
     Route::prefix('users')->group(function () {
         Route::get('{user_type}', [UserController::class, 'index'])->name('users.index');
@@ -33,13 +41,3 @@ Route::prefix('admin')->namespace()->group(function () {
     });
 });
 
-// STUDENT LOGIN/AUTHENTICATION
-Route::prefix('auth/student')->group(function () {
-    // Route::get('login', [AdminAuthController::class, 'index'])->name('auth.login');
-    // Route::post('authenticate', [AdminAuthController::class, 'authenticate'])->name('auth.authenticate');
-});
-
-
-
-// CREATION OF ROOT ACCOUNT
-Route::get('create-root', [CreateRootUserController::class, 'createRootUser']);
