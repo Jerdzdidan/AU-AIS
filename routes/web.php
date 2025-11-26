@@ -21,6 +21,10 @@ Route::prefix('auth/admin')->group(function () {
     Route::get('logout', [AdminAuthController::class, 'logout'])->name('auth.admin.logout');
 });
 
+Route::prefix('admin')->namespace()->group(function () {
+    
+});
+
 // STUDENT LOGIN/AUTHENTICATION
 Route::prefix('auth/student')->group(function () {
     // Route::get('login', [AdminAuthController::class, 'index'])->name('auth.login');

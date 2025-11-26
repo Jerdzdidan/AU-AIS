@@ -143,7 +143,7 @@
                     @csrf
                     <div class="mb-6">
                         <label for="email">Email:</label>
-                        <input type="text" name="email" id="email" class="form-control" placeholder="Enter your username" autofocus maxlength="150" required>
+                        <input type="text" name="email" id="email" class="form-control" placeholder="Enter your email" autofocus maxlength="150" required>
                     </div>
 
                     <div class="mb-6 form-password-toggle">

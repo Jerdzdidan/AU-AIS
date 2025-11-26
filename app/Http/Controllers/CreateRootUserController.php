@@ -15,6 +15,7 @@ class CreateRootUserController extends Controller
         $user->name = 'root';
         $user->email = 'root@gmail.com';
         $user->password = '123456';
+        $user->usertype = 'ADMIN';
         $user->save();
 
         return redirect()->route('home');
