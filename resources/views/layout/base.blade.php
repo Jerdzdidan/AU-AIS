@@ -60,6 +60,9 @@
     <!-- Fontawesome icons -->
     <script src="https://kit.fontawesome.com/c5804bd254.js" crossorigin="anonymous"></script>
 
+    <!-- SweetAlert2 CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+
     <!-- Page CSS -->
     <link rel="stylesheet" href="{{ asset('css/layout/select2.css') }}">
     <link rel="stylesheet" href="{{ asset('css/layout/layout_custom.css') }}">
@@ -161,6 +164,9 @@
     <!-- Toastr -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
 
+    <!-- SweetAlert2 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
     <!-- Main JS -->
 
     <script src="{{ asset('themes/sneat/assets/js/main.js') }}"></script>
@@ -168,7 +174,7 @@
     <!-- Page JS -->
     <script src="{{ asset('themes/sneat/assets/js/tables-datatables-basic.js') }}"></script>
 
-    @yield('section')
+    @yield('scripts')
 
     <!-- Place this tag before closing body tag for github widget button. -->
     <script async defer src="https://buttons.github.io/buttons.js"></script>

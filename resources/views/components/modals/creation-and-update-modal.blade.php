@@ -5,7 +5,7 @@
         <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
     </div>
     <div class="offcanvas-body flex-grow-1">
-        <form class="add-new-record pt-0 row g-2" id="add-or-update-form" action="{{ $action }}" onsubmit="return false">
+        <form class="add-or-update-form pt-0 row g-2" id="add-or-update-form" action="{{ $action }}">
             @csrf
 
             {{ $slot }}

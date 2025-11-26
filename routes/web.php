@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AdminPanel\UserController;
 use App\Http\Controllers\Auth\AdminAuthController;
 use App\Http\Controllers\CreateRootUserController;
 use Illuminate\Support\Facades\Route;
@@ -22,7 +23,14 @@ Route::prefix('auth/admin')->group(function () {
 });
 
 Route::prefix('admin')->namespace()->group(function () {
-    
+    Route::prefix('users')->group(function () {
+        Route::get('{user_type}', [UserController::class, 'index'])->name('users.index');
+        Route::get('data/{user_type}', [UserController::class, 'getData'])->name('users.data');
+        Route::get('stats/{user_type}', [UserController::class, 'getStats'])->name('users.stats');
+
+        Route::post('store/{user_type}', [UserController::class, 'store'])->name('users.store');
+        Route::delete('destroy/{id}', [UserController::class, 'destroy'])->name('users.destroy');
+    });
 });
 
 // STUDENT LOGIN/AUTHENTICATION
@@ -30,9 +38,6 @@ Route::prefix('auth/student')->group(function () {
     // Route::get('login', [AdminAuthController::class, 'index'])->name('auth.login');
     // Route::post('authenticate', [AdminAuthController::class, 'authenticate'])->name('auth.authenticate');
 });
-
-
-
 
 
 

@@ -5,6 +5,7 @@
     @endif
     <input type="{{ $type ?? 'text' }}" id="{{ $id }}" name="{{ $name }}" class="form-control" placeholder="{{ $placeholder ?? '' }}" aria-label="{{ $label }}" value="{{ $value ?? '' }}" />
 </div>
+<div class="invalid-feedback"></div>
 @if($help)
     <div class="form-text">{{ $help ?? '' }}</div>
 @endif

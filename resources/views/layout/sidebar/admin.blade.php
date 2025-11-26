@@ -32,6 +32,6 @@
 
 <x-sidebar.item route='#' name='E-R Officer accounts' icon='fa-solid fa-user-gear me-2' />
 
-<x-sidebar.item route='#' name='Admin accounts' icon='fa-solid fa-user-shield me-2' />
+<x-sidebar.item route='users.index' param='admin' name='Admin accounts' icon='fa-solid fa-user-shield me-2' />
 
 @endsection

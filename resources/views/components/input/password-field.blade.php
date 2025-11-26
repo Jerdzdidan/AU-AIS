@@ -6,6 +6,7 @@
     <input type="password" id="{{ $id }}" name="{{ $name }}" class="form-control" placeholder="{{ $placeholder ?? '' }}" />
     <span class="input-group-text cursor-pointer"><i class="bx bx-hide"></i></span>
 </div>
+<div class="invalid-feedback"></div>
 @if($help)
     <div class="form-text">{{ $help ?? '' }}</div>
 @endif

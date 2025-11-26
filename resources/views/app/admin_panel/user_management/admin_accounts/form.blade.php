@@ -1,9 +1,24 @@
+
 <x-modals.creation-and-update-modal 
-    id = "AddModal"
-    title = "New Admin"
-    action = ""
-    submitButtonName = "Submit"
+    id="add-or-update-modal"
+    title="New Admin"
+    action=""
+    submitButtonName="Submit"
 >
+
+
+{{-- Name --}}
+<div class="col-12 form-control-validation">
+    <x-input.input-field
+        id="name" 
+        name="name" 
+        label="Name"
+        type="text"
+        icon="bx bx-user-circle" 
+        placeholder="Name" 
+        help=""
+    />
+</div>
 
 {{-- Email and Password --}}
 <div class="col-sm-12 form-control-validation">
@@ -14,6 +29,7 @@
         type="text"
         icon="bx bx-id-card" 
         placeholder="Email" 
+        help=""
     />
     
     <x-input.password-field
@@ -25,18 +41,5 @@
         help="Leave blank to use default password (Arellano@1938)"
     />
 </div>
-
-{{-- Name --}}
-<div class="col-12 form-control-validation">
-    <x-input.input-field
-        id="name" 
-        name="name" 
-        label="Name"
-        type="text"
-        icon="bx bx-user-circle" 
-        placeholder="Username" 
-    />
-</div>
-
 
 </x-modals.creation-and-update-modal>

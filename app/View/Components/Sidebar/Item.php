@@ -11,13 +11,14 @@ class Item extends Component
     /**
      * Create a new component instance.
      */
-    public $route, $name, $icon;
+    public $route, $name, $icon, $param;
 
-    public function __construct($route = '', $name = '', $icon = '')
+    public function __construct($route = '', $name = '', $icon = '', $param = '')
     {
         $this->route = $route;
         $this->name = $name;
         $this->icon = $icon;
+        $this->param = $param;
     }
 
     /**
