@@ -115,7 +115,7 @@
                       document.write(new Date().getFullYear());
                     </script>, made by
                     <a href="https://www.facebook.com/jdgonzdayao" target="_blank" class="footer-link">Jerdan Gondayao</a>,
-                    <a href="https://www.facebook.com/Johnmer1115" target="_blank" class="footer-link">Rhenn Mercado</a>, and
+                    <a href="https://www.facebook.com/rhennmarc.mercado" target="_blank" class="footer-link">Rhenn Marc Mercado</a>, and
                     <a href="https://www.facebook.com/Johnmer1115" target="_blank" class="footer-link">Johnmer Tanqui-on</a>
                   </div>
                 </div>
