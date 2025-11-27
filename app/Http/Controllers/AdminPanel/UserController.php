@@ -9,6 +9,7 @@ use Illuminate\Contracts\Encryption\DecryptException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Validation\Rule;
 use Yajra\DataTables\DataTables;
 
 class UserController extends Controller
@@ -60,6 +61,46 @@ class UserController extends Controller
         $user->email = $validated['email'];
         $user->password = Hash::make($validated['password']);
         $user->user_type = strtoupper($user_type);
+
+        $user->save();
+    }
+
+    public function edit($id) 
+    {
+        $decrypted = Crypt::decryptString($id);
+
+        $user = User::findOrFail($decrypted);
+
+        return response()->json([
+            'id'        => Crypt::encryptString($user->id),
+            'name'      => $user->name,
+            'email'     => $user->email,
+            'user_type' => $user->user_type,
+        ]);
+    }
+
+    public function update(Request $request, $id)
+    {
+        $decrypted = Crypt::decryptString($id);
+
+        $validated = $request->validate([
+            'name'     => 'required|string|max:255',
+            'email'    => 'required|email|unique:users,email',
+            'email' => [
+            'required',
+            'email',
+            Rule::unique('users', 'email')->ignore($decrypted),
+        ],
+            'password' => 'nullable|string|min:6',
+        ]);
+
+        $user = User::findOrFail($decrypted);
+        $user->name = $validated['name'];
+        $user->email = $validated['email'];
+
+        if (!empty($validated['password'])) {
+            $user->password = Hash::make($validated['password']);
+        }
 
         $user->save();
     }

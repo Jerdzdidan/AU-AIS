@@ -2,14 +2,23 @@ class GenericCRUD {
     constructor(config) {
         this.baseUrl = config.baseUrl;
         this.storeUrl = config.storeUrl;
+        this.editUrl = config.editUrl;
+        this.updateUrl = config.updateUrl;
         this.destroyUrl = config.destroyUrl;
         this.entityName = config.entityName;
         this.dataTable = config.dataTable;
         this.csrfToken = config.csrfToken;
         this.modal = config.modal;
         this.form = config.form;
+        this.$modal = $(config.modal);
+        this.$form = $(config.form);
+
+        this.$modal.on('hidden.bs.offcanvas hidden.bs.modal', () => {
+            this.$form.trigger('reset');
+            this.$form.find('input[name="id"]').val('');
+        });
     }
-    
+
     view(id) {
         $.ajax({
             url: `${this.baseUrl}/${id}`,
@@ -23,8 +32,10 @@ class GenericCRUD {
     }
     
     edit(id) {
+        const url = this.editUrl.replace(':id', id);
+        
         $.ajax({
-            url: `${this.baseUrl}/edit/${id}`,
+            url: url,
             method: 'GET',
             success: (response) => {
                 if (this.onEditSuccess) this.onEditSuccess(response);
@@ -85,17 +96,55 @@ class GenericCRUD {
     }
     
     update(id, formData) {
+        const url = this.updateUrl.replace(':id', id);
+        
         $.ajax({
-            url: `${this.baseUrl}/${id}`,
-            method: 'PUT',
+            url: url,
+            method: 'POST',
             data: formData,
+            processData: false,
+            contentType: false,
             headers: { 'X-CSRF-TOKEN': this.csrfToken },
             success: (response) => {
                 toastr.success(`${this.entityName} updated successfully`);
                 if (this.onUpdateSuccess) this.onUpdateSuccess(response);
+                $(this.modal).offcanvas('hide');
+                $(this.form)[0].reset();
                 this.dataTable.reload();
             },
-            error: () => toastr.error(`Failed to update ${this.entityName}`)
+            error: (xhr) => {
+                if (xhr.status === 422) {
+                    let errors = {};
+                    try {
+                        const json = xhr.responseJSON ?? JSON.parse(xhr.responseText);
+                        errors = json?.errors ?? {};
+                    } catch (e) {
+                        console.error('Could not parse error JSON', e);
+                    }
+
+                    const allMessages = Object.values(errors)     
+                        .flat()                              
+                        .map(msg => `<li>${msg}</li>`) 
+                        .join('');  
+
+                    const htmlMessage = `<ul style="margin:0; padding-left:20px;">${allMessages}</ul>`;
+
+                    if (htmlMessage) {
+                        toastr.error(htmlMessage, 'Validation Error:', {
+                            closeButton: true,
+                            progressBar: true,
+                            timeOut: 5000,
+                            extendedTimeOut: 2000,
+                            escapeHtml: false
+                        });
+                    } else {
+                        toastr.error('Please check your input.', 'Validation Error');
+                    }
+                    return;
+                }
+
+                toastr.error(`Failed to create ${this.entityName}`);
+            }
         });
     }
     

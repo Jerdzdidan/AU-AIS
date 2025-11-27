@@ -120,6 +120,8 @@ $(document).ready(function() {
     window.adminCRUD = new GenericCRUD({
         baseUrl: '/admin/users/',
         storeUrl: "{{ route('users.store', $user_type) }}",
+        editUrl: "{{ route('users.edit', ':id') }}",
+        updateUrl: "{{ route('users.update', ':id') }}",
         destroyUrl: "{{ route('users.destroy', ':id') }}",
         entityName: 'Admin',
         dataTable: adminTable,
@@ -131,22 +133,38 @@ $(document).ready(function() {
     $('#add-or-update-form').on('submit', function(e) {
         e.preventDefault();
         const fd = new FormData(this);
+        const id = $(this).find('input[name="id"]').val();
 
-        adminCRUD.create(fd);
+        if (id) {
+            fd.append('_method', 'PUT');
+            adminCRUD.update(id, fd);
+        } else {
+            adminCRUD.create(fd);
+        }
     });
 
     $('input').on('input', function() {
         $(this).closest('.input-group, .form-group').find('.invalid-feedback').text('');
     });
     
-    // Customize callbacks if needed
+    // Customized callbacks
     adminCRUD.onViewSuccess = (response) => {
-        // Show modal with admin data
         $('#viewAdminModal').modal('show');
     };
+
+    adminCRUD.onEditSuccess = (data) => {
+        $('#add-or-update-modal').offcanvas('show');
+
+        $('#add-or-update-form input[name="name"]').val(data.name);
+        $('#add-or-update-form input[name="email"]').val(data.email);
+        $('#add-or-update-form input[name="user_type"]').val(data.user_type);
+
+        $('#add-or-update-form input[name="id"]').val(data.id);
+
+        $('#add-or-update-form button[type="submit"]').text('Update Admin');
+    };
+
 });
 </script>
 
-{{-- <script src="{{ asset('js/app/admin_panel/user_management/admin.js') }}"></script>
-<script src="{{ asset('js/app/admin_panel/user_management/delete_user.js') }}"></script> --}}
 @endsection

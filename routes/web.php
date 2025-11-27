@@ -37,6 +37,8 @@ Route::prefix('admin')->namespace()->group(function () {
         Route::get('stats/{user_type}', [UserController::class, 'getStats'])->name('users.stats');
 
         Route::post('store/{user_type}', [UserController::class, 'store'])->name('users.store');
+        Route::get('edit/{id}', [UserController::class, 'edit'])->where('id', '.*')->name('users.edit');
+        Route::put('update/{id}', [UserController::class, 'update'])->where('id', '.*')->name('users.update');
         Route::delete('destroy/{id}', [UserController::class, 'destroy'])->name('users.destroy');
     });
 });

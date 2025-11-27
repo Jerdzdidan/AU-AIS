@@ -8,6 +8,8 @@
         <form class="add-or-update-form pt-0 row g-2" id="add-or-update-form" action="{{ $action }}">
             @csrf
 
+            <input type="hidden" name="id" id="id" value="">
+
             {{ $slot }}
 
             <!-- Form Actions -->
