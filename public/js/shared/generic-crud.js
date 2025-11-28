@@ -9,14 +9,15 @@ class GenericCRUD {
         this.entityName = config.entityName;
         this.dataTable = config.dataTable;
         this.csrfToken = config.csrfToken;
-        this.modal = config.modal;
-        this.form = config.form;
         this.$modal = $(config.modal);
         this.$form = $(config.form);
 
         this.$modal.on('hidden.bs.offcanvas hidden.bs.modal', () => {
             this.$form.trigger('reset');
             this.$form.find('input[name="id"]').val('');
+
+            this.$modal.find('.offcanvas-title').text(`New ${this.entityName}`);
+            this.$form.find('button[type="submit"]').text('Submit');
         });
     }
 
@@ -39,6 +40,11 @@ class GenericCRUD {
             url: url,
             method: 'GET',
             success: (response) => {
+                this.$modal.offcanvas('show');
+                
+                this.$modal.find('.offcanvas-title').text(`Edit ${this.entityName}`);
+                this.$form.find('button[type="submit"]').text(`Update ${this.entityName}`);
+
                 if (this.onEditSuccess) this.onEditSuccess(response);
             },
             error: (xhr) => {
@@ -171,8 +177,8 @@ class GenericCRUD {
             html: `Are you sure you want to delete <span class="text-danger">${name}</span>?`,
             icon: "error",
             showCancelButton: true,
-            confirmButtonColor: "#d33",
-            cancelButtonColor: "#3085d6",
+            confirmButtonColor: "#F27474",
+            cancelButtonColor: "#91a8b3ff",
             confirmButtonText: "Yes, delete it!",
             cancelButtonText: "Cancel"
         }).then((result) => {
@@ -199,27 +205,42 @@ class GenericCRUD {
         });
     }
 
-    toggleStatus(id) {
+    toggleStatus(id, name) {
         const url = this.toggleUrl.replace(':id', id);
-        
-        $.ajax({
-            url: url,
-            method: 'POST',
-            headers: { 'X-CSRF-TOKEN': this.csrfToken },
-            success: (response) => {
-                toastr.success(response.message || "Status updated!");
-                this.dataTable.reload();
-            },
-            error: (xhr) => {
-                if (xhr.status === 403) {
-                    const msg = xhr.responseJSON?.message || 'Action forbidden';
-                    toastr.error(msg, 'Forbidden');
-                    return;
-                }
-                
-                toastr.error(`Failed to toggle ${this.entityName}`);
+
+        Swal.fire({
+            title: 'Confirm Toggle Status',
+            html: `Are you sure you want to toggle status: <span class="text-info">${name}</span>?`,
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#F8BB86",
+            cancelButtonColor: "#91a8b3ff",
+            confirmButtonText: "Confirm",
+            cancelButtonText: "Cancel"
+        }).then((result) => {
+            if (result.isConfirmed) {
+                $.ajax({
+                    url: url,
+                    method: 'POST',
+                    headers: { 'X-CSRF-TOKEN': this.csrfToken },
+                    success: (response) => {
+                        toastr.success(response.message || "Status updated!");
+                        this.dataTable.reload();
+                    },
+                    error: (xhr) => {
+                        if (xhr.status === 403) {
+                            const msg = xhr.responseJSON?.message || 'Action forbidden';
+                            toastr.error(msg, 'Forbidden');
+                            return;
+                        }
+                        
+                        toastr.error(`Failed to toggle ${this.entityName}`);
+                    }
+                });
             }
         });
+        
+        
     }
 
 

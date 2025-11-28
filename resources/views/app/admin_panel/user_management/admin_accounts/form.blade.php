@@ -38,7 +38,7 @@
         label="Password" 
         icon="bx bx-lock-alt" 
         placeholder="*******"
-        help="Leave blank to retain the password"
+        help=""
     />
 </div>
 

@@ -17,7 +17,7 @@ Admin Accounts Management
     <div class="content-container">
         <!-- Page Header -->
         <x-table.page-header title="" subtitle="Manage system accounts">
-            <button class="btn btn-primary" data-bs-toggle="offcanvas" data-bs-target="#add-or-update-modal">
+            <button class="btn btn-primary" data-bs-toggle="offcanvas" id="btn-add" data-bs-target="#add-or-update-modal">
                 <i class="fa-solid fa-plus fa-1x me-2"></i>
                 Add New Account
             </button>
@@ -100,7 +100,7 @@ $(document).ready(function() {
                         : '<i class="fa-solid fa-toggle-off"></i>';
 
                     return `
-                        <button class="btn btn-sm btn-outline-primary" title="Toggle user status" onclick="adminCRUD.toggleStatus('${row.id}', ${row.status})">
+                        <button class="btn btn-sm btn-outline-primary" title="Toggle user status" onclick="adminCRUD.toggleStatus('${row.id}', '${row.name}')">
                             ${toggleIcon}
                         </button>
 
@@ -127,7 +127,6 @@ $(document).ready(function() {
         }
     }).init();
     
-    // Initialize CRUD
     window.adminCRUD = new GenericCRUD({
         baseUrl: '/admin/users/',
         storeUrl: "{{ route('users.store', $user_type) }}",
@@ -135,6 +134,7 @@ $(document).ready(function() {
         updateUrl: "{{ route('users.update', ':id') }}",
         destroyUrl: "{{ route('users.destroy', ':id') }}",
         toggleUrl: "{{ route('users.toggle', ':id') }}",
+
         entityName: 'Admin',
         dataTable: adminTable,
         csrfToken: "{{ csrf_token() }}",
@@ -155,25 +155,11 @@ $(document).ready(function() {
         }
     });
 
-    $('input').on('input', function() {
-        $(this).closest('.input-group, .form-group').find('.invalid-feedback').text('');
-    });
-    
-    // Customized callbacks
-    adminCRUD.onViewSuccess = (response) => {
-        $('#viewAdminModal').modal('show');
-    };
-
     adminCRUD.onEditSuccess = (data) => {
-        $('#add-or-update-modal').offcanvas('show');
-
+        $('#add-or-update-form input[name="id"]').val(data.id);
         $('#add-or-update-form input[name="name"]').val(data.name);
         $('#add-or-update-form input[name="email"]').val(data.email);
         $('#add-or-update-form input[name="user_type"]').val(data.user_type);
-
-        $('#add-or-update-form input[name="id"]').val(data.id);
-
-        $('#add-or-update-form button[type="submit"]').text('Update Admin');
     };
 
 });
