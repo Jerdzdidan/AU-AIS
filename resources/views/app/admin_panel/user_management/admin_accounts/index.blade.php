@@ -72,12 +72,13 @@ Admin Accounts Management
 @section('scripts')
 <script src="{{ asset('js/shared/generic-datatable.js') }}"></script>
 <script src="{{ asset('js/shared/generic-crud.js') }}"></script>
+<script src="{{ asset('js/admin_panel/utils.js') }}"></script>
 <script>
 $(document).ready(function() {
     // Initialize DataTable
     const adminTable = new GenericDataTable({
         tableId: 'adminAccountsTable',
-        ajaxUrl: "{{ route('users.data', $user_type) }}",
+        ajaxUrl: "{{ route('users.data', 'ADMIN') }}",
         columns: [
             { data: "id", visible: false },
             { data: "name" },
@@ -118,7 +119,7 @@ $(document).ready(function() {
         statsCards: {
             total: 'totalAdmins',
             callback: (table) => {
-                $.get("{{ route('users.stats', $user_type) }}", (data) => {
+                $.get("{{ route('users.stats', 'ADMIN') }}", (data) => {
                     $('#totalAdmins').text(data.total);
                     $('#activeAdmins').text(data.active);
                     $('#inactiveAdmins').text(data.inactive);
@@ -129,10 +130,10 @@ $(document).ready(function() {
     
     window.adminCRUD = new GenericCRUD({
         baseUrl: '/admin/users/',
-        storeUrl: "{{ route('users.store', $user_type) }}",
-        editUrl: "{{ route('users.edit', ':id') }}",
-        updateUrl: "{{ route('users.update', ':id') }}",
-        destroyUrl: "{{ route('users.destroy', ':id') }}",
+        storeUrl: "{{ route('admins.store') }}",
+        editUrl: "{{ route('admins.edit', ':id') }}",
+        updateUrl: "{{ route('admins.update', ':id') }}",
+        destroyUrl: "{{ route('admins.destroy', ':id') }}",
         toggleUrl: "{{ route('users.toggle', ':id') }}",
 
         entityName: 'Admin',
@@ -161,6 +162,8 @@ $(document).ready(function() {
         $('#add-or-update-form input[name="email"]').val(data.email);
         $('#add-or-update-form input[name="user_type"]').val(data.user_type);
     };
+
+    
 
 });
 </script>

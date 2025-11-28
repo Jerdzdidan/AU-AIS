@@ -11,9 +11,14 @@ class SelectField extends Component
     /**
      * Create a new component instance.
      */
-    public function __construct()
+
+    public $id, $label;
+
+    public function __construct($id, $label)
     {
         //
+        $this->id = $id;
+        $this->label = $label;
     }
 
     /**

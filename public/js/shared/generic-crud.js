@@ -70,8 +70,8 @@ class GenericCRUD {
             success: (response) => {
                 toastr.success(`${this.entityName} created successfully`);
                 if (this.onCreateSuccess) this.onCreateSuccess(response);
-                $(this.modal).offcanvas('hide');
-                $(this.form)[0].reset();
+                this.$modal.offcanvas('hide');  
+                this.$form[0].reset();
                 this.dataTable.reload();
             },
             error: (xhr) => {
@@ -123,8 +123,8 @@ class GenericCRUD {
             success: (response) => {
                 toastr.success(`${this.entityName} updated successfully`);
                 if (this.onUpdateSuccess) this.onUpdateSuccess(response);
-                $(this.modal).offcanvas('hide');
-                $(this.form)[0].reset();
+                this.$modal.offcanvas('hide');  
+                this.$form[0].reset();
                 this.dataTable.reload();
             },
             error: (xhr) => {
@@ -179,7 +179,7 @@ class GenericCRUD {
             showCancelButton: true,
             confirmButtonColor: "#F27474",
             cancelButtonColor: "#91a8b3ff",
-            confirmButtonText: "Yes, delete it!",
+            confirmButtonText: "Confirm",
             cancelButtonText: "Cancel"
         }).then((result) => {
             if (result.isConfirmed) {

@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\Department;
 use App\Models\User;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
@@ -23,6 +24,12 @@ class DatabaseSeeder extends Seeder
             'password' => '123456',
             'user_type' => 'ADMIN',
             'status' => true,
+        ]);
+
+        Department::factory()->create([
+            'name' => 'School of Computer Studies',
+            'code' => 'SCS',
+            'head_of_department' => 'Geraldine M. Rilles'
         ]);
     }
 }

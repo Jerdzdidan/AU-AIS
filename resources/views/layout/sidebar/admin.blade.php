@@ -16,7 +16,7 @@
     <span class="menu-header-text">Academic Information</span>
 </li>
 
-<x-sidebar.item route='#' name='Departments' icon='fa-solid fa-building-user me-2'/>
+<x-sidebar.item route='departments.index' name='Departments' icon='fa-solid fa-building-user me-2'/>
 
 <x-sidebar.item route='#' name='Programs' icon='fa-solid fa-table-list me-2' />
 
@@ -30,8 +30,8 @@
 
 <x-sidebar.item route='#' name='Student accounts' icon='fa-solid fa-user-graduate me-2' />
 
-<x-sidebar.item route='#' name='E-R Officer accounts' icon='fa-solid fa-user-gear me-2' />
+<x-sidebar.item route='officers.index' name='E-R Officer accounts' icon='fa-solid fa-user-gear me-2' />
 
-<x-sidebar.item route='users.index' param='admin' name='Admin accounts' icon='fa-solid fa-user-shield me-2' />
+<x-sidebar.item route='admins.index' param='admin' name='Admin accounts' icon='fa-solid fa-user-shield me-2' />
 
 @endsection

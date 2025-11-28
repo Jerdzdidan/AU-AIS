@@ -49,7 +49,7 @@
     <link rel="stylesheet" href="{{ asset('themes/sneat/assets/vendor/libs/flatpickr/flatpickr.css') }}" />
 
     <!-- Select2 -->
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
 
     <!-- Toastr -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
@@ -159,7 +159,7 @@
     <script src="{{ asset('themes/sneat/assets/vendor/libs/flatpickr/flatpickr.js') }}"></script>
 
     <!-- Select2 -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 
     <!-- Toastr -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
