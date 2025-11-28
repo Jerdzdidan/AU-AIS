@@ -5,6 +5,7 @@ class GenericCRUD {
         this.editUrl = config.editUrl;
         this.updateUrl = config.updateUrl;
         this.destroyUrl = config.destroyUrl;
+        this.toggleUrl = config.toggleUrl;
         this.entityName = config.entityName;
         this.dataTable = config.dataTable;
         this.csrfToken = config.csrfToken;
@@ -40,7 +41,15 @@ class GenericCRUD {
             success: (response) => {
                 if (this.onEditSuccess) this.onEditSuccess(response);
             },
-            error: () => toastr.error(`Failed to load ${this.entityName}`)
+            error: (xhr) => {
+                if (xhr.status === 403) {
+                    const msg = xhr.responseJSON?.message || 'Action forbidden';
+                    toastr.error(msg, 'Forbidden');
+                    return;
+                }
+                
+                toastr.error(`Failed to load ${this.entityName}`);
+            }
         });
     }
     
@@ -143,6 +152,12 @@ class GenericCRUD {
                     return;
                 }
 
+                if (xhr.status === 403) {
+                    const msg = xhr.responseJSON?.message || 'Action forbidden';
+                    toastr.error(msg, 'Forbidden');
+                    return;
+                }
+
                 toastr.error(`Failed to create ${this.entityName}`);
             }
         });
@@ -170,8 +185,39 @@ class GenericCRUD {
                         toastr.success(`${this.entityName} deleted successfully`);
                         this.dataTable.reload();
                     },
-                    error: () => toastr.error(`Failed to delete ${this.entityName}`)
+                    error: (xhr) => {
+                        if (xhr.status === 403) {
+                            const msg = xhr.responseJSON?.message || 'Action forbidden';
+                            toastr.error(msg, 'Forbidden');
+                            return;
+                        }
+                        
+                        toastr.error(`Failed to delete ${this.entityName}`);
+                    }
                 });
+            }
+        });
+    }
+
+    toggleStatus(id) {
+        const url = this.toggleUrl.replace(':id', id);
+        
+        $.ajax({
+            url: url,
+            method: 'POST',
+            headers: { 'X-CSRF-TOKEN': this.csrfToken },
+            success: (response) => {
+                toastr.success(response.message || "Status updated!");
+                this.dataTable.reload();
+            },
+            error: (xhr) => {
+                if (xhr.status === 403) {
+                    const msg = xhr.responseJSON?.message || 'Action forbidden';
+                    toastr.error(msg, 'Forbidden');
+                    return;
+                }
+                
+                toastr.error(`Failed to toggle ${this.entityName}`);
             }
         });
     }

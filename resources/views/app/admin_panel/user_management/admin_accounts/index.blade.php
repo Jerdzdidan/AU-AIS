@@ -88,20 +88,31 @@ $(document).ready(function() {
                 render: (data, type, row) => {
                     const status = row.status ? 'Active' : 'Inactive';
                     const badge = row.status ? 'success' : 'danger';
-                    return `<span class="badge bg-${badge}">${status}</span>`;
+                    return `<span class="badge bg-label-${badge}">${status}</span>`;
                 }
             },
             { 
                 data: null,
                 orderable: false,
-                render: (data, type, row) => `
-                    <button class="btn btn-sm btn-outline-warning" onclick="adminCRUD.edit('${row.id}')">
-                        <i class="fa-solid fa-pencil"></i>
-                    </button>
-                    <button class="btn btn-sm btn-outline-danger" onclick="adminCRUD.delete('${row.id}', '${row.name}')">
-                        <i class="fa-solid fa-trash"></i>
-                    </button>
-                `
+                render: (data, type, row) => {
+                    const toggleIcon = row.status
+                        ? '<i class="fa-solid fa-toggle-on"></i>'
+                        : '<i class="fa-solid fa-toggle-off"></i>';
+
+                    return `
+                        <button class="btn btn-sm btn-outline-primary" title="Toggle user status" onclick="adminCRUD.toggleStatus('${row.id}', ${row.status})">
+                            ${toggleIcon}
+                        </button>
+
+                        <button class="btn btn-sm btn-outline-warning" title="Edit user: ${row.name}" onclick="adminCRUD.edit('${row.id}')">
+                            <i class="fa-solid fa-pencil"></i>
+                        </button>
+
+                        <button class="btn btn-sm btn-outline-danger" title="Delete user: ${row.name}" onclick="adminCRUD.delete('${row.id}', '${row.name}')">
+                            <i class="fa-solid fa-trash"></i>
+                        </button>
+                    `;
+                }
             }
         ],
         statsCards: {
@@ -123,6 +134,7 @@ $(document).ready(function() {
         editUrl: "{{ route('users.edit', ':id') }}",
         updateUrl: "{{ route('users.update', ':id') }}",
         destroyUrl: "{{ route('users.destroy', ':id') }}",
+        toggleUrl: "{{ route('users.toggle', ':id') }}",
         entityName: 'Admin',
         dataTable: adminTable,
         csrfToken: "{{ csrf_token() }}",

@@ -38,7 +38,7 @@
         label="Password" 
         icon="bx bx-lock-alt" 
         placeholder="*******"
-        help="Leave blank to use default password (Arellano@1938)"
+        help="Leave blank to retain the password"
     />
 </div>
 

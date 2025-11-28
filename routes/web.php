@@ -3,6 +3,7 @@
 use App\Http\Controllers\AdminPanel\UserController;
 use App\Http\Controllers\Auth\AdminAuthController;
 use App\Http\Controllers\CreateRootUserController;
+use App\Http\Middleware\PreventSelfAction;
 use Illuminate\Support\Facades\Route;
 
 // PLACEHOLDER ROUTE
@@ -37,9 +38,10 @@ Route::prefix('admin')->namespace()->group(function () {
         Route::get('stats/{user_type}', [UserController::class, 'getStats'])->name('users.stats');
 
         Route::post('store/{user_type}', [UserController::class, 'store'])->name('users.store');
-        Route::get('edit/{id}', [UserController::class, 'edit'])->where('id', '.*')->name('users.edit');
-        Route::put('update/{id}', [UserController::class, 'update'])->where('id', '.*')->name('users.update');
-        Route::delete('destroy/{id}', [UserController::class, 'destroy'])->name('users.destroy');
+        Route::get('edit/{id}', [UserController::class, 'edit'])->where('id', '.*')->middleware(PreventSelfAction::class)->name('users.edit');
+        Route::put('update/{id}', [UserController::class, 'update'])->where('id', '.*')->middleware(PreventSelfAction::class)->name('users.update');
+        Route::delete('destroy/{id}', [UserController::class, 'destroy'])->middleware(PreventSelfAction::class)->name('users.destroy');
+        Route::post('toggle-status/{id}', [UserController::class, 'toggle'])->middleware(PreventSelfAction::class)->name('users.toggle');
     });
 });
 

@@ -129,4 +129,30 @@ class UserController extends Controller
             ], 500);
         }
     }
+
+    public function toggle($id)
+    {
+        try {
+            $decrypted = Crypt::decryptString($id);
+            
+            $user = User::findOrFail($decrypted);
+            $user->status = !$user->status;
+            $user->save();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'User status toggled successfully.'
+            ]);
+        } catch (DecryptException $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Invalid user ID. Could not delete.'
+            ], 400);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Something went wrong: ' . $e->getMessage()
+            ], 500);
+        }
+    }
 }

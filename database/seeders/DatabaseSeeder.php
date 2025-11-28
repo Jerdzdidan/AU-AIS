@@ -22,6 +22,7 @@ class DatabaseSeeder extends Seeder
             'email' => 'root@gmail.com',
             'password' => '123456',
             'user_type' => 'ADMIN',
+            'status' => true,
         ]);
     }
 }
