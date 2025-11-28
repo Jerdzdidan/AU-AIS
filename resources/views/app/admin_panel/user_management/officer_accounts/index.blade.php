@@ -77,11 +77,9 @@ Officer Accounts Management
 <script>
 $(document).ready(function() {
 
-    initSelect2('#department_id', {
-        url: "{{ route('departments.select') }}",
-        placeholder: 'Select a department'
-    });
-
+    // Select2
+    let departmentsCache = [];
+    prefetchAndInitSelect2('#department_id', "{{ route('departments.select') }}", 'Select a department');
 
     // Initialize DataTable
     const officersTable = new GenericDataTable({

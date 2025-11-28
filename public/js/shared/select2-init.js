@@ -2,29 +2,45 @@
  * Simple Select2 Initializer with Badge Styling
  * Clean and reusable for Laravel projects
  */
+function prefetchAndInitSelect2(selector, url, placeholder) {
+    $.get(url, function(data) {
+        const preloadedData = (Array.isArray(data) ? data : data.data || []).map(item => ({
+            id: item.id,
+            text: item.name,
+            code: item.code
+        }));
+
+        initSelect2(selector, { placeholder, preloadedData });
+    });
+}
 
 function initSelect2(selector, options = {}) {
     const {
         url = null,
         badgeKey = 'code',
         badgeClass = 'bg-primary',
-        placeholder = 'Select an option'
+        placeholder = 'Select an option',
+        preloadedData = null // NEW: array of preloaded options
     } = options;
 
     const $element = $(selector);
     if (!$element.length) return;
 
-
-    // Base config
     const config = {
         allowClear: true,
         placeholder: placeholder,
         templateResult: formatWithBadge,
-        templateSelection: formatWithBadge
+        templateSelection: formatWithBadge,
+        language: {
+            searching: function() { return null; } // hide "Searching..."
+        }
     };
 
-    // Add AJAX if URL provided
-    if (url) {
+    if (preloadedData) {
+        // Use local data instead of AJAX
+        config.data = preloadedData;
+    } else if (url) {
+        // Original AJAX config
         config.ajax = {
             url: url,
             dataType: 'json',
@@ -41,18 +57,11 @@ function initSelect2(selector, options = {}) {
 
     $element.select2(config);
 
-    // Format function
     function formatWithBadge(option) {
         if (!option.id) return option.text;
-        
         const code = option.code || $(option.element).data('code') || '';
         if (!code) return $('<span>' + option.text + '</span>');
-
-        return $(
-            '<span>' + 
-                code + ' - ' + option.text +
-            '</span>'
-        );
+        return $('<span>' + code + ' - ' + option.text + '</span>');
     }
 }
 
