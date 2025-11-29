@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AdminPanel\AdminUserController;
+use App\Http\Controllers\AdminPanel\CurriculumController;
 use App\Http\Controllers\AdminPanel\DepartmentController;
 use App\Http\Controllers\AdminPanel\OfficerUserController;
 use App\Http\Controllers\AdminPanel\ProgramController;
@@ -62,7 +63,33 @@ Route::prefix('admin')->middleware('auth')->group(function () {
     Route::prefix('programs')->group(function () {
         Route::get('data', [ProgramController::class, 'getData'])->name('programs.data');
         Route::get('stats', [ProgramController::class, 'getStats'])->name('programs.stats');
+
+        // FOR SELECT2
+        Route::get('select', [ProgramController::class, 'getProgramsForSelect'])->name('programs.select');
     });
+
+    // CURRICULUM MANAGEMENT
+    Route::resource('curricula', CurriculumController::class)->except(['show']);
+    Route::prefix('curricula')->group(function () {
+        Route::get('data', [CurriculumController::class, 'getData'])->name('curricula.data');
+        Route::get('stats', [CurriculumController::class, 'getStats'])->name('curricula.stats');
+
+        Route::post('toggle/{id}', [CurriculumController::class, 'toggle'])->name('curricula.toggle');
+
+            // CURRICULUM SUBJECT MANAGEMENT
+        Route::prefix('subjects')->group(function () {
+            Route::get('/{curriculum_id}', [App\Http\Controllers\AdminPanel\SubjectController::class, 'index'])->name('subjects.index');
+            Route::get('data/{curriculum_id}', [App\Http\Controllers\AdminPanel\SubjectController::class, 'getData'])->name('subjects.data');
+            Route::get('stats/{curriculum_id}', [App\Http\Controllers\AdminPanel\SubjectController::class, 'getStats'])->name('subjects.stats');
+            Route::post('store/{curriculum_id}', [App\Http\Controllers\AdminPanel\SubjectController::class, 'store'])->name('subjects.store');
+            Route::get('edit/{id}', [App\Http\Controllers\AdminPanel\SubjectController::class, 'edit'])->name('subjects.edit');
+            Route::put('update/{id}', [App\Http\Controllers\AdminPanel\SubjectController::class, 'update'])->name('subjects.update');
+            Route::delete('destroy/{id}', [App\Http\Controllers\AdminPanel\SubjectController::class, 'destroy'])->name('subjects.destroy');
+            Route::post('toggle/{id}', [App\Http\Controllers\AdminPanel\SubjectController::class, 'toggle'])->name('subjects.toggle');
+        });
+    });
+
+
 
 
 });

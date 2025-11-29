@@ -12,12 +12,14 @@ class PageHeader extends Component
      * Create a new component instance.
      */
 
-    public $subtitle, $title;
-    public function __construct($title, $subtitle)
+    public $subtitle, $title, $showBackButton, $backUrl;
+    public function __construct($title, $subtitle, $showBackButton = false, $backUrl = null)
     {
         //
         $this->title = $title;
         $this->subtitle = $subtitle;
+        $this->showBackButton = $showBackButton;
+        $this->backUrl = $backUrl;
     }
 
     /**

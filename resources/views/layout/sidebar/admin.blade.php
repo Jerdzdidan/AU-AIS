@@ -20,7 +20,7 @@
 
 <x-sidebar.item route='programs.index' name='Programs' icon='fa-solid fa-table-list me-2' />
 
-<x-sidebar.item route='#' name='Curriculums' icon='fa-solid fa-file-pen me-2' />
+<x-sidebar.item route='curricula.index' name='Curricula' icon='fa-solid fa-file-pen me-2' class="{{ request()->routeIs('subjects.*') ? 'active' : '' }}"/>
 
 <li class="menu-header small text-uppercase">
     <span class="menu-header-text">User Management</span>

@@ -5,12 +5,15 @@ class GenericDataTable {
         this.columns = config.columns;
         this.statsCards = config.statsCards || null;
         this.table = null;
+        this.order = config.order || [[1, "asc"]];
+        this.lengthMenu = config.lengthMenu || null;
     }
     
     init() {
         this.table = $(`#${this.tableId}`).DataTable({
             processing: true,
             serverSide: true,
+            responsive: true,
             ajax: {
                 url: this.ajaxUrl,
                 type: "GET",
@@ -20,9 +23,9 @@ class GenericDataTable {
                 }
             },
             columns: this.columns,
-            order: [[1, "asc"]],
+            order: this.order,
             pageLength: 10,
-            lengthMenu: [10, 25, 50, 100],
+            lengthMenu: this.lengthMenu || [10, 25, 50, 100],
             language: {
                 processing: '<div class="spinner-border text-primary"></div> Loading...',
                 emptyTable: "No records available"

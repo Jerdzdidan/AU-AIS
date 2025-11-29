@@ -12,7 +12,7 @@ use Yajra\DataTables\DataTables;
 class ProgramController extends Controller
 {
     //
-        public function index()
+    public function index()
     {
         return view('app.admin_panel.program_management.index');
     }
