@@ -18,9 +18,7 @@
 
 <x-sidebar.item route='departments.index' name='Departments' icon='fa-solid fa-building-user me-2'/>
 
-<x-sidebar.item route='#' name='Programs' icon='fa-solid fa-table-list me-2' />
-
-<x-sidebar.item route='#' name='Subjects' icon='fa-solid fa-book-open me-2' />
+<x-sidebar.item route='programs.index' name='Programs' icon='fa-solid fa-table-list me-2' />
 
 <x-sidebar.item route='#' name='Curriculums' icon='fa-solid fa-file-pen me-2' />
 

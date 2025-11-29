@@ -87,14 +87,25 @@ class DepartmentController extends Controller
     public function destroy($id)
     {
         $decrypted = Crypt::decryptString($id);
-        Department::findOrFail($decrypted)->delete();
-
+        $department = Department::findOrFail($decrypted);
+        
+        // Check associations
+        $check = $department->checkAssociations();
+        
+        if ($check['hasAssociations']) {
+            return response()->json([
+                'success' => false,
+                'message' => $check['message']
+            ], 422);
+        }
+        
+        $department->delete();
+        
         return response()->json([
             'success' => true,
             'message' => 'Department deleted successfully.'
         ]);
     }
-
 
     public function getDepartmentsForSelect(Request $request)
     {

@@ -11,9 +11,17 @@ class TextAreaField extends Component
     /**
      * Create a new component instance.
      */
-    public function __construct()
+
+    public $id, $label, $placeholder, $rows, $icon;
+
+    public function __construct($id, $label, $placeholder = '', $rows = 2, $icon = '')
     {
         //
+        $this->id = $id;
+        $this->label = $label;
+        $this->placeholder = $placeholder;
+        $this->rows = $rows;
+        $this->icon = $icon;
     }
 
     /**

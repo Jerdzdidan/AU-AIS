@@ -75,7 +75,7 @@ class OfficerUserController extends Controller
             $user->password = Hash::make($validated['password']);
         }
 
-        $user->save();
+        $user->update();
     }
 
     public function destroy($id)

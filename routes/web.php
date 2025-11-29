@@ -3,9 +3,9 @@
 use App\Http\Controllers\AdminPanel\AdminUserController;
 use App\Http\Controllers\AdminPanel\DepartmentController;
 use App\Http\Controllers\AdminPanel\OfficerUserController;
+use App\Http\Controllers\AdminPanel\ProgramController;
 use App\Http\Controllers\AdminPanel\UserController;
 use App\Http\Controllers\Auth\AdminAuthController;
-use App\Http\Controllers\CreateRootUserController;
 use App\Http\Middleware\PreventSelfAction;
 use Illuminate\Support\Facades\Route;
 
@@ -47,19 +47,21 @@ Route::prefix('admin')->middleware('auth')->group(function () {
     });
 
     // DEPARTMENTS MANAGEMENT
+    Route::resource('departments', DepartmentController::class)->except(['show']);
     Route::prefix('departments')->group(function () {
-        Route::resource('/', DepartmentController::class)
-            ->names([
-                'index' => 'departments.index', 'create' => 'departments.create', 'store' => 'departments.store', 
-                'show' => 'departments.show', 'edit' => 'departments.edit', 'update' => 'departments.update',
-                'destroy' => 'departments.destroy',
-            ]);
 
         Route::get('data', [DepartmentController::class, 'getData'])->name('departments.data');
         Route::get('stats', [DepartmentController::class, 'getStats'])->name('departments.stats');
 
         // FOR SELECT2
         Route::get('select', [DepartmentController::class, 'getDepartmentsForSelect'])->name('departments.select');
+    });
+
+    // PROGRAMS MANAGEMENT
+    Route::resource('programs', ProgramController::class)->except(['show']);
+    Route::prefix('programs')->group(function () {
+        Route::get('data', [ProgramController::class, 'getData'])->name('programs.data');
+        Route::get('stats', [ProgramController::class, 'getStats'])->name('programs.stats');
     });
 
 

@@ -197,6 +197,16 @@ class GenericCRUD {
                             toastr.error(msg, 'Forbidden');
                             return;
                         }
+
+                         if (xhr.status === 422) {
+                            const msg = xhr.responseJSON?.message || 'Cannot delete this record';
+                            toastr.error(msg, 'Cannot Delete', {
+                                closeButton: true,
+                                timeOut: 7000,
+                                extendedTimeOut: 3000
+                            });
+                            return;
+                        }
                         
                         toastr.error(`Failed to delete ${this.entityName}`);
                     }

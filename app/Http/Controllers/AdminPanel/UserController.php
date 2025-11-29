@@ -45,7 +45,7 @@ class UserController extends Controller
             
             $user = User::findOrFail($decrypted);
             $user->status = !$user->status;
-            $user->save();
+            $user->update();
 
             return response()->json([
                 'success' => true,
