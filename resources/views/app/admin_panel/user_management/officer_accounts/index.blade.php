@@ -59,6 +59,7 @@ Officer Accounts Management
             <th>Name</th>
             <th>Email</th>
             <th>User Type</th>
+            <th>Department</th>
             <th>Status</th>
             <th>Actions</th>
         </x-table.table>
@@ -90,6 +91,7 @@ $(document).ready(function() {
             { data: "name" },
             { data: "email" },
             { data: "user_type" },
+            { data: "department_name" },
             { 
                 data: "status",
                 render: (data, type, row) => {
@@ -107,15 +109,15 @@ $(document).ready(function() {
                         : '<i class="fa-solid fa-toggle-off"></i>';
 
                     return `
-                        <button class="btn btn-sm btn-outline-primary" title="Toggle user status" onclick="adminCRUD.toggleStatus('${row.id}', '${row.name}')">
+                        <button class="btn btn-sm btn-outline-primary" title="Toggle user status" onclick="officerCRUD.toggleStatus('${row.id}', '${row.name}')">
                             ${toggleIcon}
                         </button>
 
-                        <button class="btn btn-sm btn-outline-warning" title="Edit user: ${row.name}" onclick="adminCRUD.edit('${row.id}')">
+                        <button class="btn btn-sm btn-outline-warning" title="Edit user: ${row.name}" onclick="officerCRUD.edit('${row.id}')">
                             <i class="fa-solid fa-pencil"></i>
                         </button>
 
-                        <button class="btn btn-sm btn-outline-danger" title="Delete user: ${row.name}" onclick="adminCRUD.delete('${row.id}', '${row.name}')">
+                        <button class="btn btn-sm btn-outline-danger" title="Delete user: ${row.name}" onclick="officerCRUD.delete('${row.id}', '${row.name}')">
                             <i class="fa-solid fa-trash"></i>
                         </button>
                     `;

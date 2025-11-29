@@ -50,9 +50,8 @@ Route::prefix('admin')->middleware('auth')->group(function () {
     Route::prefix('departments')->group(function () {
         Route::resource('/', DepartmentController::class)
             ->names([
-                'index'   => 'departments.index', 'create'  => 'departments.create',
-                'store'   => 'departments.store', 'show'    => 'departments.show',
-                'edit'    => 'departments.edit', 'update'  => 'departments.update',
+                'index' => 'departments.index', 'create' => 'departments.create', 'store' => 'departments.store', 
+                'show' => 'departments.show', 'edit' => 'departments.edit', 'update' => 'departments.update',
                 'destroy' => 'departments.destroy',
             ]);
 

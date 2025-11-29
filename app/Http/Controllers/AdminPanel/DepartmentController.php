@@ -108,7 +108,7 @@ class DepartmentController extends Controller
 
         $formatted = $departments->map(function ($dept) {
             return [
-                'id' => Crypt::encryptString($dept->id),
+                'id' => $dept->id,
                 'name' => $dept->name,
                 'code' => $dept->code
             ];

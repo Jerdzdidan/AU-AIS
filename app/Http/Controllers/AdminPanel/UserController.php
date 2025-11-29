@@ -14,11 +14,17 @@ class UserController extends Controller
     //
     public function getData($user_type)
     {
-        $users = User::where('user_type', $user_type)->where('name', '!=', 'root')->select(['id', 'name', 'email', 'user_type', 'status']);
+        $users = User::with('department:id,name')
+            ->where('user_type', $user_type)
+            ->where('name', '!=', 'root')
+            ->select(['id', 'name', 'email', 'department_id', 'user_type', 'status']);
         
         return DataTables::of($users)
             ->editColumn('id', function ($row) {
                 return Crypt::encryptString($row->id);
+            })
+            ->addColumn('department_name', function ($row) {
+                return $row->department ? $row->department->name : '-';
             })
             ->make(true);
     }

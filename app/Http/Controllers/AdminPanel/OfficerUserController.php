@@ -19,14 +19,6 @@ class OfficerUserController extends Controller
 
     public function store(Request $request)
     {
-        try {
-            $departmentId = Crypt::decryptString($request->department_id);
-        } catch (\Exception $e) {
-            return back()->withErrors(['department_id' => 'Invalid department value.']);
-        }
-
-        $request->merge(['department_id' => $departmentId]);
-
         $validated = $request->validate([
             'name'     => 'required|string|max:255',
             'email'    => 'required|email|unique:users,email',
@@ -39,7 +31,7 @@ class OfficerUserController extends Controller
         $user->email = $validated['email'];
         $user->password = Hash::make($validated['password']);
         $user->user_type = 'OFFICER';
-        $user->department_id = $departmentId;
+        $user->department_id = $validated['department_id'];
 
         $user->save();
     }
@@ -54,7 +46,8 @@ class OfficerUserController extends Controller
             'id' => Crypt::encryptString($user->id),
             'name' => $user->name,
             'email' => $user->email,
-            'department' => $user->department
+            'department_id' => $user->department_id,
+            'department_name' => $user->department->name,
         ]);
     }
 
@@ -70,13 +63,13 @@ class OfficerUserController extends Controller
                 Rule::unique('users', 'email')->ignore($decrypted),
             ],
             'password' => 'nullable|string|min:6',
-            'department' => 'required',
+            'department_id' => 'required|exists:departments,id',
         ]);
 
         $user = User::findOrFail($decrypted);
         $user->name = $validated['name'];
         $user->email = $validated['email'];
-        $user->department = $validated['department'];
+        $user->department_id = $validated['department_id'];
 
         if (!empty($validated['password'])) {
             $user->password = Hash::make($validated['password']);

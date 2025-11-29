@@ -23,7 +23,7 @@ return new class extends Migration
     {
         Schema::table('users', function (Blueprint $table) {
             //
-            $table->dropCoulumn('department_id');
+            $table->dropColumn('department_id');
         });
     }
 };
