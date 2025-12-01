@@ -18,6 +18,7 @@ class Department extends Model
     {
         return [
             'users' => 'users',
+            'programs' => 'programs',
         ];
     }
     

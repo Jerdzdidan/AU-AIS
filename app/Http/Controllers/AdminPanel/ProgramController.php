@@ -89,6 +89,16 @@ class ProgramController extends Controller
         $decrypted = Crypt::decryptString($id);
         $program = Program::findOrFail($decrypted);
         
+        // Check associations
+        $check = $program->checkAssociations();
+        
+        if ($check['hasAssociations']) {
+            return response()->json([
+                'success' => false,
+                'message' => $check['message']
+            ], 422);
+        }
+        
         $program->delete();
         
         return response()->json([

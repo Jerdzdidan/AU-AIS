@@ -93,6 +93,16 @@ class CurriculumController extends Controller
     {
         $decrypted = Crypt::decryptString($id);
         $curriculum = Curriculum::findOrFail($decrypted);
+
+        // Check associations
+        $check = $curriculum->checkAssociations();
+        
+        if ($check['hasAssociations']) {
+            return response()->json([
+                'success' => false,
+                'message' => $check['message']
+            ], 422);
+        }
         
         $curriculum->delete();
         
