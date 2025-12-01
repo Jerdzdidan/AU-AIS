@@ -7,6 +7,8 @@ use App\Http\Controllers\AdminPanel\OfficerUserController;
 use App\Http\Controllers\AdminPanel\ProgramController;
 use App\Http\Controllers\AdminPanel\UserController;
 use App\Http\Controllers\Auth\AdminAuthController;
+use App\Http\Controllers\Auth\GlobalLogoutController;
+use App\Http\Controllers\Auth\StudentAuthController;
 use App\Http\Middleware\PreventSelfAction;
 use Illuminate\Support\Facades\Route;
 
@@ -24,14 +26,16 @@ Route::get('/', function () {
 Route::prefix('auth/admin')->group(function () {
     Route::get('login', [AdminAuthController::class, 'index'])->name('auth.admin.login');
     Route::post('authenticate', [AdminAuthController::class, 'authenticate'])->name('auth.admin.authenticate');
-    Route::get('logout', [AdminAuthController::class, 'logout'])->name('auth.admin.logout');
 });
 
 // STUDENT LOGIN/AUTHENTICATION
 Route::prefix('auth/student')->group(function () {
-    // Route::get('login', [AdminAuthController::class, 'index'])->name('auth.login');
-    // Route::post('authenticate', [AdminAuthController::class, 'authenticate'])->name('auth.authenticate');
+    Route::get('login', [StudentAuthController::class, 'index'])->name('auth.student.login');
+    Route::post('authenticate', [StudentAuthController::class, 'authenticate'])->name('auth.student.authenticate');
 });
+
+// LOGOUT
+Route::get('auth/logout', [GlobalLogoutController::class, 'logout'])->name('auth.logout');
 
 
 // ADMIN PANEL
