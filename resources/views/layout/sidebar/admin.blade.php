@@ -26,7 +26,7 @@
     <span class="menu-header-text">User Management</span>
 </li>
 
-<x-sidebar.item route='#' name='Student accounts' icon='fa-solid fa-user-graduate me-2' />
+<x-sidebar.item route='students.index' name='Student accounts' icon='fa-solid fa-user-graduate me-2' />
 
 <x-sidebar.item route='officers.index' name='E-R Officer accounts' icon='fa-solid fa-user-gear me-2' />
 

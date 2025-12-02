@@ -160,7 +160,6 @@ $(document).ready(function() {
         $('#add-or-update-form input[name="id"]').val(data.id);
         $('#add-or-update-form input[name="name"]').val(data.name);
         $('#add-or-update-form input[name="email"]').val(data.email);
-        $('#add-or-update-form input[name="user_type"]').val(data.user_type);
     };
 
     

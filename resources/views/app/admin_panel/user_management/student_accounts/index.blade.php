@@ -1,7 +1,7 @@
 @extends('layout.base')
 
 @section('title')
-Officer Accounts Management
+Student Accounts Management
 @endsection
 
 @section('head')
@@ -9,7 +9,7 @@ Officer Accounts Management
 @endsection
 
 @section('nav_title')
-Officer Accounts Management
+Student Accounts Management
 @endsection
 
 @section('body')
@@ -26,17 +26,17 @@ Officer Accounts Management
         <!-- Statistics Cards (Optional) -->
         <div class="row mb-4">
             
-            {{-- TOTAL OFFICERS --}}
+            {{-- TOTAL STUDENTS --}}
             <x-table.stats-card 
-                id="totalOfficers" 
-                title="Total Officers" 
+                id="totalStudents" 
+                title="Total Students" 
                 icon="fa-solid fa-user fa-2x" 
                 bgColor="bg-primary" 
                 class="col-md-4"/>
 
             {{-- ACTIVE ACCOUNTS --}}
             <x-table.stats-card 
-                id="activeOfficers" 
+                id="activeStudents" 
                 title="Active" 
                 icon="fa-solid fa-user-check fa-2x" 
                 bgColor="bg-success" 
@@ -44,7 +44,7 @@ Officer Accounts Management
 
             {{-- INACTIVE ACCOUNTS --}}
             <x-table.stats-card 
-                id="inactiveOfficers" 
+                id="inactiveStudents" 
                 title="Inactive" 
                 icon="fa-solid fa-user-xmark fa-2x" 
                 bgColor="bg-danger" 
@@ -53,18 +53,19 @@ Officer Accounts Management
         </div>
         
         <!-- DataTable -->
-        <x-table.table id="officerAccountsTable">
+        <x-table.table id="studentAccountsTable">
             {{-- Columns --}}
             <th>Id</th>
+            <th>Student No.</th>
             <th>Name</th>
             <th>Email</th>
-            <th>User Type</th>
-            <th>Department</th>
+            <th>Year Level</th>
+            <th>Program</th>
             <th>Status</th>
             <th>Actions</th>
         </x-table.table>
 
-        @include('app.admin_panel.user_management.officer_accounts.form')
+        @include('app.admin_panel.user_management.student_accounts.form')
 
     </div>
 </div>
@@ -79,24 +80,28 @@ Officer Accounts Management
 $(document).ready(function() {
 
     // Select2
-    let departmentsCache = [];
-    prefetchAndInitSelect2('#department_id', "{{ route('departments.select') }}", 'Select a department');
+    let programsCache = [];
+    prefetchAndInitSelect2('#program_id', "{{ route('programs.select') }}", 'Select a program');
 
     // Initialize DataTable
-    const officersTable = new GenericDataTable({
-        tableId: 'officerAccountsTable',
-        ajaxUrl: "{{ route('users.data', 'OFFICER') }}",
+    const studentsTable = new GenericDataTable({
+        tableId: 'studentAccountsTable',
+        ajaxUrl: "{{ route('students.data') }}",
         columns: [
             { data: "id", visible: false },
-            { data: "name" },
-            { data: "email" },
-            { data: "user_type" },
-            { data: "department_name" },
+            { data: "student_number" },
+            { data: "user.name" },
             { 
-                data: "status",
+                data: "user.email",
+                defaultContent: '---'
+            },
+            { data: "year_level" },
+            { data: "program.code" },
+            { 
+                data: "user.status",
                 render: (data, type, row) => {
-                    const status = row.status ? 'Active' : 'Inactive';
-                    const badge = row.status ? 'success' : 'danger';
+                    const status = row.user.status ? 'Active' : 'Inactive';
+                    const badge = row.user.status ? 'success' : 'danger';
                     return `<span class="badge bg-label-${badge}">${status}</span>`;
                 }
             },
@@ -104,20 +109,20 @@ $(document).ready(function() {
                 data: null,
                 orderable: false,
                 render: (data, type, row) => {
-                    const toggleIcon = row.status
+                    const toggleIcon = row.user.status
                         ? '<i class="fa-solid fa-toggle-on"></i>'
                         : '<i class="fa-solid fa-toggle-off"></i>';
 
                     return `
-                        <button class="btn btn-sm btn-outline-primary" title="Toggle user status" onclick="officerCRUD.toggleStatus('${row.id}', '${row.name}')">
+                        <button class="btn btn-sm btn-outline-primary" title="Toggle user status" onclick="studentCRUD.toggleStatus('${row.user_id}', '${row.user.name}')">
                             ${toggleIcon}
                         </button>
 
-                        <button class="btn btn-sm btn-outline-warning" title="Edit user: ${row.name}" onclick="officerCRUD.edit('${row.id}')">
+                        <button class="btn btn-sm btn-outline-warning" title="Edit user: ${row.user.name}" onclick="studentCRUD.edit('${row.id}')">
                             <i class="fa-solid fa-pencil"></i>
                         </button>
 
-                        <button class="btn btn-sm btn-outline-danger" title="Delete user: ${row.name}" onclick="officerCRUD.delete('${row.id}', '${row.name}')">
+                        <button class="btn btn-sm btn-outline-danger" title="Delete user: ${row.user.name}" onclick="studentCRUD.delete('${row.id}', '${row.user.name}')">
                             <i class="fa-solid fa-trash"></i>
                         </button>
                     `;
@@ -125,27 +130,27 @@ $(document).ready(function() {
             }
         ],
         statsCards: {
-            total: 'totalOfficers',
+            total: 'totalStudents',
             callback: (table) => {
-                $.get("{{ route('users.stats', 'OFFICER') }}", (data) => {
-                    $('#totalOfficers').text(data.total);
-                    $('#activeOfficers').text(data.active);
-                    $('#inactiveOfficers').text(data.inactive);
+                $.get("{{ route('users.stats', 'STUDENT') }}", (data) => {
+                    $('#totalStudents').text(data.total);
+                    $('#activeStudents').text(data.active);
+                    $('#inactiveStudents').text(data.inactive);
                 });
             }
         }
     }).init();
     
-    window.officerCRUD = new GenericCRUD({
+    window.studentCRUD = new GenericCRUD({
         baseUrl: '/admin/users/',
-        storeUrl: "{{ route('officers.store') }}",
-        editUrl: "{{ route('officers.edit', ':id') }}",
-        updateUrl: "{{ route('officers.update', ':id') }}",
-        destroyUrl: "{{ route('officers.destroy', ':id') }}",
+        storeUrl: "{{ route('students.store') }}",
+        editUrl: "{{ route('students.edit', ':id') }}",
+        updateUrl: "{{ route('students.update', ':id') }}",
+        destroyUrl: "{{ route('students.destroy', ':id') }}",
         toggleUrl: "{{ route('users.toggle', ':id') }}",
 
-        entityName: 'Officer',
-        dataTable: officersTable,
+        entityName: 'Student',
+        dataTable: studentsTable,
         csrfToken: "{{ csrf_token() }}",
         form: '#add-or-update-form',
         modal: '#add-or-update-modal'
@@ -158,24 +163,26 @@ $(document).ready(function() {
 
         if (id) {
             fd.append('_method', 'PUT');
-            officerCRUD.update(id, fd);
+            studentCRUD.update(id, fd);
         } else {
-            officerCRUD.create(fd);
+            studentCRUD.create(fd);
         }
     });
 
-    officerCRUD.onEditSuccess = (data) => {
+    studentCRUD.onEditSuccess = (data) => {
         $('#add-or-update-form input[name="id"]').val(data.id);
+        $('#add-or-update-form input[name="student_number"]').val(data.student_number);
         $('#add-or-update-form input[name="name"]').val(data.name);
         $('#add-or-update-form input[name="email"]').val(data.email);
-        $('#add-or-update-form input[name="user_type"]').val(data.user_type);
+        $('#add-or-update-form input[name="year_level"]').val(data.year_level);
+        $('#add-or-update-form input[name="program"]').val(data.program);
 
-        setSelect2Value('#department_id', data.department_id);
+        setSelect2Value('#program_id', data.program_id);
     };
 
     $('#add-or-update-modal').on('hidden.bs.offcanvas', function() {
         $('#add-or-update-form')[0].reset();
-        resetSelect2('#department_id');
+        resetSelect2('#program_id');
     });
 
 });

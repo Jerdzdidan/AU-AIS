@@ -9,8 +9,9 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Yajra\DataTables\DataTables;
 
-class StudentController extends Controller
+class StudentUserController extends Controller
 {
     //
     public function index()
@@ -18,27 +19,56 @@ class StudentController extends Controller
         return view('app.admin_panel.user_management.student_accounts.index');
     }
 
+    public function getData()
+    {
+        $students = Student::with(['user:id,name,email,status', 'program:id,name,code'])
+        ->select(['id', 'user_id', 'student_number', 'program_id', 'year_level']);
+    
+        return DataTables::of($students)
+            ->editColumn('id', function ($row) {
+                return Crypt::encryptString($row->id);
+            })
+            ->editColumn('user_id', function ($row) {
+                return Crypt::encryptString($row->user_id);
+            })
+            ->make(true);
+    }
+
     public function store(Request $request)
     {
-        $student_info_validated = $request->validate([
+        
+        $validated = $request->validate([
+            // Student info
             'student_number' => 'required|string|unique:students,student_number',
             'program_id' => 'required|exists:programs,id',
-            'year_level' => 'required|string',
-        ]);
-
-        $user_info_validated = $request->validate([
-            'name'     => 'required|string|max:255',
+            'year_level' => 'required|integer|min:1|max:10',
+            // User info
+            'name' => 'required|string|max:255',
             'password' => 'required|string|min:6',
         ]);
 
-        $student = new Student();
-        $student->student_number = $student_info_validated['student_number'];
-        $student->program_id = $student_info_validated['program_id'];
-        $student->year_level = $student_info_validated['year_level'];
+        try{
+            DB::beginTransaction();
+            
+            $student = new Student();
+            $student->student_number = $validated['student_number'];
+            $student->program_id = $validated['program_id'];
+            $student->year_level = $validated['year_level'];
+            $student->save();
 
-        $student->save();
-
-        event(new StudentCreationEvent($student, $user_info_validated));
+            event(new StudentCreationEvent($student, [
+                'name' => $validated['name'],
+                'password' => $validated['password']
+            ]));
+            
+            DB::commit();
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json([
+                'success' => false,
+                'message' => 'Error creating student: ' . $e->getMessage()
+            ], 500);
+        }
     }
 
     public function edit($id) 
@@ -50,9 +80,9 @@ class StudentController extends Controller
         return response()->json([
             'id' => Crypt::encryptString($student_profile->id),
             'name' => $student_profile->user->name ?? null,
-            'email' => $student_profile->user->email ?? null,
-            'department_id' => $student_profile->department_id,
-            'department_name' => $student_profile->department->name ?? null,
+            'student_number' => $student_profile->student_number,
+            'program_id' => $student_profile->program_id,
+            'year_level' => $student_profile->year_level,
         ]);
     }
 
@@ -62,10 +92,10 @@ class StudentController extends Controller
 
         $validated = $request->validate([
             'name'     => 'required|string|max:255',
-            'password' => 'required|string|min:6',
-            'student_number' => 'required|string|unique:students,student_number,' . $decrypted,
             'password' => 'nullable|string|min:6',
+            'student_number' => 'required|string|unique:students,student_number,' . $decrypted,
             'year_level' => 'required|string',
+            'program_id' => 'required|exists:programs,id',
         ]);
 
         $student = Student::findOrFail($decrypted);

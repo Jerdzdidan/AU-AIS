@@ -53,6 +53,12 @@ class GenericCRUD {
                     toastr.error(msg, 'Forbidden');
                     return;
                 }
+
+                if (xhr.status === 500) {
+                    const msg = xhr.responseJSON?.message || 'Internal server error';
+                    toastr.error(msg, 'Server Error');
+                    return;
+                }
                 
                 toastr.error(`Failed to load ${this.entityName}`);
             }
@@ -102,6 +108,12 @@ class GenericCRUD {
                     } else {
                         toastr.error('Please check your input.', 'Validation Error');
                     }
+                    return;
+                }
+
+                if (xhr.status === 500) {
+                    const msg = xhr.responseJSON?.message || 'Internal server error';
+                    toastr.error(msg, 'Server Error');
                     return;
                 }
 
@@ -158,6 +170,12 @@ class GenericCRUD {
                     return;
                 }
 
+                if (xhr.status === 500) {
+                    const msg = xhr.responseJSON?.message || 'Internal server error';
+                    toastr.error(msg, 'Server Error');
+                    return;
+                }
+
                 if (xhr.status === 403) {
                     const msg = xhr.responseJSON?.message || 'Action forbidden';
                     toastr.error(msg, 'Forbidden');
@@ -198,7 +216,13 @@ class GenericCRUD {
                             return;
                         }
 
-                         if (xhr.status === 422) {
+                        if (xhr.status === 500) {
+                            const msg = xhr.responseJSON?.message || 'Internal server error';
+                            toastr.error(msg, 'Server Error');
+                            return;
+                        }
+
+                        if (xhr.status === 422) {
                             const msg = xhr.responseJSON?.message || 'Cannot delete this record';
                             toastr.error(msg, 'Cannot Delete', {
                                 closeButton: true,
@@ -241,6 +265,12 @@ class GenericCRUD {
                         if (xhr.status === 403) {
                             const msg = xhr.responseJSON?.message || 'Action forbidden';
                             toastr.error(msg, 'Forbidden');
+                            return;
+                        }
+
+                        if (xhr.status === 500) {
+                            const msg = xhr.responseJSON?.message || 'Internal server error';
+                            toastr.error(msg, 'Server Error');
                             return;
                         }
                         

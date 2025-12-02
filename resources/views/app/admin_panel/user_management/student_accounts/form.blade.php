@@ -6,9 +6,18 @@
     submitButtonName="Submit"
 >
 
-
-{{-- Name --}}
+{{-- Student Number and Name --}}
 <div class="col-12 form-control-validation">
+    <x-input.input-field
+        id="student_number" 
+        name="student_number" 
+        label="Student Number"
+        type="text"
+        icon="bx bx-id-card" 
+        placeholder="Student Number" 
+        help=""
+    />
+
     <x-input.input-field
         id="name" 
         name="name" 
@@ -22,16 +31,6 @@
 
 {{-- Email and Password --}}
 <div class="col-sm-12 form-control-validation">
-    <x-input.input-field
-        id="email" 
-        name="email" 
-        label="Email"
-        type="text"
-        icon="bx bx-id-card" 
-        placeholder="Email" 
-        help=""
-    />
-    
     <x-input.password-field
         id="password" 
         name="password" 
@@ -42,11 +41,25 @@
     />
 </div>
 
-{{-- DEPARTMENT --}}
+{{-- Year Level --}}
+<div class="col-sm-12 form-control-validation">
+    <x-input.integer-field 
+        id="year_level"
+        label="Year Level"
+        icon="fa-solid fa-graduation-cap"
+        placeholder="1-4"
+        :min="1"
+        :max="4"
+        help=""
+    />
+</div>
+
+
+{{-- PROGRAM --}}
 <div class="col-12 form-control-validation">
     <x-input.select-field 
-        id="department_id"
-        label="Department"
+        id="program_id"
+        label="Program"
     />
 </div>
 
