@@ -27,4 +27,9 @@ class Subject extends Model
     {
         return $this->belongsTo(Curriculum::class);
     }
+
+    public function studentProgress()
+    {
+        return $this->hasMany(StudentSubjectProgress::class);
+    }
 }

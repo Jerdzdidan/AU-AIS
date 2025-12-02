@@ -71,8 +71,8 @@ class SubjectController extends Controller
             'year_level' => 'required|integer|min:1|max:5',
             'semester' => 'required|string|max:50',
             'subject_category' => 'required|string|max:100',
-            'lec_units' => 'required|numeric|min:0',
-            'lab_units' => 'required|numeric|min:0',
+            'lec_units' => 'required|numeric|min:1|max:5',
+            'lab_units' => 'required|numeric|min:1|max:5',
             'prerequisites' => 'nullable|string',
         ]);
 
@@ -110,8 +110,8 @@ class SubjectController extends Controller
             'year_level' => 'required|integer|min:1|max:5',
             'semester' => 'required|string|max:50',
             'subject_category' => 'required|string|max:100',
-            'lec_units' => 'required|numeric|min:0',
-            'lab_units' => 'required|numeric|min:0',
+            'lec_units' => 'required|numeric|min:1|max:5',
+            'lab_units' => 'required|numeric|min:1|max:5',
             'prerequisites' => 'nullable|string',
         ]);
 

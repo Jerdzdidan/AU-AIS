@@ -16,7 +16,7 @@ class Program extends Model
     protected function getRelationshipsToCheck()
     {
         return [
-            'curricula' => 'curricula',
+            'curriculum' => 'curriculum',
         ];
     }
 
@@ -30,7 +30,7 @@ class Program extends Model
         return $this->hasMany(Student::class);
     }
 
-    public function curricula()
+    public function curriculum()
     {
         return $this->hasOne(Curriculum::class);
     }
