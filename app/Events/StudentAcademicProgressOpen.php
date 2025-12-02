@@ -2,6 +2,7 @@
 
 namespace App\Events;
 
+use App\Models\Student;
 use Illuminate\Broadcasting\Channel;
 use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Broadcasting\PresenceChannel;
@@ -17,9 +18,11 @@ class StudentAcademicProgressOpen
     /**
      * Create a new event instance.
      */
-    public function __construct()
+
+    public $student;
+    public function __construct(Student $student)
     {
-        //
+        $this->student = $student;
     }
 
     /**

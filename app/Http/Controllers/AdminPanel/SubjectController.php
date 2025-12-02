@@ -8,6 +8,7 @@ use App\Models\Subject;
 use Illuminate\Contracts\Encryption\DecryptException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Crypt;
+use Illuminate\Validation\Rule;
 use Yajra\DataTables\DataTables;
 
 class SubjectController extends Controller
@@ -67,13 +68,29 @@ class SubjectController extends Controller
 
         $validated = $request->validate([
             'code' => 'required|string|max:50',
-            'name' => 'required|string|max:255',
+            'code' => [
+                'required',
+                'string',
+                'max:50',
+                Rule::unique('subjects')
+                    ->where(fn($q) => $q->where('curriculum_id', $decrypted)),
+            ],
+            'name' => [
+                'required',
+                'string',
+                'max:255',
+                Rule::unique('subjects')
+                    ->where(fn($q) => $q->where('curriculum_id', $decrypted)),
+            ],
             'year_level' => 'required|integer|min:1|max:5',
             'semester' => 'required|string|max:50',
             'subject_category' => 'required|string|max:100',
             'lec_units' => 'required|numeric|min:1|max:5',
             'lab_units' => 'required|numeric|min:1|max:5',
             'prerequisites' => 'nullable|string',
+        ], [
+            'code.unique' => 'The subject code has already been taken for this curriculum.',
+            'name.unique' => 'The subject name has already been taken for this curriculum.',
         ]);
 
         $validated['curriculum_id'] = $decrypted;
@@ -105,14 +122,31 @@ class SubjectController extends Controller
         $subject = Subject::findOrFail($decrypted);
 
         $validated = $request->validate([
-            'code' => 'required|string|max:50',
-            'name' => 'required|string|max:255',
+            'code' => [
+                'required',
+                'string',
+                'max:50',
+                Rule::unique('subjects')
+                    ->ignore($subject->id)
+                    ->where(fn($q) => $q->where('curriculum_id', $subject->curriculum_id)),
+            ],
+            'name' => [
+                'required',
+                'string',
+                'max:255',
+                Rule::unique('subjects')
+                    ->ignore($subject->id)
+                    ->where(fn($q) => $q->where('curriculum_id', $subject->curriculum_id)),
+            ],
             'year_level' => 'required|integer|min:1|max:5',
             'semester' => 'required|string|max:50',
             'subject_category' => 'required|string|max:100',
             'lec_units' => 'required|numeric|min:1|max:5',
             'lab_units' => 'required|numeric|min:1|max:5',
             'prerequisites' => 'nullable|string',
+        ], [
+            'code.unique' => 'This subject code already exists in this curriculum.',
+            'name.unique' => 'This subject name already exists in this curriculum.',
         ]);
 
         $subject->update($validated);
