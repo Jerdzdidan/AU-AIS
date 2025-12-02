@@ -14,7 +14,7 @@ return Application::configure(basePath: dirname(__DIR__))
     )
     ->withMiddleware(function (Middleware $middleware): void {
         //
-        $middleware->redirectGuestsTo(fn (Request $request) => route('auth.admin.login'));
+        $middleware->redirectGuestsTo(fn (Request $request) => route('auth.index'));
         $middleware->append(PreventSelfAction::class);
     })
     ->withExceptions(function (Exceptions $exceptions): void {

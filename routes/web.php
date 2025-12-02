@@ -23,6 +23,9 @@ Route::get('/', function () {
     return view('home');
 })->middleware('auth')->name('home');
 
+// DEFAULT ROUTE FOR AUTHENTICATION SELECTION
+Route::view('auth', 'auth.index')->name('auth.index');
+
 // ADMIN LOGIN/AUTHENTICATION
 Route::prefix('auth/admin')->group(function () {
     Route::get('login', [AdminAuthController::class, 'index'])->name('auth.admin.login');
@@ -36,7 +39,7 @@ Route::prefix('auth/student')->group(function () {
 });
 
 // LOGOUT
-Route::get('auth/logout', [GlobalLogoutController::class, 'logout'])->name('auth.logout');
+Route::get('auth/logout/{user_type}', [GlobalLogoutController::class, 'logout'])->name('auth.logout');
 
 
 // ADMIN PANEL
@@ -88,7 +91,7 @@ Route::prefix('admin')->middleware('auth')->group(function () {
 
         Route::post('toggle/{id}', [CurriculumController::class, 'toggle'])->name('curricula.toggle');
 
-            // CURRICULUM SUBJECT MANAGEMENT
+        // CURRICULUM SUBJECT MANAGEMENT
         Route::prefix('subjects')->group(function () {
             Route::get('/{curriculum_id}', [App\Http\Controllers\AdminPanel\SubjectController::class, 'index'])->name('subjects.index');
             Route::get('data/{curriculum_id}', [App\Http\Controllers\AdminPanel\SubjectController::class, 'getData'])->name('subjects.data');

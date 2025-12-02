@@ -12,9 +12,9 @@ use Illuminate\Support\Facades\Hash;
 class StudentAuthController extends Controller
 {
     //
-    // public function index() {
-    //     return view('auth.admin.login');
-    // }
+    public function index() {
+        return view('auth.student.login');
+    }
 
     public function authenticate(Request $request): RedirectResponse
     {

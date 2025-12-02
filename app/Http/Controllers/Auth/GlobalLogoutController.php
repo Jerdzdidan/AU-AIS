@@ -10,13 +10,17 @@ use Illuminate\Support\Facades\Auth;
 class GlobalLogoutController extends Controller
 {
     //
-    public function logout(Request $request): RedirectResponse
+    public function logout(Request $request, $user_type): RedirectResponse
     {
         Auth::logout();
     
         $request->session()->invalidate();
     
         $request->session()->regenerateToken();
+
+        if ($user_type === 'STUDENT') {
+            return redirect()->route('auth.student.login');
+        }
     
         return redirect()->route('auth.admin.login');
     }

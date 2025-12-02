@@ -87,7 +87,13 @@
     <div class="layout-wrapper layout-content-navbar">
       <div class="layout-container">
         <!-- SIDEBAR -->
+        @if(auth()->user()->user_type == 'ADMIN')
           @include('layout.sidebar.admin')
+        @elseif(auth()->user()->user_type == 'OFFICER')
+          @include('layout.sidebar.officer')
+        @elseif(auth()->user()->user_type == 'STUDENT')
+          @include('layout.sidebar.student')
+        @endif
         <!-- SIDEBAR -->
 
         <!-- DELETE POPUP MODAL -->
