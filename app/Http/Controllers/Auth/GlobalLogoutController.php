@@ -21,7 +21,10 @@ class GlobalLogoutController extends Controller
         if ($user_type === 'STUDENT') {
             return redirect()->route('auth.student.login');
         }
-    
-        return redirect()->route('auth.admin.login');
+        else if ($user_type === 'ADMIN' || $user_type === 'OFFICER') {
+            return redirect()->route('auth.admin.login');
+        }
+
+        return redirect()->route('auth.index');
     }
 }

@@ -85,13 +85,21 @@ class SubjectController extends Controller
             'year_level' => 'required|integer|min:1|max:5',
             'semester' => 'required|string|max:50',
             'subject_category' => 'required|string|max:100',
-            'lec_units' => 'required|numeric|min:1|max:5',
-            'lab_units' => 'required|numeric|min:1|max:5',
+            'lec_units' => 'required|numeric|min:0|max:5',
+            'lab_units' => 'required|numeric|min:0|max:5',
             'prerequisites' => 'nullable|string',
         ], [
             'code.unique' => 'The subject code has already been taken for this curriculum.',
             'name.unique' => 'The subject name has already been taken for this curriculum.',
         ]);
+
+        if ($validated['lec_units'] == 0 && $validated['lab_units'] == 0) {
+            return response()->json([
+                'errors' => [
+                    'lec_units' => ['Lecture and lab units cannot both be zero.']
+                ]
+            ], 422);
+        }
 
         $validated['curriculum_id'] = $decrypted;
         Subject::create($validated);
@@ -141,13 +149,21 @@ class SubjectController extends Controller
             'year_level' => 'required|integer|min:1|max:5',
             'semester' => 'required|string|max:50',
             'subject_category' => 'required|string|max:100',
-            'lec_units' => 'required|numeric|min:1|max:5',
-            'lab_units' => 'required|numeric|min:1|max:5',
+            'lec_units' => 'required|numeric|min:0|max:5',
+            'lab_units' => 'required|numeric|min:0|max:5',
             'prerequisites' => 'nullable|string',
         ], [
             'code.unique' => 'This subject code already exists in this curriculum.',
             'name.unique' => 'This subject name already exists in this curriculum.',
         ]);
+
+        if ($validated['lec_units'] == 0 && $validated['lab_units'] == 0) {
+            return response()->json([
+                'errors' => [
+                    'lec_units' => ['Lecture and lab units cannot both be zero.']
+                ]
+            ], 422);
+        }
 
         $subject->update($validated);
 
