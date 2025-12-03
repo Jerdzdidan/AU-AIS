@@ -82,7 +82,7 @@ class SubjectController extends Controller
                 Rule::unique('subjects')
                     ->where(fn($q) => $q->where('curriculum_id', $decrypted)),
             ],
-            'year_level' => 'required|integer|min:1|max:5',
+            'year_level' => 'nullable|integer|min:1|max:5',
             'semester' => 'required|string|max:50',
             'subject_category' => 'required|string|max:100',
             'lec_units' => 'required|numeric|min:0|max:5',
@@ -146,7 +146,7 @@ class SubjectController extends Controller
                     ->ignore($subject->id)
                     ->where(fn($q) => $q->where('curriculum_id', $subject->curriculum_id)),
             ],
-            'year_level' => 'required|integer|min:1|max:5',
+            'year_level' => 'nullable|integer|min:1|max:5',
             'semester' => 'required|string|max:50',
             'subject_category' => 'required|string|max:100',
             'lec_units' => 'required|numeric|min:0|max:5',

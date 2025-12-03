@@ -107,7 +107,10 @@ $(document).ready(function() {
             { data: "id", visible: false },
             { data: "code" },
             { data: "name" },
-            { data: "year_level" },
+            { 
+                data: "year_level",
+                defaultContent: '-'
+            },
             { data: "semester" },
             { data: "subject_category" },
             { data: "lec_units", className: "none" },

@@ -6,10 +6,12 @@ use App\Http\Controllers\AdminPanel\DepartmentController;
 use App\Http\Controllers\AdminPanel\OfficerUserController;
 use App\Http\Controllers\AdminPanel\ProgramController;
 use App\Http\Controllers\AdminPanel\StudentUserController;
+use App\Http\Controllers\AdminPanel\SubjectController;
 use App\Http\Controllers\AdminPanel\UserController;
 use App\Http\Controllers\Auth\AdminAuthController;
 use App\Http\Controllers\Auth\GlobalLogoutController;
 use App\Http\Controllers\Auth\StudentAuthController;
+use App\Http\Controllers\StudentPortal\AcademicProgress;
 use App\Http\Middleware\PreventSelfAction;
 use Illuminate\Support\Facades\Route;
 
@@ -93,16 +95,32 @@ Route::prefix('admin')->middleware('auth')->group(function () {
 
         // CURRICULUM SUBJECT MANAGEMENT
         Route::prefix('subjects')->group(function () {
-            Route::get('/{curriculum_id}', [App\Http\Controllers\AdminPanel\SubjectController::class, 'index'])->name('subjects.index');
-            Route::get('data/{curriculum_id}', [App\Http\Controllers\AdminPanel\SubjectController::class, 'getData'])->name('subjects.data');
-            Route::get('stats/{curriculum_id}', [App\Http\Controllers\AdminPanel\SubjectController::class, 'getStats'])->name('subjects.stats');
-            Route::post('store/{curriculum_id}', [App\Http\Controllers\AdminPanel\SubjectController::class, 'store'])->name('subjects.store');
-            Route::get('edit/{id}', [App\Http\Controllers\AdminPanel\SubjectController::class, 'edit'])->name('subjects.edit');
-            Route::put('update/{id}', [App\Http\Controllers\AdminPanel\SubjectController::class, 'update'])->name('subjects.update');
-            Route::delete('destroy/{id}', [App\Http\Controllers\AdminPanel\SubjectController::class, 'destroy'])->name('subjects.destroy');
-            Route::post('toggle/{id}', [App\Http\Controllers\AdminPanel\SubjectController::class, 'toggle'])->name('subjects.toggle');
+            Route::get('/{curriculum_id}', [SubjectController::class, 'index'])->name('subjects.index');
+            Route::get('data/{curriculum_id}', [SubjectController::class, 'getData'])->name('subjects.data');
+            Route::get('stats/{curriculum_id}', [SubjectController::class, 'getStats'])->name('subjects.stats');
+            Route::post('store/{curriculum_id}', [SubjectController::class, 'store'])->name('subjects.store');
+            Route::get('edit/{id}', [SubjectController::class, 'edit'])->name('subjects.edit');
+            Route::put('update/{id}', [SubjectController::class, 'update'])->name('subjects.update');
+            Route::delete('destroy/{id}', [SubjectController::class, 'destroy'])->name('subjects.destroy');
+            Route::post('toggle/{id}', [SubjectController::class, 'toggle'])->name('subjects.toggle');
         });
     });
 
 });
 
+
+Route::prefix('student')->middleware('auth')->group(function () {
+    
+    // ACADEMIC PROGRESS
+    Route::get('academic-progress', [AcademicProgress::class, 'index'])->name('student.academic_progress.index');
+    Route::get('academic-progress/data', [AcademicProgress::class, 'getData'])->name('student.academic_progress.data');
+    Route::get('academic-progress/stats', [AcademicProgress::class, 'getStats'])->name('student.academic_progress.stats');
+
+    // STUDENT MANUAL
+    Route::view('manual', 'app.student_portal.manual.index')->name('student.manual.index');
+
+    // FAQs
+    Route::view('faqs', 'app.student_portal.general_information.faqs')->name('student.faqs.index');
+    // Help
+    Route::view('help', 'app.student_portal.general_information.help')->name('student.help.index');
+});

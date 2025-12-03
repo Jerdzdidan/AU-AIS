@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\AdminPanel;
 
+use App\Events\StudentAcademicProgressCreate;
 use App\Events\StudentCreationEvent;
 use App\Http\Controllers\Controller;
 use App\Models\Student;
@@ -60,6 +61,8 @@ class StudentUserController extends Controller
                 'name' => $validated['name'],
                 'password' => $validated['password']
             ]));
+
+            event(new StudentAcademicProgressCreate($student));
             
             DB::commit();
         } catch (\Exception $e) {

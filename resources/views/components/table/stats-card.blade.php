@@ -1,5 +1,5 @@
 <div class="{{ $class }} my-2 my-md-0">
-    <div class="card {{ $bgColor }} text-white">
+    <div class="card {{ $bgColor }} h-100 text-white">
         <div class="card-body">
             <div class="d-flex justify-content-between">
                 <div>

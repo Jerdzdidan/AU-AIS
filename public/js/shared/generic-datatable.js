@@ -19,6 +19,11 @@ class GenericDataTable {
                 type: "GET",
                 error: (xhr, error) => {
                     console.error('Error:', error);
+                    if (xhr.status === 500) {
+                        const msg = xhr.responseJSON?.message || 'Internal server error';
+                        toastr.error(msg, 'Server Error');
+                        return;
+                    }
                     toastr.error('Error loading data. Please refresh.');
                 }
             },

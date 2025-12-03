@@ -2,9 +2,11 @@
 
 namespace Database\Seeders;
 
+use App\Events\StudentCreationEvent;
 use App\Models\Curriculum;
 use App\Models\Department;
 use App\Models\Program;
+use App\Models\Student;
 use App\Models\Subject;
 use App\Models\User;
 use COM;
@@ -70,5 +72,18 @@ class DatabaseSeeder extends Seeder
             'prerequisites' => null,
             'is_active' => true,
         ]);
+
+        $student = Student::factory()->create([
+            'user_id' => null,
+            'program_id' => 1,
+            'student_number' => '23-12345',
+            'year_level' => 1,
+        ]);
+
+        event(new StudentCreationEvent($student, [
+            'name' => 'testStudent',
+            'password' => '123456'
+        ]));
+
     }
 }

@@ -21,32 +21,33 @@ class CreateStudentSubjectProgressRecords
     /**
      * Handle the event.
      */
-    public function handle(StudentAcademicProgressOpen $event): void
+    public function handle(object $event): void
     {
         $student = $event->student;
 
         $subjects = $student->program->curriculum->subjects;
-        $subjectIds = $subjects->pluck('id')->all();
+        $currentSubjectIds = $subjects->pluck('id')->toArray();
 
-        DB::transaction(function () use ($student, $subjects, $subjectIds) {
+        DB::transaction(function () use ($student, $subjects, $currentSubjectIds) {
             StudentSubjectProgress::where('student_id', $student->id)
-                ->whereNotIn('subject_id', $subjectIds)
+                ->whereNotIn('subject_id', $currentSubjectIds)
                 ->delete();
             
             foreach ($subjects as $subject) {
-                $progress = StudentSubjectProgress::where('student_id', $student->id)
-                    ->where('subject_id', $subject->id)
-                    ->first();
-
-                if (!$progress) {
-                    StudentSubjectProgress::create([
+                StudentSubjectProgress::firstOrCreate(
+                    [
                         'student_id' => $student->id,
                         'subject_id' => $subject->id,
+                    ],
+                    [
                         'lecture_completed' => false,
-                        'lab_completed' => false
-                    ]);
-                    continue;
-                }
+                        'laboratory_completed' => false,
+                        'lecture_grade' => null,
+                        'laboratory_grade' => null,
+                        'semester_taken' => null,
+                        'year_taken' => null,
+                    ]
+                );
             }
         });
     }
