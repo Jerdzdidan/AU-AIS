@@ -52,6 +52,21 @@ Admin Accounts Management
 
         </div>
         
+        <!-- Status Filter -->
+        <div class="col-2">
+            <x-input.select-field
+                id="filter-status"
+                label="Filter by Status:"
+                icon="fa-solid fa-tags"
+                :options="[
+                    ['value' => 'All', 'text' => 'All Status'],
+                    ['value' => 'Active', 'text' => 'Active'],
+                    ['value' => 'Inactive', 'text' => 'Inactive'],
+                ]"
+                placeholder="Select Status"
+            />
+        </div>
+
         <!-- DataTable -->
         <x-table.table id="adminAccountsTable">
             {{-- Columns --}}
@@ -75,10 +90,18 @@ Admin Accounts Management
 <script src="{{ asset('js/admin_panel/utils.js') }}"></script>
 <script>
 $(document).ready(function() {
+    $('#filter-status').select2({
+        minimumResultsForSearch: -1,
+        placeholder: 'All Status'
+    });
+
     // Initialize DataTable
     const adminTable = new GenericDataTable({
         tableId: 'adminAccountsTable',
         ajaxUrl: "{{ route('users.data', 'ADMIN') }}",
+        ajaxData: function(d) {
+            d.status = $('#filter-status').val();
+        },
         columns: [
             { data: "id", visible: false },
             { data: "name" },
@@ -162,7 +185,9 @@ $(document).ready(function() {
         $('#add-or-update-form input[name="email"]').val(data.email);
     };
 
-    
+    $('#filter-status').on('change', function() {
+        adminTable.reload();
+    });
 
 });
 </script>

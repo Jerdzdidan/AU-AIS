@@ -26,7 +26,7 @@ class SubjectController extends Controller
         ]);
     }
 
-    public function getData($curriculum_id)
+    public function getData(Request $request, $curriculum_id)
     {
         $decrypted = Crypt::decryptString($curriculum_id);
         $subjects = Subject::where('curriculum_id', $decrypted)->select([
@@ -41,6 +41,14 @@ class SubjectController extends Controller
             'is_active',
             'prerequisites',
         ]);
+
+        if ($request->filled('status') && $request->status !== 'All') {
+            if ($request->status === 'Active') {
+                $subjects->where('is_active', true);
+            } elseif ($request->status === 'Inactive') {
+                $subjects->where('is_active', false);
+            }
+        }
         
         return DataTables::of($subjects)
             ->editColumn('id', function ($row) {
@@ -99,6 +107,11 @@ class SubjectController extends Controller
                     'lec_units' => ['Lecture and lab units cannot both be zero.']
                 ]
             ], 422);
+        }
+
+        if ($validated['subject_category'] == "MINOR") {
+            $validated['year_level'] = null; 
+            $validated['semester'] = null;
         }
 
         $validated['curriculum_id'] = $decrypted;
@@ -163,6 +176,11 @@ class SubjectController extends Controller
                     'lec_units' => ['Lecture and lab units cannot both be zero.']
                 ]
             ], 422);
+        }
+
+        if ($validated['subject_category'] == "MINOR") {
+            $validated['year_level'] = null;
+            $validated['semester'] = null;
         }
 
         $subject->update($validated);

@@ -2,6 +2,7 @@ class GenericDataTable {
     constructor(config) {
         this.tableId = config.tableId;
         this.ajaxUrl = config.ajaxUrl;
+        this.ajaxData = config.ajaxData || null;
         this.columns = config.columns;
         this.statsCards = config.statsCards || null;
         this.table = null;
@@ -17,6 +18,7 @@ class GenericDataTable {
             ajax: {
                 url: this.ajaxUrl,
                 type: "GET",
+                ...(this.ajaxData !== null && { data: this.ajaxData }),
                 error: (xhr, error) => {
                     console.error('Error:', error);
                     if (xhr.status === 500) {

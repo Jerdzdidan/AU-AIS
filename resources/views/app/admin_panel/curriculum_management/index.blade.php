@@ -51,6 +51,21 @@ Curriculum Management
                 class="col-md-4"/>
 
         </div>
+
+        <!-- Status Filter -->
+        <div class="col-2">
+            <x-input.select-field
+                id="filter-status"
+                label="Filter by Status:"
+                icon="fa-solid fa-tags"
+                :options="[
+                    ['value' => 'All', 'text' => 'All Status'],
+                    ['value' => 'Active', 'text' => 'Active'],
+                    ['value' => 'Inactive', 'text' => 'Inactive'],
+                ]"
+                placeholder="Select Status"
+            />
+        </div>
         
         <!-- DataTable -->
         <x-table.table id="curriculaTable">
@@ -76,11 +91,19 @@ $(document).ready(function() {
     // Select2
     let programsCache = [];
     prefetchAndInitSelect2('#program_id', "{{ route('programs.select') }}", 'Select a program');
+    
+    $('#filter-status').select2({
+        minimumResultsForSearch: -1,
+        placeholder: 'All Status'
+    });
 
     // Initialize DataTable
     const curriculaTable = new GenericDataTable({
         tableId: 'curriculaTable',
         ajaxUrl: "{{ route('curricula.data') }}",
+        ajaxData: function(d) {
+            d.status = $('#filter-status').val();
+        },
         columns: [
             { data: "id", visible: false },
             { data: "name" },
@@ -173,6 +196,10 @@ $(document).ready(function() {
     $('#add-or-update-modal').on('hidden.bs.offcanvas', function() {
         $('#add-or-update-form')[0].reset();
         resetSelect2('#program_id');
+    });
+
+    $('#filter-status').on('change', function() {
+        curriculaTable.reload();
     });
 
 });

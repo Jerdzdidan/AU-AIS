@@ -17,10 +17,18 @@ class CurriculumController extends Controller
         return view('app.admin_panel.curriculum_management.index');
     }
 
-    public function getData()
+    public function getData(Request $request)
     {
         $curriculum = Curriculum::with('program:id,name,code')->select(['id', 'program_id', 'description', 'is_active']);
         
+        if ($request->filled('status') && $request->status !== 'All') {
+            if ($request->status === 'Active') {
+                $curriculum->where('is_active', true);
+            } elseif ($request->status === 'Inactive') {
+                $curriculum->where('is_active', false);
+            }
+        }
+
         return DataTables::of($curriculum)
             ->editColumn('id', function ($row) {
                 return Crypt::encryptString($row->id);

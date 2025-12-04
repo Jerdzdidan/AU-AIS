@@ -16,8 +16,8 @@ return new class extends Migration
             $table->foreignId('curriculum_id')->constrained();
             $table->string('code');
             $table->string('name');
-            $table->integer('year_level');
-            $table->string('semester');
+            $table->integer('year_level')->nullable();
+            $table->string('semester')->nullable();
             $table->string('subject_category');
             $table->decimal('lec_units', 4, 2);
             $table->decimal('lab_units', 4, 2);

@@ -113,8 +113,14 @@ $(document).ready(function() {
                 }
             },
             { data: "subject.subject_category", className: "none" },
-            { data: "subject.year_level" },
-            { data: "subject.semester" },
+            { 
+                data: "subject.year_level",
+                defaultContent: '-'
+            },
+            { 
+                data: "subject.semester",
+                defaultContent: '-'
+            },
             { data: "subject.lec_units", className: "none" },
             { data: "subject.lab_units", className: "none" },
             { data: "total_units", className: "none" },

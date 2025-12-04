@@ -20,10 +20,17 @@ class StudentUserController extends Controller
         return view('app.admin_panel.user_management.student_accounts.index');
     }
 
-    public function getData()
+    public function getData(Request $request)
     {
         $students = Student::with(['user:id,name,email,status', 'program:id,name,code'])
-        ->select(['id', 'user_id', 'student_number', 'program_id', 'year_level']);
+            ->select(['id', 'user_id', 'student_number', 'program_id', 'year_level']);
+
+        if ($request->filled('status') && $request->status !== 'All') {
+            $isActive = $request->status === 'Active';
+            $students->whereHas('user', function($query) use ($isActive) {
+                $query->where('status', $isActive);
+            });
+        }
     
         return DataTables::of($students)
             ->editColumn('id', function ($row) {

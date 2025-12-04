@@ -12,12 +12,20 @@ use Yajra\DataTables\DataTables;
 class UserController extends Controller
 {
     //
-    public function getData($user_type)
+    public function getData(Request $request, $user_type)
     {
         $users = User::with('department:id,name')
             ->where('user_type', $user_type)
             ->where('name', '!=', 'root')
             ->select(['id', 'name', 'email', 'department_id', 'user_type', 'status']);
+
+        if ($request->filled('status') && $request->status !== 'All') {
+            if ($request->status === 'Active') {
+                $users->where('status', true);
+            } elseif ($request->status === 'Inactive') {
+                $users->where('status', false);
+            }
+        }
         
         return DataTables::of($users)
             ->editColumn('id', function ($row) {

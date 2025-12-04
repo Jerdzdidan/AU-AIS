@@ -63,6 +63,21 @@
                 class="col-md-3"/>
 
         </div>
+
+        <!-- Status Filter -->
+        <div class="col-2">
+            <x-input.select-field
+                id="filter-status"
+                label="Filter by Status:"
+                icon="fa-solid fa-tags"
+                :options="[
+                    ['value' => 'All', 'text' => 'All Status'],
+                    ['value' => 'Active', 'text' => 'Active'],
+                    ['value' => 'Inactive', 'text' => 'Inactive'],
+                ]"
+                placeholder="Select Status"
+            />
+        </div>
         
         <!-- DataTable -->
         <x-table.table id="subjectsTable">
@@ -98,11 +113,19 @@ $(document).ready(function() {
         placeholder: 'Select Category',
     });
 
+    $('#filter-status').select2({
+        minimumResultsForSearch: -1,
+        placeholder: 'All Status'
+    });
+
     // Initialize DataTable
     const subjectsTable = new GenericDataTable({
-        order: [[4, "asc"], [5, "asc"]],
+        order: [[5, "asc"], [3, "asc"], [4, "asc"]],
         tableId: 'subjectsTable',
         ajaxUrl: "{{ route('subjects.data', $curriculum_id) }}",
+        ajaxData: function(d) {
+            d.status = $('#filter-status').val();
+        },
         columns: [
             { data: "id", visible: false },
             { data: "code" },
@@ -111,7 +134,10 @@ $(document).ready(function() {
                 data: "year_level",
                 defaultContent: '-'
             },
-            { data: "semester" },
+            { 
+                data: "semester",
+                defaultContent: '-'
+            },
             { data: "subject_category" },
             { data: "lec_units", className: "none" },
             { data: "lab_units", className: "none" },
@@ -206,6 +232,10 @@ $(document).ready(function() {
     $('#add-or-update-modal').on('hidden.bs.offcanvas', function() {
         $('#add-or-update-form')[0].reset();
         $('#add-or-update-form select').val(null).trigger('change');
+    });
+
+    $('#filter-status').on('change', function() {
+        subjectsTable.reload();
     });
 
 });

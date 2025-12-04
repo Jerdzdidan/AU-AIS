@@ -51,6 +51,21 @@ Student Accounts Management
                 class="col-md-4"/>
 
         </div>
+
+        <!-- Status Filter -->
+        <div class="col-2">
+            <x-input.select-field
+                id="filter-status"
+                label="Filter by Status:"
+                icon="fa-solid fa-tags"
+                :options="[
+                    ['value' => 'All', 'text' => 'All Status'],
+                    ['value' => 'Active', 'text' => 'Active'],
+                    ['value' => 'Inactive', 'text' => 'Inactive'],
+                ]"
+                placeholder="Select Status"
+            />
+        </div>
         
         <!-- DataTable -->
         <x-table.table id="studentAccountsTable">
@@ -78,6 +93,10 @@ Student Accounts Management
 <script src="{{ asset('js/admin_panel/utils.js') }}"></script>
 <script>
 $(document).ready(function() {
+    $('#filter-status').select2({
+        minimumResultsForSearch: -1,
+        placeholder: 'All Status'
+    });
 
     // Select2
     let programsCache = [];
@@ -87,6 +106,9 @@ $(document).ready(function() {
     const studentsTable = new GenericDataTable({
         tableId: 'studentAccountsTable',
         ajaxUrl: "{{ route('students.data') }}",
+        ajaxData: function(d) {
+            d.status = $('#filter-status').val();
+        },
         columns: [
             { data: "id", visible: false },
             { data: "student_number" },
@@ -183,6 +205,10 @@ $(document).ready(function() {
     $('#add-or-update-modal').on('hidden.bs.offcanvas', function() {
         $('#add-or-update-form')[0].reset();
         resetSelect2('#program_id');
+    });
+
+    $('#filter-status').on('change', function() {
+        studentsTable.reload();
     });
 
 });
