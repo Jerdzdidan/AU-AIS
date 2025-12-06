@@ -63,4 +63,14 @@
     />
 </div>
 
+{{-- CURRICULUM --}}
+<div class="col-12 form-control-validation">
+    <x-input.select-field 
+        id="curriculum_id"
+        label="Curriculum"
+        prop="disabled"
+        placeholder="Select a curriculum"
+    />
+</div>
+
 </x-modals.creation-and-update-modal>

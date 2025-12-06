@@ -78,6 +78,7 @@ class DatabaseSeeder extends Seeder
         $student = Student::factory()->create([
             'user_id' => null,
             'program_id' => 1,
+            'curriculum_id' => 1,
             'student_number' => '23-12345',
             'year_level' => 1,
         ]);

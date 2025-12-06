@@ -29,4 +29,9 @@ class Curriculum extends Model
     {
         return $this->hasMany(Subject::class);
     }
+
+    public function students()
+    {
+        return $this->hasMany(Student::class);
+    }
 }

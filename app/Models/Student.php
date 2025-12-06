@@ -20,6 +20,11 @@ class Student extends Model
         return $this->belongsTo(Program::class);
     }
 
+    public function curriculum()
+    {
+        return $this->belongsTo(Curriculum::class);
+    }
+
     public function studentSubjectProgress()
     {
         return $this->hasMany(StudentSubjectProgress::class);

@@ -142,4 +142,28 @@ class CurriculumController extends Controller
         }
     }
 
+    public function getCurriculaForSelect(Request $request, $program_id)
+    {
+        $query = Curriculum::query();
+
+        if ($search = $request->input('q')) {
+            $query->where('year_start', 'like', "%{$search}%")
+                ->orWhere('year_end', 'like', "%{$search}%");
+        }
+
+        $curricula = $query->with('program:id,name')
+                           ->where('program_id', $program_id)
+                           ->where('is_active', true)
+                           ->get(['id', 'program_id', 'year_start', 'year_end']);
+        
+        $formatted = $curricula->map(function ($curriculum) {
+            return [
+                'id' => $curriculum->id,
+                'name' => $curriculum->program->name . ' - Curriculum (' . $curriculum->year_start . '-' . $curriculum->year_end . ')'
+            ];
+        });
+
+        return response()->json($formatted);
+    }
+
 }

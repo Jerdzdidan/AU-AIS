@@ -76,6 +76,7 @@ Student Accounts Management
             <th>Email</th>
             <th>Year Level</th>
             <th>Program</th>
+            <th>Curriculum</th>
             <th>Status</th>
             <th>Actions</th>
         </x-table.table>
@@ -93,13 +94,18 @@ Student Accounts Management
 <script src="{{ asset('js/admin_panel/utils.js') }}"></script>
 <script>
 $(document).ready(function() {
+    let curriculum_route = "{{ route('curricula.select', ':id') }}"
+
+    $('#curriculum_id').select2({
+        placeholder: 'Select a curriculum'
+    });
+
     $('#filter-status').select2({
         minimumResultsForSearch: -1,
         placeholder: 'All Status'
     });
 
     // Select2
-    let programsCache = [];
     prefetchAndInitSelect2('#program_id', "{{ route('programs.select') }}", 'Select a program');
 
     // Initialize DataTable
@@ -119,6 +125,7 @@ $(document).ready(function() {
             },
             { data: "year_level" },
             { data: "program.code" },
+            { data: "curriculum" },
             { 
                 data: "user.status",
                 render: (data, type, row) => {
@@ -197,15 +204,31 @@ $(document).ready(function() {
         $('#add-or-update-form input[name="name"]').val(data.name);
         $('#add-or-update-form input[name="email"]').val(data.email);
         $('#add-or-update-form input[name="year_level"]').val(data.year_level);
-        $('#add-or-update-form input[name="program"]').val(data.program);
 
         setSelect2Value('#program_id', data.program_id);
+        setSelect2Value('#curriculum_id', data.curriculum_id);
     };
 
     $('#add-or-update-modal').on('hidden.bs.offcanvas', function() {
         $('#add-or-update-form')[0].reset();
         resetSelect2('#program_id');
+        resetSelect2('#curriculum_id');
     });
+
+    $('#program_id').on('change', function() {
+        const programId = $(this).val();
+    
+        if (programId) {
+            $('#curriculum_id').prop('disabled', false);
+            let url = curriculum_route.replace(':id', programId);
+            
+            prefetchAndInitSelect2('#curriculum_id', url, 'Select a curriculum');
+        } 
+        else {
+            $('#curriculum_id').prop('disabled', true);
+            resetSelect2('#curriculum_id');
+        }
+    })
 
     $('#filter-status').on('change', function() {
         studentsTable.reload();

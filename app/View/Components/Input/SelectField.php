@@ -12,13 +12,14 @@ class SelectField extends Component
      * Create a new component instance.
      */
 
-    public $id, $label, $options;
+    public $id, $label, $prop, $options;
 
-    public function __construct($id, $label, $options = null)
+    public function __construct($id, $label, $prop = '', $options = null)
     {
         //
         $this->id = $id;
         $this->label = $label;
+        $this->prop = $prop;
         $this->options = $options;
     }
 

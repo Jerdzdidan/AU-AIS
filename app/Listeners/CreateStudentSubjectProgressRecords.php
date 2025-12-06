@@ -25,7 +25,7 @@ class CreateStudentSubjectProgressRecords
     {
         $student = $event->student;
 
-        $subjects = $student->program->curriculum->subjects;
+        $subjects = $student->curriculum->subjects;
         $currentSubjectIds = $subjects->pluck('id')->toArray();
 
         DB::transaction(function () use ($student, $subjects, $currentSubjectIds) {
@@ -34,20 +34,22 @@ class CreateStudentSubjectProgressRecords
                 ->delete();
             
             foreach ($subjects as $subject) {
-                StudentSubjectProgress::firstOrCreate(
-                    [
-                        'student_id' => $student->id,
-                        'subject_id' => $subject->id,
-                    ],
-                    [
-                        'lecture_completed' => false,
-                        'laboratory_completed' => false,
-                        'lecture_grade' => null,
-                        'laboratory_grade' => null,
-                        'semester_taken' => null,
-                        'year_taken' => null,
-                    ]
-                );
+                if($subject->is_active){
+                    StudentSubjectProgress::firstOrCreate(
+                        [
+                            'student_id' => $student->id,
+                            'subject_id' => $subject->id,
+                        ],
+                        [
+                            'lecture_completed' => false,
+                            'laboratory_completed' => false,
+                            'lecture_grade' => null,
+                            'laboratory_grade' => null,
+                            'semester_taken' => null,
+                            'year_taken' => null,
+                        ]
+                    );
+                }
             }
         });
     }

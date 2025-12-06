@@ -1,5 +1,5 @@
 <label class="form-label" for="{{ $id }}">{{ $label }}</label>
-<select id="{{ $id }}" name="{{ $id }}" class="form-control">
+<select id="{{ $id }}" name="{{ $id }}" class="form-control" {{ $prop }}>
     <option value=""></option>
     <!-- Options will be loaded via AJAX or Customized -->
     {{ $slot }}

@@ -22,8 +22,8 @@ class StudentUserController extends Controller
 
     public function getData(Request $request)
     {
-        $students = Student::with(['user:id,name,email,status', 'program:id,name,code'])
-            ->select(['id', 'user_id', 'student_number', 'program_id', 'year_level']);
+        $students = Student::with(['user:id,name,email,status', 'program:id,name,code', 'curriculum:id,year_start,year_end'])
+            ->select(['id', 'user_id', 'student_number', 'program_id', 'curriculum_id', 'year_level']);
 
         if ($request->filled('status') && $request->status !== 'All') {
             $isActive = $request->status === 'Active';
@@ -33,6 +33,9 @@ class StudentUserController extends Controller
         }
     
         return DataTables::of($students)
+            ->addColumn('curriculum', function($row) {
+                return $row->program->code . ' - Curriculum (' . $row->curriculum->year_start . '-' . $row->curriculum->year_end . ')';
+            })
             ->editColumn('id', function ($row) {
                 return Crypt::encryptString($row->id);
             })
@@ -49,6 +52,7 @@ class StudentUserController extends Controller
             // Student info
             'student_number' => 'required|string|unique:students,student_number',
             'program_id' => 'required|exists:programs,id',
+            'curriculum_id' => 'required|exists:curricula,id',
             'year_level' => 'required|integer|min:1|max:10',
             // User info
             'name' => 'required|string|max:255',
@@ -61,6 +65,7 @@ class StudentUserController extends Controller
             $student = new Student();
             $student->student_number = $validated['student_number'];
             $student->program_id = $validated['program_id'];
+            $student->curriculum_id = $validated['curriculum_id'];
             $student->year_level = $validated['year_level'];
             $student->save();
 
@@ -92,6 +97,7 @@ class StudentUserController extends Controller
             'name' => $student_profile->user->name ?? null,
             'student_number' => $student_profile->student_number,
             'program_id' => $student_profile->program_id,
+            'curriculum_id' => $student_profile->curriculum_id,
             'year_level' => $student_profile->year_level,
         ]);
     }
@@ -106,11 +112,13 @@ class StudentUserController extends Controller
             'student_number' => 'required|string|unique:students,student_number,' . $decrypted,
             'year_level' => 'required|string',
             'program_id' => 'required|exists:programs,id',
+            'curriculum_id' => 'required|exists:curricula,id',
         ]);
 
         $student = Student::findOrFail($decrypted);
         $student->student_number = $validated['student_number'];
         $student->program_id = $validated['program_id'];
+        $student->curriculum_id = $validated['curriculum_id'];
         $student->year_level = $validated['year_level'];
 
         $student->user->name = $validated['name'];

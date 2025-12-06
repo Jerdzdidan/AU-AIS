@@ -93,6 +93,8 @@ Route::prefix('admin')->middleware('auth')->group(function () {
 
         Route::post('toggle/{id}', [CurriculumController::class, 'toggle'])->name('curricula.toggle');
 
+        Route::get('select/{program_id}', [CurriculumController::class, 'getCurriculaForSelect'])->name('curricula.select');
+
         // CURRICULUM SUBJECT MANAGEMENT
         Route::prefix('subjects')->group(function () {
             Route::get('/{curriculum_id}', [SubjectController::class, 'index'])->name('subjects.index');
