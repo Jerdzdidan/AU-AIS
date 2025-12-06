@@ -23,7 +23,7 @@ class AcademicProgress extends Controller
         return view('app.student_portal.academic_progress.index');
     }
 
-    public function getData()
+    public function getData(Request $request)
     {
         $academicProgress = StudentSubjectProgress::where(
                 'student_id',
@@ -36,6 +36,14 @@ class AcademicProgress extends Controller
                 'student_subject_progress.lecture_completed',
                 'student_subject_progress.laboratory_completed',
             ]);
+
+        if ($request->filled('status') && $request->status !== 'All') {
+            if ($request->status === 'Complete') {
+                $academicProgress->where('lecture_completed', true)->where('laboratory_completed', true);
+            } elseif ($request->status === 'Incomplete') {
+                $academicProgress->where('lecture_completed', false)->where('laboratory_completed', false);
+            }
+        }
 
         return DataTables::of($academicProgress)
             ->editColumn('id', function ($row) {

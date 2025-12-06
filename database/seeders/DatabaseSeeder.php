@@ -57,6 +57,8 @@ class DatabaseSeeder extends Seeder
         Curriculum::factory()->create([
             'program_id' => 1,
             'description' => 'BSCS Curriculum 2025',
+            'start_year' => '2023',
+            'end_year' => '2025',
             'is_active' => true,
         ]);
 

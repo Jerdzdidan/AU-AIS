@@ -32,9 +32,8 @@ class StudentSubjectProgress extends Model
 
     public function isCompleted()
     {
-        $lecCompleted = $this->lecture_status === 'completed';
-        $labCompleted = $this->lab_status === 'completed' || 
-                       $this->lab_status === 'not_applicable';
+        $lecCompleted = $this->lecture_completed;
+        $labCompleted = $this->lab_completed;
         
         return $lecCompleted && $labCompleted;
     }

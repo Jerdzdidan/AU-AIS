@@ -53,6 +53,21 @@ Academic Progress
                 class="col-md-4"/>
 
         </div>
+
+        <!-- Status Filter -->
+        <div class="col-2">
+            <x-input.select-field
+                id="filter-status"
+                label="Filter by Status:"
+                icon="fa-solid fa-tags"
+                :options="[
+                    ['value' => 'All', 'text' => 'All Status'],
+                    ['value' => 'Complete', 'text' => 'Complete'],
+                    ['value' => 'Incomplete', 'text' => 'Incomplete'],
+                ]"
+                placeholder="Select Status"
+            />
+        </div>
         
         <!-- DataTable -->
         <x-table.table id="academicProgressTable">
@@ -81,11 +96,19 @@ Academic Progress
 <script>
 $(document).ready(function() {
 
+    $('#filter-status').select2({
+        minimumResultsForSearch: -1,
+        placeholder: 'All Status'
+    });
+
     // Initialize DataTable
     const academicProgressTable = new GenericDataTable({
         order: [[6, "asc"], [7, "asc"], [8, "asc"]],
         tableId: 'academicProgressTable',
         ajaxUrl: "{{ route('student.academic_progress.data') }}",
+        ajaxData: function(d) {
+            d.status = $('#filter-status').val();
+        },
         columns: [
             { data: "id", visible: false },
             { data: "subject.code" },
@@ -148,6 +171,10 @@ $(document).ready(function() {
             }
         }
     }).init();
+
+    $('#filter-status').on('change', function() {
+        academicProgressTable.reload();
+    });
 
 });
 </script>

@@ -15,6 +15,8 @@ return new class extends Migration
             $table->id();
             $table->foreignId('program_id')->unique()->constrained();
             $table->string('description')->nullable();
+            $table->string('start_year');
+            $table->string('end_year');
             $table->boolean('is_active')->default(true);
             $table->timestamps();
         });
