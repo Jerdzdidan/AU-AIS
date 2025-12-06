@@ -3,14 +3,22 @@
  * Clean and reusable for Laravel projects
  */
 function prefetchAndInitSelect2(selector, url, placeholder) {
-    $.get(url, function(data) {
-        const preloadedData = (Array.isArray(data) ? data : data.data || []).map(item => ({
-            id: item.id,
-            text: item.name,
-            code: item.code
-        }));
+    return new Promise((resolve, reject) => {
+        $.get(url)
+            .done(function(data) {
+                const preloadedData = (Array.isArray(data) ? data : data.data || []).map(item => ({
+                    id: item.id,
+                    text: item.name,
+                    code: item.code
+                }));
 
-        initSelect2(selector, { placeholder, preloadedData });
+                initSelect2(selector, { placeholder, preloadedData });
+                resolve(preloadedData); 
+            })
+            .fail(function(error) {
+                console.error('Failed to load Select2 data:', error);
+                reject(error); 
+            });
     });
 }
 
@@ -20,7 +28,7 @@ function initSelect2(selector, options = {}) {
         badgeKey = 'code',
         badgeClass = 'bg-primary',
         placeholder = 'Select an option',
-        preloadedData = null // NEW: array of preloaded options
+        preloadedData = null 
     } = options;
 
     const $element = $(selector);
@@ -32,7 +40,7 @@ function initSelect2(selector, options = {}) {
         templateResult: formatWithBadge,
         templateSelection: formatWithBadge,
         language: {
-            searching: function() { return null; } // hide "Searching..."
+            searching: function() { return null; }
         }
     };
 

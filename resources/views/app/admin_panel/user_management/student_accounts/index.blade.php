@@ -198,7 +198,7 @@ $(document).ready(function() {
         }
     });
 
-    studentCRUD.onEditSuccess = (data) => {
+    studentCRUD.onEditSuccess = async (data) => {
         $('#add-or-update-form input[name="id"]').val(data.id);
         $('#add-or-update-form input[name="student_number"]').val(data.student_number);
         $('#add-or-update-form input[name="name"]').val(data.name);
@@ -206,6 +206,11 @@ $(document).ready(function() {
         $('#add-or-update-form input[name="year_level"]').val(data.year_level);
 
         setSelect2Value('#program_id', data.program_id);
+        
+        $('#curriculum_id').prop('disabled', false);
+
+        let url = curriculum_route.replace(':id', data.program_id);
+        await prefetchAndInitSelect2('#curriculum_id', url, 'Select a curriculum');
         setSelect2Value('#curriculum_id', data.curriculum_id);
     };
 

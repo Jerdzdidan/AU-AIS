@@ -142,7 +142,7 @@ class CurriculumController extends Controller
         }
     }
 
-    public function getCurriculaForSelect(Request $request, $program_id)
+    public function getCurriculaForSelectFiltered(Request $request, $program_id)
     {
         $query = Curriculum::query();
 

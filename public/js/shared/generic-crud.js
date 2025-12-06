@@ -21,31 +21,32 @@ class GenericCRUD {
         });
     }
 
-    view(id) {
+    async view(id) {
         $.ajax({
             url: `${this.baseUrl}/${id}`,
             method: 'GET',
-            success: (response) => {
-                // Trigger custom callback if provided
-                if (this.onViewSuccess) this.onViewSuccess(response);
+            success: async (response) => {
+                // Trigger custom callback if provided (now supports async)
+                if (this.onViewSuccess) await this.onViewSuccess(response);
             },
             error: () => toastr.error(`Failed to load ${this.entityName}`)
         });
     }
     
-    edit(id) {
+    async edit(id) {
         const url = this.editUrl.replace(':id', id);
         
         $.ajax({
             url: url,
             method: 'GET',
-            success: (response) => {
+            success: async (response) => {
                 this.$modal.offcanvas('show');
                 
                 this.$modal.find('.offcanvas-title').text(`Edit ${this.entityName}`);
                 this.$form.find('button[type="submit"]').text(`Update ${this.entityName}`);
 
-                if (this.onEditSuccess) this.onEditSuccess(response);
+                // Support async callback
+                if (this.onEditSuccess) await this.onEditSuccess(response);
             },
             error: (xhr) => {
                 if (xhr.status === 403) {
@@ -65,7 +66,7 @@ class GenericCRUD {
         });
     }
     
-    create(formData) {
+    async create(formData) {
         $.ajax({
             url: `${this.storeUrl}`,
             method: 'POST',
@@ -73,9 +74,9 @@ class GenericCRUD {
             processData: false,
             contentType: false,
             headers: { 'X-CSRF-TOKEN': this.csrfToken },
-            success: (response) => {
+            success: async (response) => {
                 toastr.success(`${this.entityName} created successfully`);
-                if (this.onCreateSuccess) this.onCreateSuccess(response);
+                if (this.onCreateSuccess) await this.onCreateSuccess(response);
                 this.$modal.offcanvas('hide');  
                 this.$form[0].reset();
                 this.dataTable.reload();
@@ -122,7 +123,7 @@ class GenericCRUD {
         });
     }
     
-    update(id, formData) {
+    async update(id, formData) {
         const url = this.updateUrl.replace(':id', id);
         
         $.ajax({
@@ -132,9 +133,9 @@ class GenericCRUD {
             processData: false,
             contentType: false,
             headers: { 'X-CSRF-TOKEN': this.csrfToken },
-            success: (response) => {
+            success: async (response) => {
                 toastr.success(`${this.entityName} updated successfully`);
-                if (this.onUpdateSuccess) this.onUpdateSuccess(response);
+                if (this.onUpdateSuccess) await this.onUpdateSuccess(response);
                 this.$modal.offcanvas('hide');  
                 this.$form[0].reset();
                 this.dataTable.reload();
@@ -279,9 +280,5 @@ class GenericCRUD {
                 });
             }
         });
-        
-        
     }
-
-
 }
