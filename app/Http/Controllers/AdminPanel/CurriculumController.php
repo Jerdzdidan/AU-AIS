@@ -19,7 +19,7 @@ class CurriculumController extends Controller
 
     public function getData(Request $request)
     {
-        $curriculum = Curriculum::with('program:id,name,code')->select(['id', 'program_id', 'description', 'is_active']);
+        $curriculum = Curriculum::with('program:id,name,code')->select(['id', 'program_id', 'description', 'year_start', 'year_end', 'is_active']);
         
         if ($request->filled('status') && $request->status !== 'All') {
             if ($request->status === 'Active') {
@@ -34,7 +34,7 @@ class CurriculumController extends Controller
                 return Crypt::encryptString($row->id);
             })
             ->addColumn('name', function ($row) {
-                return $row->program->code . ' - Curriculum';
+                return $row->program->code . ' - Curriculum (' . $row->year_start . ' - ' . $row->year_end . ')';
             })
             ->make(true);
     }
@@ -51,13 +51,10 @@ class CurriculumController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'program_id' => 'required|exists:programs,id|unique:curricula,program_id',
+            'program_id' => 'required|exists:programs,id',
             'description' => 'nullable|string',
-        ], 
-        [
-            'program_id.required' => 'The program field is required.',
-            'program_id.exists' => 'The selected program does not exist.',
-            'program_id.unique' => 'The selected program already has a curriculum.'
+            'year_start' => 'required|string|max:4',
+            'year_end' => 'required|string|max:4',
         ]);
 
         Curriculum::create($validated);
@@ -73,6 +70,8 @@ class CurriculumController extends Controller
         return response()->json([
             'id' => Crypt::encryptString($curriculum->id),
             'program_id' => $curriculum->program_id,
+            'year_start' => $curriculum->year_start,
+            'year_end' => $curriculum->year_end,
             'description' => $curriculum->description,
         ]);
     }
@@ -83,13 +82,10 @@ class CurriculumController extends Controller
         $curriculum = Curriculum::findOrFail($decrypted);
 
         $validated = $request->validate([
-            'program_id' => 'required|exists:programs,id|unique:curricula,program_id,' . $curriculum->id,
+            'program_id' => 'required|exists:programs,id',
             'description' => 'nullable|string',
-        ], 
-        [
-            'program_id.required' => 'The program field is required.',
-            'program_id.exists' => 'The selected program does not exist.',
-            'program_id.unique' => 'The selected program already has a curriculum.'
+            'year_start' => 'required|string|max:4',
+            'year_end' => 'required|string|max:4',
         ]);
 
         $curriculum->update($validated);

@@ -16,6 +16,24 @@
     />
 </div>
 
+<div class="col-sm-12 form-control-validation">
+    <x-input.integer-field 
+        id="year_start"
+        label="Year Start"
+        icon="fa-solid fa-calendar"
+        placeholder="Year-Start (e.g. 2023)"
+        help=""
+    />
+
+    <x-input.integer-field 
+        id="year_end"
+        label="Year End"
+        icon="fa-solid fa-calendar"
+        placeholder="Year-End (e.g. 2025)"
+        help=""
+    />
+</div>
+
 {{-- Description --}}
 <div class="col-sm-12 form-control-validation">
     <x-input.text-area-field

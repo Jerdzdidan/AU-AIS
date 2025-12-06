@@ -22,7 +22,7 @@ class SubjectController extends Controller
 
         return view('app.admin_panel.curriculum_management.subject_management.index', [
             'curriculum_id' => Crypt::encryptString($curriculum->id),
-            'curriculum_name' => $curriculum->program->code . ' - Curriculum',
+            'curriculum_name' => $curriculum->program->code . ' - Curriculum (' . $curriculum->year_start . ' - ' . $curriculum->year_end . ')',
         ]);
     }
 

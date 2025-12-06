@@ -72,6 +72,8 @@ Curriculum Management
             {{-- Columns --}}
             <th>Id</th>
             <th>Curricula</th>
+            <th>Year Start</th>
+            <th>Year End</th>
             <th>Description</th>
             <th>Status</th>
             <th>Actions</th>
@@ -107,6 +109,8 @@ $(document).ready(function() {
         columns: [
             { data: "id", visible: false },
             { data: "name" },
+            { data: "year_start" },
+            { data: "year_end" },
             { data: "description" },
             { 
                 data: "is_active",
@@ -189,6 +193,8 @@ $(document).ready(function() {
     curriculumCRUD.onEditSuccess = (data) => {
         $('#add-or-update-form input[name="id"]').val(data.id);
         $('#add-or-update-form textarea[name="description"]').val(data.description);
+        $('#add-or-update-form input[name="year_start"]').val(data.year_start);
+        $('#add-or-update-form input[name="year_end"]').val(data.year_end);
 
         setSelect2Value('#program_id', data.program_id);
     };

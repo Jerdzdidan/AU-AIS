@@ -11,7 +11,7 @@ class Curriculum extends Model
     use ChecksAssociations;
     use HasFactory;
     //
-    protected $fillable = ['program_id', 'description', 'is_active'];
+    protected $fillable = ['program_id', 'description', 'year_start', 'year_end', 'is_active'];
 
     protected function getRelationshipsToCheck()
     {

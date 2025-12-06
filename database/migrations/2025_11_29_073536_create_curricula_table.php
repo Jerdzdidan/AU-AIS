@@ -13,10 +13,10 @@ return new class extends Migration
     {
         Schema::create('curricula', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('program_id')->unique()->constrained();
+            $table->foreignId('program_id')->constrained();
             $table->string('description')->nullable();
-            $table->string('start_year');
-            $table->string('end_year');
+            $table->string('year_start');
+            $table->string('year_end');
             $table->boolean('is_active')->default(true);
             $table->timestamps();
         });
