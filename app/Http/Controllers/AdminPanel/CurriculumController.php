@@ -57,6 +57,15 @@ class CurriculumController extends Controller
             'year_end' => 'required|string|max:4',
         ]);
 
+        if($validated['year_start'] > $validated['year_end'])
+        {
+            return response()->json([
+                'errors' => [
+                    'year_effectivity' => ['Year Start cannot be greater than Year End.']
+                ]
+            ], 422);
+        }
+
         Curriculum::create($validated);
         return response()->json(['success' => true]);
     }
@@ -87,6 +96,15 @@ class CurriculumController extends Controller
             'year_start' => 'required|string|max:4',
             'year_end' => 'required|string|max:4',
         ]);
+
+        if($validated['year_start'] > $validated['year_end'])
+        {
+            return response()->json([
+                'errors' => [
+                    'year_effectivity' => ['Year Start cannot be greater than Year End.']
+                ]
+            ], 422);
+        }
 
         $curriculum->update($validated);
 
