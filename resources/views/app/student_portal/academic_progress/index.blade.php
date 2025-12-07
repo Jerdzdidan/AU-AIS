@@ -55,19 +55,50 @@ Academic Progress
         </div>
 
         <!-- Status Filter -->
-        <div class="col-2">
-            <x-input.select-field
-                id="filter-status"
-                label="Filter by Status:"
-                icon="fa-solid fa-tags"
-                :options="[
-                    ['value' => 'All', 'text' => 'All Status'],
-                    ['value' => 'Complete', 'text' => 'Complete'],
-                    ['value' => 'Incomplete', 'text' => 'Incomplete'],
-                ]"
-                placeholder="Select Status"
-            />
+        <div class="row">
+            <div class="col-md-2">
+                <x-input.select-field
+                    id="filter-status"
+                    label="Filter by Status:"
+                    icon="fa-solid fa-tags"
+                    :options="[
+                        ['value' => 'All', 'text' => 'All Status'],
+                        ['value' => 'Complete', 'text' => 'Complete'],
+                        ['value' => 'Incomplete', 'text' => 'Incomplete'],
+                    ]"
+                    placeholder="Select Status"
+                />
+            </div>
         </div>
+
+        <!-- Year Level Tabs -->
+        <ul class="nav nav-tabs border-bottom mt-2" id="checklistYearTabs" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active" id="year1-tab" data-bs-toggle="tab" data-bs-target="#year1" type="button" role="tab">
+                    <i class="fa-solid fa-calendar me-2"></i>1st Yr.
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="year2-tab" data-bs-toggle="tab" data-bs-target="#year2" type="button" role="tab">
+                    <i class="fa-solid fa-calendar me-2"></i>2nd Yr.
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="year3-tab" data-bs-toggle="tab" data-bs-target="#year3" type="button" role="tab">
+                    <i class="fa-solid fa-calendar me-2"></i>3rd Yr.
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="year4-tab" data-bs-toggle="tab" data-bs-target="#year4" type="button" role="tab">
+                    <i class="fa-solid fa-calendar me-2"></i>4th Yr.
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="minor-tab" data-bs-toggle="tab" data-bs-target="#minor" type="button" role="tab">
+                    <i class="fa-solid fa-bookmark me-2"></i>Minor Subjects
+                </button>
+            </li>
+        </ul>
         
         <!-- DataTable -->
         <x-table.table id="academicProgressTable">
@@ -86,6 +117,7 @@ Academic Progress
             <th>Total Units</th>
             <th>Prerequisites</th>
         </x-table.table>
+        
 
     </div>
 </div>
@@ -101,6 +133,8 @@ $(document).ready(function() {
         placeholder: 'All Status'
     });
 
+    let selectedYearLevel = '1';
+
     // Initialize DataTable
     const academicProgressTable = new GenericDataTable({
         order: [[6, "asc"], [7, "asc"], [8, "asc"]],
@@ -108,6 +142,7 @@ $(document).ready(function() {
         ajaxUrl: "{{ route('student.academic_progress.data') }}",
         ajaxData: function(d) {
             d.status = $('#filter-status').val();
+            d.year_level = selectedYearLevel;
         },
         columns: [
             { data: "id", visible: false },
@@ -117,6 +152,11 @@ $(document).ready(function() {
                 data: "lecture_completed",
                 responsivePriority: 1,
                 render: (data, type, row) => {
+                    if (!row.has_lec)
+                    {
+                        return '<span class="text-muted">-</span>';
+                    }
+
                     return row.lecture_completed ? '<i class="fa-solid fa-check-circle text-success"></i>' : '<i class="fa-solid fa-times-circle text-danger"></i>';
                 }
             },
@@ -124,6 +164,11 @@ $(document).ready(function() {
                 data: "laboratory_completed",
                 responsivePriority: 1,
                 render: (data, type, row) => {
+                    if (!row.has_lab)
+                    {
+                        return '<span class="text-muted">-</span>';
+                    }
+
                     return row.laboratory_completed ? '<i class="fa-solid fa-check-circle text-success"></i>' : '<i class="fa-solid fa-times-circle text-danger"></i>';
                 }
             },
@@ -173,6 +218,35 @@ $(document).ready(function() {
     }).init();
 
     $('#filter-status').on('change', function() {
+        academicProgressTable.reload();
+    });
+
+    // Year level tab click handler
+    $('#checklistYearTabs button[data-bs-toggle="tab"]').on('shown.bs.tab', function (e) {
+        const targetTab = $(e.target).attr('id');
+        
+        // Update selected year level based on tab
+        switch(targetTab) {
+            case 'year1-tab':
+                selectedYearLevel = '1';
+                break;
+            case 'year2-tab':
+                selectedYearLevel = '2';
+                break;
+            case 'year3-tab':
+                selectedYearLevel = '3';
+                break;
+            case 'year4-tab':
+                selectedYearLevel = '4';
+                break;
+            case 'minor-tab':
+                selectedYearLevel = 'minor';
+                break;
+            default:
+                selectedYearLevel = 'all';
+        }
+        
+        // Reload the table with the new year level filter
         academicProgressTable.reload();
     });
 

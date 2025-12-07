@@ -65,18 +65,20 @@
         </div>
 
         <!-- Status Filter -->
-        <div class="col-2">
-            <x-input.select-field
-                id="filter-status"
-                label="Filter by Status:"
-                icon="fa-solid fa-tags"
-                :options="[
-                    ['value' => 'All', 'text' => 'All Status'],
-                    ['value' => 'Active', 'text' => 'Active'],
-                    ['value' => 'Inactive', 'text' => 'Inactive'],
-                ]"
-                placeholder="Select Status"
-            />
+        <div class="row">
+            <div class="col-md-2">
+                <x-input.select-field
+                    id="filter-status"
+                    label="Filter by Status:"
+                    icon="fa-solid fa-tags"
+                    :options="[
+                        ['value' => 'All', 'text' => 'All Status'],
+                        ['value' => 'Active', 'text' => 'Active'],
+                        ['value' => 'Inactive', 'text' => 'Inactive'],
+                    ]"
+                    placeholder="Select Status"
+                />
+            </div>
         </div>
         
         <!-- DataTable -->

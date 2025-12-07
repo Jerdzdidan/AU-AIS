@@ -45,6 +45,21 @@ class AcademicProgress extends Controller
             }
         }
 
+        if ($request->filled('year_level') && $request->year_level !== 'all') {
+            if ($request->year_level === 'minor') {
+                // Filter for minor subjects
+                $academicProgress->whereHas('subject', function($q) {
+                    $q->where('subject_category', 'Minor');
+                });
+            } else {
+                // Filter by specific year level (1, 2, 3, 4)
+                $academicProgress->whereHas('subject', function($q) use ($request) {
+                    $q->where('year_level', $request->year_level);
+                });
+            }
+        }
+
+
         return DataTables::of($academicProgress)
             ->editColumn('id', function ($row) {
                 return Crypt::encryptString($row->id);
@@ -55,6 +70,8 @@ class AcademicProgress extends Controller
             ->editColumn('subject.id', function ($row) {
                 return Crypt::encryptString($row->subject->id);
             })
+            ->addColumn('has_lec', fn($row) => $row->subject->lec_units > 0)
+            ->addColumn('has_lab', fn($row) => $row->subject->lab_units > 0)
             ->addColumn('is_completed', fn($row) => $row->isCompleted())
             ->addColumn('total_units', fn($row) =>
                 ($row->subject?->lec_units ?? 0) + ($row->subject?->lab_units ?? 0)
