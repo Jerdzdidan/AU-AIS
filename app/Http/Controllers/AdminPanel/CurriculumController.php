@@ -66,6 +66,35 @@ class CurriculumController extends Controller
             ], 422);
         }
 
+        $hasOverlap = Curriculum::where('program_id', $validated['program_id'])
+        ->where(function($query) use ($validated) {
+            $query->where(function($q) use ($validated) {
+                // New range starts during an existing range
+                $q->where('year_start', '<=', $validated['year_start'])
+                  ->where('year_end', '>=', $validated['year_start']);
+            })
+            ->orWhere(function($q) use ($validated) {
+                // New range ends during an existing range
+                $q->where('year_start', '<=', $validated['year_end'])
+                  ->where('year_end', '>=', $validated['year_end']);
+            })
+            ->orWhere(function($q) use ($validated) {
+                // New range completely contains an existing range
+                $q->where('year_start', '>=', $validated['year_start'])
+                  ->where('year_end', '<=', $validated['year_end']);
+            });
+        })
+        ->exists();
+
+        if($hasOverlap)
+        {
+            return response()->json([
+                'errors' => [
+                    'year_effectivity' => ['The year start and year end overlaps with an existing curriculum for this program.']
+                ]
+            ], 422);
+        }
+
         Curriculum::create($validated);
         return response()->json(['success' => true]);
     }
