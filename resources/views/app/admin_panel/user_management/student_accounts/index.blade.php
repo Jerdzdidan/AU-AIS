@@ -100,6 +100,7 @@ $(document).ready(function() {
     let curriculum_route = "{{ route('curricula.select', ':id') }}"
 
     $('#curriculum_id').select2({
+        allowClear: true,
         placeholder: 'Select a curriculum'
     });
 
@@ -213,6 +214,7 @@ $(document).ready(function() {
         $('#curriculum_id').prop('disabled', false);
 
         let url = curriculum_route.replace(':id', data.program_id);
+        $('#curriculum_id').empty();
         await prefetchAndInitSelect2('#curriculum_id', url, 'Select a curriculum');
         setSelect2Value('#curriculum_id', data.curriculum_id);
     };
@@ -221,6 +223,7 @@ $(document).ready(function() {
         $('#add-or-update-form')[0].reset();
         resetSelect2('#program_id');
         resetSelect2('#curriculum_id');
+        $('#curriculum_id').prop('disabled', true);
     });
 
     $('#program_id').on('change', function() {
@@ -229,7 +232,7 @@ $(document).ready(function() {
         if (programId) {
             $('#curriculum_id').prop('disabled', false);
             let url = curriculum_route.replace(':id', programId);
-            
+            $('#curriculum_id').empty();
             prefetchAndInitSelect2('#curriculum_id', url, 'Select a curriculum');
         } 
         else {

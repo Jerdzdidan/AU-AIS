@@ -45,6 +45,7 @@ function initSelect2(selector, options = {}) {
     };
 
     if (preloadedData) {
+        $element.empty().append('<option></option>');
         // Use local data instead of AJAX
         config.data = preloadedData;
     } else if (url) {
