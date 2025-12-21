@@ -203,20 +203,26 @@ $(document).ready(function() {
     });
 
     studentCRUD.onEditSuccess = async (data) => {
-        $('#add-or-update-form input[name="id"]').val(data.id);
-        $('#add-or-update-form input[name="student_number"]').val(data.student_number);
-        $('#add-or-update-form input[name="name"]').val(data.name);
-        $('#add-or-update-form input[name="email"]').val(data.email);
-        $('#add-or-update-form input[name="year_level"]').val(data.year_level);
+        $('#add-or-update-modal .offcanvas-body').css('position', 'relative').prepend(loadingOverlay);
 
-        setSelect2Value('#program_id', data.program_id);
-        
-        $('#curriculum_id').prop('disabled', false);
+        try {
+            $('#add-or-update-form input[name="id"]').val(data.id);
+            $('#add-or-update-form input[name="student_number"]').val(data.student_number);
+            $('#add-or-update-form input[name="name"]').val(data.name);
+            $('#add-or-update-form input[name="email"]').val(data.email);
+            $('#add-or-update-form input[name="year_level"]').val(data.year_level);
 
-        let url = curriculum_route.replace(':id', data.program_id);
-        $('#curriculum_id').empty();
-        await prefetchAndInitSelect2('#curriculum_id', url, 'Select a curriculum');
-        setSelect2Value('#curriculum_id', data.curriculum_id);
+            setSelect2Value('#program_id', data.program_id);
+            
+            $('#curriculum_id').prop('disabled', false);
+
+            let url = curriculum_route.replace(':id', data.program_id);
+            $('#curriculum_id').empty();
+            await prefetchAndInitSelect2('#curriculum_id', url, 'Select a curriculum');
+            setSelect2Value('#curriculum_id', data.curriculum_id);
+        } finally {
+            $('#loading-overlay').remove();
+        }
     };
 
     $('#add-or-update-modal').on('hidden.bs.offcanvas', function() {

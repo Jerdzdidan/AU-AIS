@@ -3,6 +3,7 @@
 use App\Http\Controllers\AdminPanel\AdminUserController;
 use App\Http\Controllers\AdminPanel\CurriculumController;
 use App\Http\Controllers\AdminPanel\DepartmentController;
+use App\Http\Controllers\AdminPanel\GradeImportController;
 use App\Http\Controllers\AdminPanel\OfficerUserController;
 use App\Http\Controllers\AdminPanel\ProgramController;
 use App\Http\Controllers\AdminPanel\StudentUserController;
@@ -106,6 +107,14 @@ Route::prefix('admin')->middleware('auth')->group(function () {
             Route::delete('destroy/{id}', [SubjectController::class, 'destroy'])->name('subjects.destroy');
             Route::post('toggle/{id}', [SubjectController::class, 'toggle'])->name('subjects.toggle');
         });
+    });
+
+    // GRADE IMPORT FEATURE
+    Route::prefix('grades/import')->group(function() {
+        Route::get('/', [GradeImportController::class, 'index'])->name('grades.import');
+        Route::post('upload', [GradeImportController::class, 'upload'])->name('grades.import.upload');
+        Route::get('preview/{import_id}', [GradeImportController::class, 'preview'])->name('grades.import.preview');
+        Route::get('commit/{import_id}', [GradeImportController::class, 'commit'])->name('grades.import.commit');
     });
 
 });
