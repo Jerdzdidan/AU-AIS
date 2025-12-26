@@ -5,7 +5,11 @@
         <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
     </div>
     <div class="offcanvas-body flex-grow-1">
-        <form class="add-or-update-form pt-0 row g-2" id="add-or-update-form" action="{{ $action }}">
+        <form 
+            class="{{ $formClass ?? 'add-or-update-form' }}"
+            id="{{ $formId ?? 'add-or-update-form' }}"
+            action="{{ $action }}"
+        >
             @csrf
 
             <input type="hidden" name="id" id="id" value="">

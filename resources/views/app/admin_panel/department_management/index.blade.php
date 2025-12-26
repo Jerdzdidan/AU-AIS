@@ -83,7 +83,6 @@ $(document).ready(function() {
             }
         ],
         statsCards: {
-            total: 'totalDepartments',
             callback: (table) => {
                 $.get("{{ route('departments.stats') }}", (data) => {
                     $('#totalDepartments').text(data.total);

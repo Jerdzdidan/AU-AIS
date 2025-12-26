@@ -142,7 +142,6 @@ $(document).ready(function() {
             }
         ],
         statsCards: {
-            total: 'totalAdmins',
             callback: (table) => {
                 $.get("{{ route('users.stats', 'ADMIN') }}", (data) => {
                     $('#totalAdmins').text(data.total);

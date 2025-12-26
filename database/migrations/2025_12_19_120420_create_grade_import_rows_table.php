@@ -17,6 +17,8 @@ return new class extends Migration
             $table->string('raw_student_identifier');
             $table->string('student_id')->nullable();
             $table->string('subject_code')->nullable();
+            $table->string('subject_name')->nullable();
+            $table->string('unit_type')->nullable();
             $table->string('school_year')->nullable();
             $table->string('semester')->nullable();
             $table->string('faculty')->nullable();

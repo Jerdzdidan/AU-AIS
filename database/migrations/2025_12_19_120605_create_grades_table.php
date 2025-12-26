@@ -15,6 +15,9 @@ return new class extends Migration
             $table->id();
             $table->foreignId('student_id')->constrained('students')->cascadeOnDelete();
             $table->string('subject_id');
+            $table->string('subject_code')->nullable();
+            $table->string('subject_name')->nullable();
+            $table->string('unit_type')->nullable();
             $table->string('school_year');
             $table->string('semester');
             $table->string('faculty')->nullable();

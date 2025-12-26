@@ -112,9 +112,12 @@ Route::prefix('admin')->middleware('auth')->group(function () {
     // GRADE IMPORT FEATURE
     Route::prefix('grades/import')->group(function() {
         Route::get('/', [GradeImportController::class, 'index'])->name('grades.import');
-        Route::post('upload', [GradeImportController::class, 'upload'])->name('grades.import.upload');
-        Route::get('preview/{import_id}', [GradeImportController::class, 'preview'])->name('grades.import.preview');
-        Route::get('commit/{import_id}', [GradeImportController::class, 'commit'])->name('grades.import.commit');
+        Route::get('data', [GradeImportController::class, 'getData'])->name('grades.import.data');
+        Route::get('stats', [GradeImportController::class, 'getStats'])->name('grades.import.stats');
+        Route::post('store', [GradeImportController::class, 'store'])->name('grades.import.store');
+        Route::get('preview/{gradeImport}', [GradeImportController::class, 'preview'])->name('grades.import.preview');
+        Route::get('commit/{gradeImport}', [GradeImportController::class, 'commit'])->name('grades.import.commit');
+        Route::delete('destroy/{gradeImport}', [GradeImportController::class, 'destroy'])->name('grades.import.destroy');
     });
 
 });

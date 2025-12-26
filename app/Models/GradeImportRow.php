@@ -12,6 +12,8 @@ class GradeImportRow extends Model
         'raw_student_identifier',
         'student_id',
         'subject_code',
+        'subject_name',
+        'unit_type',
         'school_year',
         'semester',
         'faculty',
@@ -21,11 +23,13 @@ class GradeImportRow extends Model
         'errors',
     ];
 
+    protected $casts = [
+        'errors' => 'array',
+        'grade' => 'decimal:2',
+        'credit_unit' => 'decimal:2',
+    ];
+
     public function gradeImport(){
         return $this->belongsTo(GradeImport::class);
-    }
-
-    public function isValid(){
-        return empty($this->errors);
     }
 }

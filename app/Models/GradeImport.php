@@ -23,6 +23,11 @@ class GradeImport extends Model
         return $this->hasMany(GradeImportRow::class);
     }
 
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
+
     public function grades(){
         return $this->hasMany(Grade::class);
     }

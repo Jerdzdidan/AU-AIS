@@ -12,15 +12,17 @@ class UserCreationAndUpdateModal extends Component
      * Create a new component instance.
      */
 
-    public $id, $title, $action, $submitButtonName;
+    public $id, $title, $action, $submitButtonName, $formId, $formClass;
 
-    public function __construct($id, $title, $action, $submitButtonName)
+    public function __construct($id, $title, $action, $submitButtonName, $formId, $formClass)
     {
         //
         $this->id = $id;
         $this->title = $title;
         $this->action = $action;
         $this->submitButtonName = $submitButtonName;
+        $this->formId = $formId;
+        $this->formClass = $formClass;
     }
 
     /**

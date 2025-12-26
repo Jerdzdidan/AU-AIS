@@ -149,7 +149,6 @@ $(document).ready(function() {
             }
         ],
         statsCards: {
-            total: 'totalOfficers',
             callback: (table) => {
                 $.get("{{ route('users.stats', 'OFFICER') }}", (data) => {
                     $('#totalOfficers').text(data.total);

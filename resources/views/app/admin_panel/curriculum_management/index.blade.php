@@ -153,7 +153,6 @@ $(document).ready(function() {
             }
         ],
         statsCards: {
-            total: 'totalCurricula',
             callback: (table) => {
                 $.get("{{ route('curricula.stats') }}", (data) => {
                     $('#totalCurricula').text(data.total);
