@@ -9,6 +9,7 @@
             class="{{ $formClass ?? 'add-or-update-form' }}"
             id="{{ $formId ?? 'add-or-update-form' }}"
             action="{{ $action }}"
+            enctype="{{ $enctype ?? '' }}"
         >
             @csrf
 

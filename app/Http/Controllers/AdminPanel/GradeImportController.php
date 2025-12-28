@@ -145,6 +145,56 @@ class GradeImportController extends Controller
             ], 500);
         }
     }
+
+    public function download($id) {
+        $decrypted = Crypt::decryptString($id);
+        $grade_import = GradeImport::findOrFail($decrypted);
+
+        $rows = $grade_import->rows;
+
+        $filename = $grade_import->filename;
+
+        $headers = [
+            'Content-Type' => 'text/csv',
+            'Content-Disposition' => 'attachment; filename="' . $filename . '"',
+        ];
+
+        $callback = function() use ($rows) {
+            $file = fopen('php://output', 'w');
+            
+            // CSV Headers
+            fputcsv($file, [
+                'student_id',
+                'subject_code',
+                'subject_name',
+                'unit_type',
+                'school_year',
+                'semester',
+                'faculty',
+                'credit_unit',
+                'grade',
+            ]);
+            
+            // CSV Data
+            foreach ($rows as $row) {
+                fputcsv($file, [
+                    $row->student_id,
+                    $row->subject_code,
+                    $row->subject_name,
+                    $row->unit_type,
+                    $row->school_year,
+                    $row->semester,
+                    $row->faculty,
+                    $row->credit_unit,
+                    $row->grade,
+                ]);
+            }
+            
+            fclose($file);
+        };
+    
+        return response()->stream($callback, 200, $headers);
+    }
         
     public function preview() {
 

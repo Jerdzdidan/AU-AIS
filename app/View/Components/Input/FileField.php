@@ -12,15 +12,16 @@ class FileField extends Component
      * Create a new component instance.
      */
 
-    public $id, $label, $name, $placeholder;
+    public $id, $label, $name, $accept, $helptext;
 
-    public function __construct($id, $label, $name, $placeholder)
+    public function __construct($id, $label, $name, $accept='', $helptext='')
     {
         //
         $this->id = $id;
         $this->label = $label;
         $this->name = $name;
-        $this->placeholder = $placeholder;
+        $this->accept = $accept;
+        $this->helptext = $helptext;
     }
 
     /**

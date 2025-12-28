@@ -57,7 +57,17 @@ $(document).ready(function() {
         ajaxUrl: "{{ route('grades.import.data') }}",
         columns: [
             { data: "id", visible: false },
-            { data: "filename" },
+            {
+                data: "filename",
+                render: (data, type, row) => {
+                    let url = "{{ route('grades.import.download', ':id') }}"
+                    return `
+                            <a href="${url.replace(':id', row.id)}" class="text-primary hover-underline-ltr" title="Download CSV">
+                                <i class="fa-solid fa-file-excel me-1"></i>${data}
+                            </a>
+                        `;
+                }
+            },
             { data: "valid_rows" },
             { data: "invalid_rows" },
             { data: "total_rows" },
@@ -80,53 +90,24 @@ $(document).ready(function() {
         ]
     }).init();
 
-    // Handle form submission
+    // CRUD Operations
+    window.gradeImportCRUD = new GenericCRUD({
+        baseUrl: '/admin/grades/import',
+        storeUrl: "{{ route('grades.import.store') }}",
+        destroyUrl: "{{ route('grades.import.destroy', ':id') }}",
+
+        entityName: 'Grade Import',
+        dataTable: gradeImportsTable,
+        csrfToken: "{{ csrf_token() }}",
+        form: '#grade-import-form',
+        modal: '#add-or-update-modal'
+    });
+
     $('#grade-import-form').on('submit', function(e) {
         e.preventDefault();
-        
-        console.log('Form submitted!');
-        
-        const formData = new FormData(this);
-        const submitBtn = $(this).find('button[type="submit"]');
-        const originalText = submitBtn.html();
-        
-        // Disable button and show loading
-        submitBtn.prop('disabled', true).html('<i class="fa-solid fa-spinner fa-spin me-2"></i>Uploading...');
-        
-        $.ajax({
-            url: "{{ route('grades.import.store') }}",
-            method: 'POST',
-            data: formData,
-            processData: false,
-            contentType: false,
-            success: function(response) {
-                console.log('Success response:', response);
-                
-                toastr.success('File uploaded and processed successfully!');
-                gradeImportsTable.reload();
-                
-                // Reset form and close modal
-                $('#grade-import-form')[0].reset();
-                $('#add-or-update-modal').offcanvas('hide');
-            },
-            error: function(xhr) {
-                console.error('Error:', xhr);
-                
-                let message = 'Upload failed';
-                
-                if (xhr.responseJSON && xhr.responseJSON.message) {
-                    message = xhr.responseJSON.message;
-                } else if (xhr.responseText) {
-                    message = xhr.responseText;
-                }
-                
-                toastr.error(message);
-            },
-            complete: function() {
-                // Re-enable button
-                submitBtn.prop('disabled', false).html(originalText);
-            }
-        });
+        const fd = new FormData(this);
+
+        gradeImportCRUD.create(fd);
     });
 
     // Reset form when modal closes
@@ -134,15 +115,7 @@ $(document).ready(function() {
         $('#grade-import-form')[0].reset();
     });
 
-    // CRUD Operations
-    window.gradeImportCRUD = new GenericCRUD({
-        baseUrl: '/admin/grades/import',
-        storeUrl: "{{ route('grades.import.store') }}",
-        destroyUrl: "{{ route('grades.import.destroy', ':id') }}",
-        entityName: 'Grade Import',
-        dataTable: gradeImportsTable,
-        csrfToken: "{{ csrf_token() }}"
-    });
+    
 });
 </script>
 @endsection
