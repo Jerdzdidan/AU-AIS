@@ -9,7 +9,9 @@ class Grade extends Model
     //
     protected $fillable = [
         'student_id',
-        'subject_id',
+        'subject_code',
+        'subject_name',
+        'unit_type',
         'school_year',
         'semester',
         'faculty',

@@ -1,2 +1,2 @@
-﻿student_id,subject_code,subject_name,unit_type,school_year,semester,faculty,credit_unit,grade
+﻿student_number,subject_code,subject_name,unit_type,school_year,semester,faculty,credit_unit,grade
 23-12345,CS 210,Discrete Structures 1,lec,2024-2025,1st,"Delos Reyes, Amelita M.",3,1.25

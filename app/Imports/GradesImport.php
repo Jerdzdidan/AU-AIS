@@ -71,9 +71,8 @@ class GradesImport implements ToCollection, WithHeadingRow
             // Create import row
             GradeImportRow::create([
                 'grade_import_id' => $this->gradeImportId,
-                'raw_student_identifier' => $row['student_id'] ?? '',
                 // 'student_id' => $student?->id,
-                'student_id' => $row['student_id'] ?? '',
+                'student_number' => $row['student_number'] ?? '',
                 'subject_code' => $row['subject_code'] ?? null,
                 'subject_name' => $row['subject_name'] ?? null,
                 'unit_type' => $row['unit_type'] ?? null,

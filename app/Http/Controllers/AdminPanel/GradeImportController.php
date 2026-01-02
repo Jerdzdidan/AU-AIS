@@ -29,18 +29,6 @@ class GradeImportController extends Controller
             ->editColumn('id', function ($row) {
                 return Crypt::encryptString($row->id);
             })
-            ->editColumn('status', function ($row) {
-                $badges = [
-                    'pending' => 'bg-warning',
-                    'processing' => 'bg-info',
-                    'completed' => 'bg-success',
-                    'failed' => 'bg-danger',
-                ];
-                
-                return '<span class="badge ' . ($badges[$row->status] ?? 'bg-secondary') . '">' 
-                       . ucfirst($row->status) 
-                       . '</span>';
-            })
             ->addColumn('academic_period_name', function ($row) {
                 return $row->academic_period ? $row->academic_period->name : 'N/A';
             })
@@ -98,6 +86,8 @@ class GradeImportController extends Controller
             $validated = $request->validate([
                 'file' => 'required|file|mimes:csv,xlsx,xls,txt|mimetypes:text/plain,text/csv,text/x-csv,application/csv,application/x-csv,text/comma-separated-values,text/x-comma-separated-values,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet|max:10240',
                 'academic_period_id' => 'required|exists:academic_periods,id',
+            ], [
+                'academic_period_id.required' => 'The academic period field is required.',
             ]);
 
             $file = $request->file('file');
@@ -150,7 +140,8 @@ class GradeImportController extends Controller
         } catch (ValidationException $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Validation failed: ' . implode(', ', $e->validator->errors()->all())
+                'message' => 'Validation failed: ' . implode(', ', $e->validator->errors()->all()),
+                'errors' => $e->validator->errors()->toArray()
             ], 422);
             
         } catch (Exception $e) {
@@ -181,7 +172,7 @@ class GradeImportController extends Controller
             
             // CSV Headers
             fputcsv($file, [
-                'student_id',
+                'student_number',
                 'subject_code',
                 'subject_name',
                 'unit_type',
@@ -195,7 +186,7 @@ class GradeImportController extends Controller
             // CSV Data
             foreach ($rows as $row) {
                 fputcsv($file, [
-                    $row->student_id,
+                    $row->student_number,
                     $row->subject_code,
                     $row->subject_name,
                     $row->unit_type,

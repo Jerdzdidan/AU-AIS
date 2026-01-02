@@ -10,12 +10,12 @@
 {{-- student_id and subject_code --}}
 <div class="col-sm-12 form-control-validation">
     <x-input.input-field
-        id="student_id" 
-        name="student_id" 
-        label="Student ID"
+        id="student_number" 
+        name="student_number" 
+        label="Student Number"
         type="text"
         icon="fa-solid fa-id-card fa-1x" 
-        placeholder="Student ID (e.g. 202012345)" 
+        placeholder="Student Number (e.g. 23-12345)" 
         help=""
     />
 
@@ -42,14 +42,16 @@
 
 {{-- Unit Type and Faculty --}}
 <div class="col-sm-12 form-control-validation">
-    <x-input.input-field
-        id="unit_type" 
-        name="unit_type" 
+
+    <x-input.select-field
+        id="unit_type"
         label="Unit Type"
-        type="text"
-        icon="fa-solid fa-calendar fa-1x" 
-        placeholder="Unit Type (e.g. Lecture, Laboratory)" 
-        help=""
+        icon="fa-solid fa-tags"
+        :options="[
+            ['value' => 'lec', 'text' => 'Lecture'],
+            ['value' => 'lab', 'text' => 'Laboratory'],
+        ]"
+        placeholder="Select Unit Type"
     />
 
     <x-input.input-field

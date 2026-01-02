@@ -3,8 +3,10 @@
 namespace App\Http\Controllers\AdminPanel;
 
 use App\Http\Controllers\Controller;
+use App\Models\Grade;
 use App\Models\GradeImport;
 use App\Models\GradeImportRow;
+use App\Models\Student;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\DB;
@@ -42,7 +44,7 @@ class GradeImportRowController extends Controller
              $decrypted = Crypt::decryptString($gradeImportId);
 
         $validated = $request->validate([
-            'student_id' => 'required|string|max:50',
+            'student_number' => 'required|string|max:50',
             'subject_code' => 'required|string|max:50',
             'subject_name' => 'required|string|max:255',
             'unit_type' => 'required|string|max:100',
@@ -63,8 +65,6 @@ class GradeImportRowController extends Controller
 
         $validated['status'] = 'staged';
 
-        $validated['raw_student_identifier'] = $validated['student_id'];
-
         $validated['grade_import_id'] = $decrypted;
         GradeImportRow::create($validated);
         return response()->json(['success' => true]);
@@ -77,6 +77,42 @@ class GradeImportRowController extends Controller
             ], 500);
         }
        
+    }
+
+    public function edit($gradeImportRowId) {
+        $decrypted = Crypt::decryptString($gradeImportRowId);
+        $row = GradeImportRow::findOrFail($decrypted);
+
+        return response()->json([
+            'id' => Crypt::encryptString($row->id),
+            'student_number' => $row->student_number,
+            'subject_code' => $row->subject_code,
+            'subject_name' => $row->subject_name,
+            'unit_type' => $row->unit_type,
+            'grade' => $row->grade,
+            'faculty' => $row->faculty,
+            'credit_unit' => $row->credit_unit
+        ]);
+    }
+
+    public function update(Request $request, $gradeImportRowId)
+    {
+        $decrypted = Crypt::decryptString($gradeImportRowId);
+        $row = GradeImportRow::findOrFail($decrypted);
+
+        $validated = $request->validate([
+            'student_number' => 'required|string|max:50',
+            'subject_code' => 'required|string|max:50',
+            'subject_name' => 'required|string|max:255',
+            'unit_type' => 'required|string|max:100',
+            'grade' => 'required|numeric|min:0|max:100',
+            'faculty' => 'required|string|max:255',
+            'credit_unit' => 'required|numeric|min:0|max:5',
+        ]);
+
+        $row->update($validated);
+
+        return response()->json(['success' => true]);
     }
 
     public function destroy($gradeImportRowId) {
@@ -103,6 +139,77 @@ class GradeImportRowController extends Controller
         return response()->json([
             'success' => true,
             'message' => 'Grade data record deleted successfully.'
+        ]);
+    }
+
+    public function commitRow($gradeImportRowId) {
+        $decrypted = Crypt::decryptString($gradeImportRowId);
+        $row = GradeImportRow::findOrFail($decrypted);
+
+        $student = Student::where('student_number', $row->student_number)->first();
+
+        Grade::create([
+            'student_id' => $student->id,
+            'subject_code' => $row->subject_code,
+            'subject_name' => $row->subject_name,
+            'unit_type' => $row->unit_type,
+            'school_year' => $row->school_year,
+            'semester' => $row->semester,
+            'faculty' => $row->faculty,
+            'credit_unit' => $row->credit_unit,
+            'grade' => $row->grade,
+            'grade_import_id' => $row->grade_import_id,
+        ]);
+
+        $row->status = 'committed';
+        $row->save();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Grade data row committed successfully.'
+        ]);
+    }
+
+    public function commitAll($gradeImportId) {
+        $decrypted = Crypt::decryptString($gradeImportId);
+        $gradeImport = GradeImport::findOrFail($decrypted);
+
+        $rows = $gradeImport->rows()->where('status', 'staged')->get();
+
+
+        DB::beginTransaction();
+            foreach ($rows as $row) {
+                $student = Student::where('student_number', $row->student_number)->first();
+
+                Grade::create([
+                    'student_id' => $student->id,
+                    'subject_code' => $row->subject_code,
+                    'subject_name' => $row->subject_name,
+                    'unit_type' => $row->unit_type,
+                    'school_year' => $row->school_year,
+                    'semester' => $row->semester,
+                    'faculty' => $row->faculty,
+                    'credit_unit' => $row->credit_unit,
+                    'grade' => $row->grade,
+                    'grade_import_id' => $row->grade_import_id,
+                ]);
+
+                $row->status = 'committed';
+                $row->save();
+            }
+
+            $stagedRows = $gradeImport->rows()->where('status', 'staged')->count();
+            if ($stagedRows === 0) {
+                $gradeImport->status = 'committed';
+            }
+
+            $gradeImport->processed_at = now();
+            $gradeImport->save();
+        DB::commit();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'All staged grade data rows committed successfully.'
         ]);
     }
 }

@@ -44,7 +44,7 @@
         <x-table.table id="gradeImportRowsTable">
             {{-- Columns --}}
             <th>Id</th>
-            <th>Student ID</th>
+            <th>Student No.</th>
             <th>Subject Code</th>
             <th>Subject Name</th>
             <th>Unit Type</th>
@@ -87,6 +87,10 @@
 <script src="{{ asset('js/shared/generic-crud.js') }}"></script>
 <script>
 $(document).ready(function() {
+    $('#unit_type').select2({
+        placeholder: 'Select Unit Type',
+    });
+
     // Initialize DataTable
     const gradeImportRowsTable = new GenericDataTable({
         order: [[0, 'desc']],
@@ -94,7 +98,7 @@ $(document).ready(function() {
         ajaxUrl: "{{ route('grades.import.rows.data', $gradeImportId) }}",
         columns: [
             { data: "id", visible: false },
-            { data: "student_id" },
+            { data: "student_number" },
             { data: "subject_code" },
             { data: "subject_name" },
             { data: "unit_type" },
@@ -114,7 +118,7 @@ $(document).ready(function() {
             {
                 data: "status",
                 render: (data, type, row) => {
-                    const badge = (data === 'commited') ? 'success' : 'warning';
+                    const badge = (data === 'committed') ? 'success' : 'warning';
 
                     return `<span class="badge bg-label-${badge}">${data}</span>`;
                 }
@@ -155,8 +159,8 @@ $(document).ready(function() {
     window.gradeImportRowsCRUD = new GenericCRUD({
         baseUrl: '/admin/grades/import/rows',
         storeUrl: "{{ route('grades.import.rows.store', $gradeImportId) }}",
-        // editUrl: "",
-        // updateUrl: "",
+        editUrl: "{{ route('grades.import.rows.edit', ':id') }}",
+        updateUrl: "{{ route('grades.import.rows.update', ':id') }}",
         destroyUrl: "{{ route('grades.import.rows.destroy', ':id') }}",
         // toggleUrl: "",
 
@@ -181,7 +185,15 @@ $(document).ready(function() {
     });
 
     gradeImportRowsCRUD.onEditSuccess = (data) => {
-        
+        $('#add-or-update-form input[name="id"]').val(data.id);
+        $('#add-or-update-form input[name="student_id"]').val(data.student_id);
+        $('#add-or-update-form input[name="subject_code"]').val(data.subject_code);
+        $('#add-or-update-form input[name="subject_name"]').val(data.subject_name);
+        $('#add-or-update-form input[name="grade"]').val(data.grade);
+        $('#add-or-update-form input[name="faculty"]').val(data.faculty);
+        $('#add-or-update-form input[name="credit_unit"]').val(data.credit_unit);
+
+        $('#add-or-update-form select[name="unit_type"]').val(data.unit_type).trigger('change');
     };
 
     $('#add-or-update-modal').on('hidden.bs.offcanvas', function() {
@@ -193,6 +205,16 @@ $(document).ready(function() {
     //     gradeImportRowsTable.reload();
     // });
 
+    $('#btn-commit').on('click', function() {
+        if (confirm('Are you sure you want to commit all valid grade import records? This action cannot be undone.')) {
+            $.post("{{ route('grades.import.rows.commitAll', $gradeImportId) }}", {_token: "{{ csrf_token() }}"}, function(response) {
+                alert(response.message);
+                gradeImportRowsTable.reload();
+            }).fail(function(xhr) {
+                alert('An error occurred while committing the records: ' + xhr.responseText);
+            });
+        }
+    });
 });
 </script>
 

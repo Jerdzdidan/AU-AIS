@@ -1,15 +1,108 @@
 @extends('layout.base')
 
 @section('title')
-Academic Progress
+Grades
 @endsection
 
 @section('head')
     <link rel="stylesheet" href="{{ asset('css/app/admin_panel/user_management/custom_profile.css') }}">
+    <style>
+        /* Collapsible row styles */
+        .subject-row {
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        
+        .subject-row:hover {
+            background-color: rgba(0, 0, 0, 0.02);
+        }
+        
+        .toggle-icon {
+            display: inline-block;
+            transition: transform 0.3s ease;
+            font-weight: bold;
+            color: #0d6efd;
+        }
+        
+        .toggle-icon.rotated {
+            transform: rotate(90deg);
+        }
+        
+        .details-row {
+            display: none;
+            background-color: #f8f9fa;
+        }
+        
+        .details-row.show {
+            display: table-row;
+        }
+        
+        .details-content {
+            padding: 1rem;
+        }
+        
+        .detail-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.5rem 0;
+            border-bottom: 1px solid #dee2e6;
+        }
+        
+        .detail-item:last-child {
+            border-bottom: none;
+        }
+        
+        .detail-label {
+            font-weight: 600;
+            color: #6c757d;
+        }
+        
+        .detail-value {
+            font-weight: 500;
+            color: #212529;
+        }
+        
+        /* Desktop view - show full table */
+        @media (min-width: 769px) {
+            .mobile-collapsible {
+                display: none;
+            }
+            
+            .desktop-table {
+                display: table;
+            }
+        }
+        
+        /* Mobile view - show collapsible version */
+        @media (max-width: 768px) {
+            .mobile-collapsible {
+                display: table;
+            }
+            
+            .desktop-table {
+                display: none;
+            }
+            
+            .card-header h5 {
+                font-size: 0.95rem;
+            }
+            
+            .card-footer h6 {
+                font-size: 0.9rem;
+            }
+        }
+        
+        @media (max-width: 576px) {
+            .card-header h5 {
+                font-size: 0.85rem;
+                line-height: 1.3;
+            }
+        }
+    </style>
 @endsection
 
 @section('nav_title')
-Academic Progress
+Grades
 @endsection
 
 @section('body')
@@ -18,239 +111,122 @@ Academic Progress
         <!-- Page Header -->
         <x-table.page-header 
             title="" 
-            subtitle="View academic progress details"
+            subtitle="View grade details"
         />
-        
-        <!-- Statistics Cards (Optional) -->
-        <div class="row mb-4">
 
-            {{-- UNITS PROGRESS --}}
-            <x-table.progress-card 
-                title="Units Progress"
-                icon="fa-solid fa-calculator fa-2x"
-                bgColor="bg-info"
-                class="col-md-4"
-                numeratorId="unitsEarnedDisplay"
-                denominatorId="unitsRequiredDisplay"
-                progressBarId="unitsProgressBar"
-                percentageId="unitsPercentage"
-            />
+        {{-- Grade Cards --}}
+        <div class="card">
+            <!-- Card Header -->
+            <div class="card-header bg-primary py-3 py-md-4">
+                <h5 class="mb-0 text-white fw-bold">School Year 2023-2024 | 1st Semester</h5>
+            </div>
 
-            {{-- TOTAL Subjects --}}
-            <x-table.stats-card 
-                id="totalSubjects" 
-                title="Total Subjects" 
-                icon="fa-solid fa-file-pen fa-2x" 
-                bgColor="bg-primary" 
-                class="col-md-4"/>
-                    
-            {{-- Subject Completed --}}
-            <x-table.stats-card 
-                id="completedSubjects" 
-                title="Subjects Completed" 
-                icon="fa-solid fa-check fa-2x" 
-                bgColor="bg-success" 
-                class="col-md-4"/>
+            <!-- Card Body -->
+            <div class="card-body px-0 py-0">
+                
+                <!-- Desktop Table (visible on tablet and larger) -->
+                <table class="table mb-0 desktop-table">
+                    <thead class="table-secondary">
+                        <tr>
+                            <th class="fw-bold py-2 text-center" colspan="2">Subject</th>
+                            <th class="fw-bold py-2">Unit Type</th>
+                            <th class="fw-bold py-2 text-center">Credit Unit</th>
+                            <th class="fw-bold py-2">Faculty</th>
+                            <th class="fw-bold py-2 text-center">Grade</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="py-1"><span class="small fw-semibold">CS101</span></td>
+                            <td class="py-1"><span class="small">Introduction to Programming</span></td>
+                            <td class="py-1"><span class="small">Lecture</span></td>
+                            <td class="py-1 text-center"><span class="small">3</span></td>
+                            <td class="py-1"><span class="small">Dr. John Smith</span></td>
+                            <td class="py-1 text-center"><span class="small">1.25</span></td>
+                        </tr>
+                    </tbody>
+                </table>
 
-        </div>
+                <!-- Mobile Collapsible Table (visible on mobile) -->
+                <table class="table mb-0 mobile-collapsible">
+                    <thead class="table-secondary">
+                        <tr>
+                            <th class="fw-bold py-2" style="width: 10px;"></th>
+                            <th class="fw-bold py-2">Subject</th>
+                            <th class="fw-bold py-2 text-center">Grade</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Subject 1 -->
+                        <tr class="subject-row" onclick="toggleDetails(this)">
+                            <td class="py-2 text-center">
+                                <span class="toggle-icon">›</span>
+                            </td>
+                            <td class="py-2">
+                                <div class="fw-semibold">CS101</div>
+                                <div class="small text-muted">Introduction to Programming</div>
+                            </td>
+                            <td class="py-2 text-center">
+                                <span>1.25</span>
+                            </td>
+                        </tr>
+                        <tr class="details-row">
+                            <td colspan="3" class="p-0">
+                                <div class="details-content">
+                                    <div class="detail-item">
+                                        <span class="detail-label">Unit Type:</span>
+                                        <span class="detail-value">Lecture</span>
+                                    </div>
+                                    <div class="detail-item">
+                                        <span class="detail-label">Credit Unit:</span>
+                                        <span class="detail-value">3</span>
+                                    </div>
+                                    <div class="detail-item">
+                                        <span class="detail-label">Faculty:</span>
+                                        <span class="detail-value">Dr. John Smith</span>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
 
-        <!-- Status Filter -->
-        <div class="row">
-            <div class="col-md-2">
-                <x-input.select-field
-                    id="filter-status"
-                    label="Filter by Status:"
-                    icon="fa-solid fa-tags"
-                    :options="[
-                        ['value' => 'All', 'text' => 'All Status'],
-                        ['value' => 'Complete', 'text' => 'Complete'],
-                        ['value' => 'Incomplete', 'text' => 'Incomplete'],
-                    ]"
-                    placeholder="Select Status"
-                />
+                    </tbody>
+                </table>
+                
+            </div>
+
+            <!-- Card Footer -->
+            <div class="card-footer bg-secondary py-2 py-md-3">
+                <div class="row h-100 g-2">
+                    <div class="col-12 col-md-6 d-flex align-items-center justify-content-start">
+                            <small class="text-white">General Weighted Average (GWA):</small>
+                            <span class="text-white fw-semibold px-2 border-bottom border-1 border-white">
+                                <small>3.67</small>
+                            </span>
+                    </div>
+                    <div class="col-12 col-md-6 d-flex align-items-center justify-content-start justify-content-md-end">
+                            <small class="text-white">Total Credit Units:</small>
+                            <span class="text-white fw-semibold px-2 border-bottom border-1 border-white">
+                                <small>10.00</small>
+                            </span>
+                    </div>
+                </div>
             </div>
         </div>
 
-        <!-- Year Level Tabs -->
-        <ul class="nav nav-tabs border-bottom mt-2" id="checklistYearTabs" role="tablist">
-            <li class="nav-item" role="presentation">
-                <button class="nav-link active" id="year1-tab" data-bs-toggle="tab" data-bs-target="#year1" type="button" role="tab">
-                    <i class="fa-solid fa-calendar me-2"></i>1st Yr.
-                </button>
-            </li>
-            <li class="nav-item" role="presentation">
-                <button class="nav-link" id="year2-tab" data-bs-toggle="tab" data-bs-target="#year2" type="button" role="tab">
-                    <i class="fa-solid fa-calendar me-2"></i>2nd Yr.
-                </button>
-            </li>
-            <li class="nav-item" role="presentation">
-                <button class="nav-link" id="year3-tab" data-bs-toggle="tab" data-bs-target="#year3" type="button" role="tab">
-                    <i class="fa-solid fa-calendar me-2"></i>3rd Yr.
-                </button>
-            </li>
-            <li class="nav-item" role="presentation">
-                <button class="nav-link" id="year4-tab" data-bs-toggle="tab" data-bs-target="#year4" type="button" role="tab">
-                    <i class="fa-solid fa-calendar me-2"></i>4th Yr.
-                </button>
-            </li>
-            <li class="nav-item" role="presentation">
-                <button class="nav-link" id="minor-tab" data-bs-toggle="tab" data-bs-target="#minor" type="button" role="tab">
-                    <i class="fa-solid fa-bookmark me-2"></i>Minor Subjects
-                </button>
-            </li>
-        </ul>
-        
-        <!-- DataTable -->
-        <x-table.table id="academicProgressTable">
-            {{-- Columns --}}
-            <th>Id</th>
-            <th>Code</th>
-            <th>Subject Name</th>
-            <th>LEC</th>
-            <th>LAB</th>
-            <th>Status</th>
-            <th>Category</th>
-            <th>Year Level</th>
-            <th>Semester</th>
-            <th>Lec Units</th>
-            <th>Lab Units</th>
-            <th>Total Units</th>
-            <th>Prerequisites</th>
-        </x-table.table>
-        
-
     </div>
 </div>
-@endsection
 
-@section('scripts')
-<script src="{{ asset('js/shared/generic-datatable.js') }}"></script>
 <script>
-$(document).ready(function() {
-
-    $('#filter-status').select2({
-        minimumResultsForSearch: -1,
-        placeholder: 'All Status'
-    });
-
-    let selectedYearLevel = '1';
-
-    // Initialize DataTable
-    const academicProgressTable = new GenericDataTable({
-        order: [[6, "asc"], [7, "asc"], [8, "asc"]],
-        tableId: 'academicProgressTable',
-        ajaxUrl: "{{ route('student.academic_progress.data') }}",
-        ajaxData: function(d) {
-            d.status = $('#filter-status').val();
-            d.year_level = selectedYearLevel;
-        },
-        columns: [
-            { data: "id", visible: false },
-            { data: "subject.code" },
-            { data: "subject.name" },
-            { 
-                data: "lecture_completed",
-                responsivePriority: 1,
-                render: (data, type, row) => {
-                    if (!row.has_lec)
-                    {
-                        return '<span class="text-muted">-</span>';
-                    }
-
-                    return row.lecture_completed ? '<i class="fa-solid fa-check-circle text-success"></i>' : '<i class="fa-solid fa-times-circle text-danger"></i>';
-                }
-            },
-            { 
-                data: "laboratory_completed",
-                responsivePriority: 1,
-                render: (data, type, row) => {
-                    if (!row.has_lab)
-                    {
-                        return '<span class="text-muted">-</span>';
-                    }
-
-                    return row.laboratory_completed ? '<i class="fa-solid fa-check-circle text-success"></i>' : '<i class="fa-solid fa-times-circle text-danger"></i>';
-                }
-            },
-            {
-                data: "is_completed",
-                render: (data, type, row) => {
-                    const status = row.is_completed ? 'Completed' : 'Incomplete';
-                    const badge = row.is_completed ? 'success' : 'warning';
-                    return `<span class="badge bg-label-${badge}">${status}</span>`;
-                }
-            },
-            { data: "subject.subject_category", className: "none" },
-            { 
-                data: "subject.year_level",
-                defaultContent: '-'
-            },
-            { 
-                data: "subject.semester",
-                defaultContent: '-'
-            },
-            { data: "subject.lec_units", className: "none" },
-            { data: "subject.lab_units", className: "none" },
-            { data: "total_units", className: "none" },
-            { data: "subject.prerequisites", className: "none" },
-        ],
-        statsCards: {
-            callback: (table) => {
-                $.get("{{ route('student.academic_progress.stats') }}", (data) => {
-                    $('#unitsEarnedDisplay').text(data.units_earned);
-                    $('#unitsRequiredDisplay').text(data.total_units);
-                    $('#unitsProgressBar').css('width', `${data.units_progress}%`).attr('aria-valuenow', data.units_progress);
-                    $('#unitsPercentage').text(`${data.units_progress}%`);
-
-                    $('#totalSubjects').text(data.total_subjects);
-                    $('#completedSubjects').text(data.subjects_completed);
-                }).fail((xhr) => {
-                    console.error('Error fetching stats:', xhr);
-                    if (xhr.status === 500) {
-                        const msg = xhr.responseJSON?.message || 'Internal server error';
-                        toastr.error(msg, 'Server Error');
-                        return;
-                    }
-                    toastr.error('Error fetching statistics. Please refresh.');
-                });
-            }
-        }
-    }).init();
-
-    $('#filter-status').on('change', function() {
-        academicProgressTable.reload();
-    });
-
-    // Year level tab click handler
-    $('#checklistYearTabs button[data-bs-toggle="tab"]').on('shown.bs.tab', function (e) {
-        const targetTab = $(e.target).attr('id');
-        
-        // Update selected year level based on tab
-        switch(targetTab) {
-            case 'year1-tab':
-                selectedYearLevel = '1';
-                break;
-            case 'year2-tab':
-                selectedYearLevel = '2';
-                break;
-            case 'year3-tab':
-                selectedYearLevel = '3';
-                break;
-            case 'year4-tab':
-                selectedYearLevel = '4';
-                break;
-            case 'minor-tab':
-                selectedYearLevel = 'minor';
-                break;
-            default:
-                selectedYearLevel = 'all';
-        }
-        
-        // Reload the table with the new year level filter
-        academicProgressTable.reload();
-    });
-
-});
+function toggleDetails(row) {
+    // Get the next row (details row)
+    const detailsRow = row.nextElementSibling;
+    const icon = row.querySelector('.toggle-icon');
+    
+    // Toggle the details row
+    detailsRow.classList.toggle('show');
+    
+    // Rotate the icon
+    icon.classList.toggle('rotated');
+}
 </script>
-
 @endsection

@@ -14,8 +14,7 @@ return new class extends Migration
         Schema::create('grade_import_rows', function (Blueprint $table) {
             $table->id();
             $table->foreignId('grade_import_id')->constrained('grade_imports')->cascadeOnDelete();
-            $table->string('raw_student_identifier');
-            $table->string('student_id')->nullable();
+            $table->string('student_number')->nullable();
             $table->string('subject_code')->nullable();
             $table->string('subject_name')->nullable();
             $table->string('unit_type')->nullable();

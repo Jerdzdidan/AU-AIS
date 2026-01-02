@@ -15,6 +15,7 @@ use App\Http\Controllers\Auth\AdminAuthController;
 use App\Http\Controllers\Auth\GlobalLogoutController;
 use App\Http\Controllers\Auth\StudentAuthController;
 use App\Http\Controllers\StudentPortal\AcademicProgress;
+use App\Http\Controllers\StudentPortal\GradeController;
 use App\Http\Middleware\PreventSelfAction;
 use Illuminate\Support\Facades\Route;
 
@@ -140,7 +141,12 @@ Route::prefix('admin')->middleware('auth')->group(function () {
             Route::get('data/{gradeImportId}', [GradeImportRowController::class, 'getData'])->name('grades.import.rows.data');
 
             Route::post('store/{gradeImportId}', [GradeImportRowController::class, 'store'])->name('grades.import.rows.store');
+            Route::get('edit/{gradeImportRowId}', [GradeImportRowController::class, 'edit'])->name('grades.import.rows.edit');
+            Route::put('update/{gradeImportRowId}', [GradeImportRowController::class, 'update'])->name('grades.import.rows.update');
             Route::delete('destroy/{gradeImportRowId}', [GradeImportRowController::class, 'destroy'])->name('grades.import.rows.destroy');
+
+            Route::post('commit-row/{gradeImportRowId}', [GradeImportRowController::class, 'commitRow'])->name('grades.import.rows.commitRow');
+            Route::post('commit-all/{gradeImportId}', [GradeImportRowController::class, 'commitAll'])->name('grades.import.rows.commitAll');
         });
               
         Route::get('commit/{gradeImport}', [GradeImportController::class, 'commit'])->name('grades.import.commit');
@@ -156,6 +162,9 @@ Route::prefix('student')->middleware('auth')->group(function () {
     Route::get('academic-progress', [AcademicProgress::class, 'index'])->name('student.academic_progress.index');
     Route::get('academic-progress/data', [AcademicProgress::class, 'getData'])->name('student.academic_progress.data');
     Route::get('academic-progress/stats', [AcademicProgress::class, 'getStats'])->name('student.academic_progress.stats');
+
+    // GRADE VIEWING
+    Route::get('grades', [GradeController::class, 'index'])->name('student.grades.index');
 
     // STUDENT MANUAL
     Route::view('manual', 'app.student_portal.manual.index')->name('student.manual.index');

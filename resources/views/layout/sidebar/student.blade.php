@@ -8,7 +8,7 @@
 
 <x-sidebar.item route='student.academic_progress.index' name='Academic Progress' icon='fa-solid fa-user-graduate me-2'/>
 
-<x-sidebar.item route='#' name='Grades' icon='fa-solid fa-star me-2'/>
+<x-sidebar.item route='student.grades.index' name='Grades' icon='fa-solid fa-star me-2'/>
 
 <li class="menu-header small text-uppercase">
     <span class="menu-header-text">Student Information</span>

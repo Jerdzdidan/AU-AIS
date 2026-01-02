@@ -9,8 +9,7 @@ class GradeImportRow extends Model
     //
     protected $fillable = [
         'grade_import_id',
-        'raw_student_identifier',
-        'student_id',
+        'student_number',
         'subject_code',
         'subject_name',
         'unit_type',

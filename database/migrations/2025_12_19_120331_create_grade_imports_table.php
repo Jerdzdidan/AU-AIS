@@ -19,7 +19,7 @@ return new class extends Migration
             $table->integer('total_rows')->default(0);
             $table->integer('valid_rows')->default(0);
             $table->integer('invalid_rows')->default(0);
-            $table->enum('status', ['pending', 'processing', 'completed', 'failed'])->default('pending');
+            $table->string('status')->default('pending');
             $table->text('notes')->nullable();
             $table->timestamp('processed_at')->nullable();
             $table->timestamps();

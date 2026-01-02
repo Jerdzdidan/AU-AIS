@@ -77,7 +77,14 @@ $(document).ready(function() {
             { data: "valid_rows", className: "none" },
             { data: "invalid_rows", className: "none" },
             { data: "total_rows" },
-            { data: "status" },
+            {
+                data: "status",
+                render: (data, type, row) => {
+                    const badge = (data === 'committed') ? 'success' : 'warning';
+
+                    return `<span class="badge bg-label-${badge}">${data.toUpperCase()}</span>`;
+                }
+            },
             { data: "processed_at", className: "none" },
             { 
                 data: null,

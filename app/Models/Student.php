@@ -30,6 +30,11 @@ class Student extends Model
         return $this->hasMany(StudentSubjectProgress::class);
     }
 
+    public function grades()
+    {
+        return $this->hasMany(Grade::class);
+    }
+
     public function getProgressPercentage()
     {
         $allSubjects = $this->program->curriculum->subjects ?? collect();
