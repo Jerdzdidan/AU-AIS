@@ -3,6 +3,7 @@
 namespace Database\Seeders;
 
 use App\Events\StudentCreationEvent;
+use App\Models\AcademicPeriod;
 use App\Models\Curriculum;
 use App\Models\Department;
 use App\Models\Program;
@@ -87,6 +88,15 @@ class DatabaseSeeder extends Seeder
             'name' => 'testStudent',
             'password' => '123456'
         ]));
+
+        $academicPeriod = AcademicPeriod::factory()->create([
+            'name' => 'A.Y. 2025-2026 - 1st Semester',
+            'school_year' => '2025-2026',
+            'year_start' => '2025',
+            'year_end' => '2026',
+            'semester' => '1st',
+            'is_current' => true,
+        ]);
 
     }
 }

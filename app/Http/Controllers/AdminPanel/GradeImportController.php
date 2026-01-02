@@ -8,6 +8,7 @@ use App\Models\GradeImport;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Crypt;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\ValidationException;
 use Maatwebsite\Excel\Facades\Excel;
@@ -39,6 +40,9 @@ class GradeImportController extends Controller
                 return '<span class="badge ' . ($badges[$row->status] ?? 'bg-secondary') . '">' 
                        . ucfirst($row->status) 
                        . '</span>';
+            })
+            ->addColumn('academic_period_name', function ($row) {
+                return $row->academic_period ? $row->academic_period->name : 'N/A';
             })
             ->rawColumns(['status'])
             ->make(true);
@@ -93,14 +97,30 @@ class GradeImportController extends Controller
             // FIXED VALIDATION - more flexible
             $validated = $request->validate([
                 'file' => 'required|file|mimes:csv,xlsx,xls,txt|mimetypes:text/plain,text/csv,text/x-csv,application/csv,application/x-csv,text/comma-separated-values,text/x-comma-separated-values,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet|max:10240',
+                'academic_period_id' => 'required|exists:academic_periods,id',
             ]);
 
             $file = $request->file('file');
+        
+            // Check if filename already exists
+            $existingImport = GradeImport::where('filename', pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME))
+                ->first();
+                
+            if ($existingImport) {
+                return response()->json([
+                    'errors' => [
+                        'filename' => ['A file with this name has already been imported.']
+                    ],
+                ], 422);
+            }
+
+            DB::beginTransaction();
 
             // Create import record
             $import = GradeImport::create([
                 'user_id' => auth()->id(),
-                'filename' => $file->getClientOriginalName(),
+                'filename' => pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME),
+                'academic_period_id' => $validated['academic_period_id'],
                 'status' => 'pending',
             ]);
 
@@ -109,14 +129,16 @@ class GradeImportController extends Controller
             $import->refresh();
             
             $rowsCount = $import->rows()->count();
-            $validCount = $import->rows()->where('status', 'valid')->count();
-            $invalidCount = $import->rows()->where('status', 'invalid')->count();
+            $validCount = $import->rows()->where('validity', 'valid')->count();
+            $invalidCount = $import->rows()->where('validity', 'invalid')->count();
             
             $import->update([
                 'total_rows' => $rowsCount,
                 'valid_rows' => $validCount,
                 'invalid_rows' => $invalidCount,
             ]);
+
+            DB::commit();
 
             return response()->json([
                 'success' => true,
@@ -132,13 +154,8 @@ class GradeImportController extends Controller
             ], 422);
             
         } catch (Exception $e) {
-            if (isset($import)) {
-                $import->update([
-                    'status' => 'failed',
-                    'notes' => $e->getMessage()
-                ]);
-            }
-
+            DB::rollBack();
+            
             return response()->json([
                 'success' => false,
                 'message' => 'Upload failed: ' . $e->getMessage()
@@ -152,7 +169,7 @@ class GradeImportController extends Controller
 
         $rows = $grade_import->rows;
 
-        $filename = $grade_import->filename;
+        $filename = $grade_import->filename . '.csv';
 
         $headers = [
             'Content-Type' => 'text/csv',
@@ -195,13 +212,36 @@ class GradeImportController extends Controller
     
         return response()->stream($callback, 200, $headers);
     }
-        
-    public function preview() {
 
+    public function edit($gradeImportId) 
+    {
+        $decrypted = Crypt::decryptString($gradeImportId);
+
+        $grade_import = GradeImport::findOrFail($decrypted);
+
+        return response()->json([
+            'id' => Crypt::encryptString($grade_import->id),
+            'filename' => $grade_import->filename,
+            'academic_period_id' => $grade_import->academic_period_id,
+        ]);
     }
 
-    public function commit() {
-        
+    public function update(Request $request, $gradeImportId)
+    {
+        $decrypted = Crypt::decryptString($gradeImportId);
+        $grade_import = GradeImport::findOrFail($decrypted);
+
+        $validated = $request->validate([
+            'filename' => 'required|string|max:255|unique:grade_imports,filename,' . $decrypted,
+            'academic_period_update_id' => 'required|exists:academic_periods,id',
+        ]);
+
+        $grade_import->update([
+            'filename' => $validated['filename'],
+            'academic_period_id' => $validated['academic_period_update_id'],
+        ]);
+
+        return response()->json(['success' => true]);
     }
 
     public function destroy($gradeImport) {

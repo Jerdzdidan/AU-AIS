@@ -33,11 +33,11 @@
 </div> --}}
 
 <x-modals.creation-and-update-modal 
-    id="add-or-update-modal"
-    title="New Program"
+    id="grade-import-create-modal"
+    title="New Grade Import"
     action=""
     submitButtonName="Submit"
-    formId="grade-import-form"
+    formId="grade-import-create-form"
     enctype="multipart/form-data"
 >
 
@@ -48,6 +48,14 @@
         name="file"
         accept=".csv,.xlsx,.xls"
         helptext="Upload CSV or Excel files for grade import"
+    />
+</div>
+
+{{-- ACADEMIC PERIOD --}}
+<div class="col-12 form-control-validation">
+    <x-input.select-field 
+        id="academic_period_id"
+        label="Academic Period"
     />
 </div>
 

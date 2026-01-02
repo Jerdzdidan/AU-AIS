@@ -6,6 +6,7 @@ use App\Events\StudentAcademicProgressCreate;
 use App\Events\StudentCreationEvent;
 use App\Http\Controllers\Controller;
 use App\Models\Student;
+use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\DB;
@@ -77,7 +78,7 @@ class StudentUserController extends Controller
             event(new StudentAcademicProgressCreate($student));
             
             DB::commit();
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             DB::rollBack();
             return response()->json([
                 'success' => false,

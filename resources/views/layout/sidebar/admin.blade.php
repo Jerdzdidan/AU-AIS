@@ -8,9 +8,7 @@
     <span class="menu-header-text">Core</span>
 </li>
 
-<x-sidebar.item route='#' name='Academic years' icon='fa-solid fa-school-flag me-2'/>
-
-<x-sidebar.item route='#' name='Semester' icon='fa-solid fa-scroll me-2'/>
+<x-sidebar.item route='academic_periods.index' name='Academic Period' icon='fa-solid fa-school-flag me-2'/>
 
 <li class="menu-header small text-uppercase">
     <span class="menu-header-text">Academic Information</span>

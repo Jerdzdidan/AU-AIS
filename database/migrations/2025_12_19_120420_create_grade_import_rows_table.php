@@ -24,7 +24,8 @@ return new class extends Migration
             $table->string('faculty')->nullable();
             $table->decimal('credit_unit', 5, 2)->nullable();
             $table->decimal('grade', 5, 2)->nullable();
-            $table->string('status')->default('pending');
+            $table->string('validity')->default('invalid');
+            $table->string('status')->default('staged');
             $table->json('errors')->nullable();
             $table->timestamps();
         });

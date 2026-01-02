@@ -11,6 +11,7 @@ class GradeImport extends Model
     protected $fillable = [
         'user_id',
         'filename',
+        'academic_period_id',
         'total_rows',
         'valid_rows',
         'invalid_rows',
@@ -19,13 +20,13 @@ class GradeImport extends Model
         'processed_at',
     ];
 
-    public function rows(){
-        return $this->hasMany(GradeImportRow::class);
+    public function academic_period()
+    {
+        return $this->belongsTo(AcademicPeriod::class);
     }
 
-    public function user()
-    {
-        return $this->belongsTo(User::class);
+    public function rows(){
+        return $this->hasMany(GradeImportRow::class);
     }
 
     public function grades(){

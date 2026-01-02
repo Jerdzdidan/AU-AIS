@@ -19,6 +19,7 @@ class GradeImportRow extends Model
         'faculty',
         'credit_unit',
         'grade',
+        'validity',
         'status',
         'errors',
     ];

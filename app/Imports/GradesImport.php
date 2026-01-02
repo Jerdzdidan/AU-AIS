@@ -2,6 +2,7 @@
 
 namespace App\Imports;
 
+use App\Models\GradeImport;
 use App\Models\GradeImportRow;
 use App\Models\Student;
 use App\Models\Subject;
@@ -62,6 +63,11 @@ class GradesImport implements ToCollection, WithHeadingRow
             //     $errors[] = 'Semester is required';
             // }
 
+            $gradeImport = GradeImport::where('id', $this->gradeImportId)->first();
+
+            $school_year = $gradeImport?->academic_period?->school_year ?? null;
+            $semester = $gradeImport?->academic_period?->semester ?? null;
+
             // Create import row
             GradeImportRow::create([
                 'grade_import_id' => $this->gradeImportId,
@@ -71,12 +77,13 @@ class GradesImport implements ToCollection, WithHeadingRow
                 'subject_code' => $row['subject_code'] ?? null,
                 'subject_name' => $row['subject_name'] ?? null,
                 'unit_type' => $row['unit_type'] ?? null,
-                'school_year' => $row['school_year'] ?? null,
-                'semester' => $row['semester'] ?? null,
+                'school_year' => $school_year,
+                'semester' => $semester,
                 'faculty' => $row['faculty'] ?? null,
                 'credit_unit' => $row['credit_unit'] ?? null,
                 'grade' => $row['grade'] ?? null,
-                'status' => empty($errors) ? 'valid' : 'invalid',
+                'validity' =>  empty($errors) ? 'valid' : 'invalid',
+                'status' => 'staged',
                 'errors' => !empty($errors) ? json_encode($errors) : null,
             ]);
         }

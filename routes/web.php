@@ -1,9 +1,11 @@
 <?php
 
+use App\Http\Controllers\AdminPanel\AcademicPeriodController;
 use App\Http\Controllers\AdminPanel\AdminUserController;
 use App\Http\Controllers\AdminPanel\CurriculumController;
 use App\Http\Controllers\AdminPanel\DepartmentController;
 use App\Http\Controllers\AdminPanel\GradeImportController;
+use App\Http\Controllers\AdminPanel\GradeImportRowController;
 use App\Http\Controllers\AdminPanel\OfficerUserController;
 use App\Http\Controllers\AdminPanel\ProgramController;
 use App\Http\Controllers\AdminPanel\StudentUserController;
@@ -65,6 +67,17 @@ Route::prefix('admin')->middleware('auth')->group(function () {
         Route::post('toggle-status/{id}', [UserController::class, 'toggle'])->middleware(PreventSelfAction::class)->name('users.toggle');
     });
 
+    // ACADEMIC PERIOD MANAGEMENT
+    Route::resource('academic_periods', AcademicPeriodController::class)->except(['show']);
+    Route::prefix('academic_periods')->group(function () {
+        Route::get('data', [AcademicPeriodController::class, 'getData'])->name('academic_periods.data');
+        Route::get('stats', [AcademicPeriodController::class, 'getStats'])->name('academic_periods.stats');
+        Route::post('toggle/{id}', [AcademicPeriodController::class, 'toggle'])->name('academic_periods.toggle');
+        
+        // FOR SELECT2
+        Route::get('select', [AcademicPeriodController::class, 'getAcademicPeriodsForSelect'])->name('academic_periods.select');
+    });
+
     // DEPARTMENTS MANAGEMENT
     Route::resource('departments', DepartmentController::class)->except(['show']);
     Route::prefix('departments')->group(function () {
@@ -111,14 +124,27 @@ Route::prefix('admin')->middleware('auth')->group(function () {
 
     // GRADE IMPORT FEATURE
     Route::prefix('grades/import')->group(function() {
+        // GRADE IMPORTS
         Route::get('/', [GradeImportController::class, 'index'])->name('grades.import.index');
         Route::get('data', [GradeImportController::class, 'getData'])->name('grades.import.data');
         Route::get('stats', [GradeImportController::class, 'getStats'])->name('grades.import.stats');
         Route::post('store', [GradeImportController::class, 'store'])->name('grades.import.store');
+        Route::get('edit/{gradeImportId}', [GradeImportController::class, 'edit'])->name('grades.import.edit');
+        Route::put('update/{gradeImportId}', [GradeImportController::class, 'update'])->name('grades.import.update');
         Route::get('download/{id}', [GradeImportController::class, 'download'])->name('grades.import.download');
-        Route::get('preview/{gradeImport}', [GradeImportController::class, 'preview'])->name('grades.import.preview');
-        Route::get('commit/{gradeImport}', [GradeImportController::class, 'commit'])->name('grades.import.commit');
         Route::delete('destroy/{gradeImport}', [GradeImportController::class, 'destroy'])->name('grades.import.destroy');
+
+        // GRADE IMPORT ROWS
+        Route::prefix('rows')->group(function() {
+            Route::get('/{gradeImportId}', [GradeImportRowController::class, 'index'])->name('grades.import.rows.index');
+            Route::get('data/{gradeImportId}', [GradeImportRowController::class, 'getData'])->name('grades.import.rows.data');
+
+            Route::post('store/{gradeImportId}', [GradeImportRowController::class, 'store'])->name('grades.import.rows.store');
+            Route::delete('destroy/{gradeImportRowId}', [GradeImportRowController::class, 'destroy'])->name('grades.import.rows.destroy');
+        });
+              
+        Route::get('commit/{gradeImport}', [GradeImportController::class, 'commit'])->name('grades.import.commit');
+        
     });
 
 });

@@ -75,7 +75,6 @@ class SubjectController extends Controller
         $decrypted = Crypt::decryptString($curriculum_id);
 
         $validated = $request->validate([
-            'code' => 'required|string|max:50',
             'code' => [
                 'required',
                 'string',

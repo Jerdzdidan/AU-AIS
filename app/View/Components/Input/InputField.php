@@ -14,7 +14,10 @@ class InputField extends Component
 
     public $id, $label, $icon, $type, $name, $placeholder, $help;
     
-    public function __construct($id, $label, $icon, $type, $name, $placeholder, $help)
+    public function __construct($id, $label, $name, string $type = 'text',
+    string $placeholder = '',
+    string $help = '',
+    string $icon = '')
     {
         //
         $this->id = $id;

@@ -6,7 +6,7 @@ use Closure;
 use Illuminate\Contracts\View\View;
 use Illuminate\View\Component;
 
-class UserCreationAndUpdateModal extends Component
+class CreationAndUpdateModal extends Component
 {
     /**
      * Create a new component instance.
@@ -14,7 +14,7 @@ class UserCreationAndUpdateModal extends Component
 
     public $id, $title, $action, $submitButtonName, $formId, $formClass, $enctype;
 
-    public function __construct($id, $title, $action, $submitButtonName, $formId, $formClass, $enctype='')
+    public function __construct($id, $title, $action, $submitButtonName, $formId = null, $formClass = '', $enctype='')
     {
         //
         $this->id = $id;
