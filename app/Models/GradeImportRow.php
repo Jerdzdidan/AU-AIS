@@ -32,4 +32,8 @@ class GradeImportRow extends Model
     public function gradeImport(){
         return $this->belongsTo(GradeImport::class);
     }
+    
+    public function grade(){
+        return $this->hasOne(Grade::class);
+    }
 }

@@ -18,6 +18,7 @@ class Grade extends Model
         'credit_unit',
         'grade',
         'grade_import_id',
+        'grade_import_row_id',
     ];
 
     public function student(){
@@ -26,5 +27,9 @@ class Grade extends Model
 
     public function gradeImport(){
         return $this->belongsTo(GradeImport::class);
+    }
+
+    public function gradeImportRow(){
+        return $this->belongsTo(GradeImportRow::class);
     }
 }

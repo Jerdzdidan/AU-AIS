@@ -72,33 +72,35 @@ Academic Progress
         </div>
 
         <!-- Year Level Tabs -->
-        <ul class="nav nav-tabs border-bottom mt-2" id="checklistYearTabs" role="tablist">
-            <li class="nav-item" role="presentation">
-                <button class="nav-link active" id="year1-tab" data-bs-toggle="tab" data-bs-target="#year1" type="button" role="tab">
-                    <i class="fa-solid fa-calendar me-2"></i>1st Yr.
-                </button>
-            </li>
-            <li class="nav-item" role="presentation">
-                <button class="nav-link" id="year2-tab" data-bs-toggle="tab" data-bs-target="#year2" type="button" role="tab">
-                    <i class="fa-solid fa-calendar me-2"></i>2nd Yr.
-                </button>
-            </li>
-            <li class="nav-item" role="presentation">
-                <button class="nav-link" id="year3-tab" data-bs-toggle="tab" data-bs-target="#year3" type="button" role="tab">
-                    <i class="fa-solid fa-calendar me-2"></i>3rd Yr.
-                </button>
-            </li>
-            <li class="nav-item" role="presentation">
-                <button class="nav-link" id="year4-tab" data-bs-toggle="tab" data-bs-target="#year4" type="button" role="tab">
-                    <i class="fa-solid fa-calendar me-2"></i>4th Yr.
-                </button>
-            </li>
-            <li class="nav-item" role="presentation">
-                <button class="nav-link" id="minor-tab" data-bs-toggle="tab" data-bs-target="#minor" type="button" role="tab">
-                    <i class="fa-solid fa-bookmark me-2"></i>Minor Subjects
-                </button>
-            </li>
-        </ul>
+        <div class="tab-scroll-wrapper" style="overflow-x: auto; -webkit-overflow-scrolling: touch;">
+            <ul class="nav nav-tabs border-bottom mt-2" id="checklistYearTabs" role="tablist" style="flex-wrap: nowrap; min-width: min-content;">
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link active" id="year1-tab" data-bs-toggle="tab" data-bs-target="#year1" type="button" role="tab">
+                        <i class="fa-solid fa-calendar me-2"></i>1st Yr.
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="year2-tab" data-bs-toggle="tab" data-bs-target="#year2" type="button" role="tab">
+                        <i class="fa-solid fa-calendar me-2"></i>2nd Yr.
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="year3-tab" data-bs-toggle="tab" data-bs-target="#year3" type="button" role="tab">
+                        <i class="fa-solid fa-calendar me-2"></i>3rd Yr.
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="year4-tab" data-bs-toggle="tab" data-bs-target="#year4" type="button" role="tab">
+                        <i class="fa-solid fa-calendar me-2"></i>4th Yr.
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="minor-tab" data-bs-toggle="tab" data-bs-target="#minor" type="button" role="tab">
+                        <i class="fa-solid fa-bookmark me-2"></i>Minor Subjects
+                    </button>
+                </li>
+            </ul>
+        </div>
         
         <!-- DataTable -->
         <x-table.table id="academicProgressTable">

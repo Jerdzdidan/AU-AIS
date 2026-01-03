@@ -6,19 +6,14 @@ use Closure;
 use Illuminate\Contracts\View\View;
 use Illuminate\View\Component;
 
-class GradeCard extends Component
+class GradeMobileTable extends Component
 {
     /**
      * Create a new component instance.
      */
-
-    public $academicPeriod, $gwa, $totalUnits;
-
-    public function __construct($academicPeriod, $gwa, $totalUnits)
+    public function __construct()
     {
-        $this->academicPeriod = $academicPeriod;
-        $this->gwa = $gwa;
-        $this->totalUnits = $totalUnits;
+        //
     }
 
     /**
@@ -26,6 +21,6 @@ class GradeCard extends Component
      */
     public function render(): View|Closure|string
     {
-        return view('components.grade.grade-card');
+        return view('components.grade.grade-mobile-table');
     }
 }

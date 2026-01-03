@@ -23,7 +23,8 @@ return new class extends Migration
             $table->string('faculty')->nullable();
             $table->decimal('credit_unit', 5, 2);
             $table->decimal('grade', 5, 2);
-            $table->foreignId('grade_import_id')->nullable()->constrained('grade_imports')->nullOnDelete();
+            $table->foreignId('grade_import_row_id')->nullable()->constrained('grade_import_rows')->cascadeOnDelete();
+            $table->foreignId('grade_import_id')->nullable()->constrained('grade_imports')->cascadeOnDelete();
             $table->timestamps();
 
             // Prevents duplicate grades for same student/subject/period

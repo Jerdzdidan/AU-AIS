@@ -192,6 +192,7 @@ class GradeImportRowController extends Controller
                     'credit_unit' => $row->credit_unit,
                     'grade' => $row->grade,
                     'grade_import_id' => $row->grade_import_id,
+                    'grade_import_row_id' => $row->id,
                 ]);
 
                 $row->status = 'committed';
