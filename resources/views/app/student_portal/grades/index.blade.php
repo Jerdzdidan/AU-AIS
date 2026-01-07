@@ -23,6 +23,12 @@ Grades
         />
 
         {{-- Grade Cards --}}
+        @if(empty($gradeCards))
+            <div class="text-center alert alert-primary mb-0" style="margin-bottom: 50px;">
+                <h2 style="font-size: 48px; margin-bottom: 20px;">Uh oh!</h2>
+                <p style="font-size: 24px;">No grade records as of yet!</p>
+            </div>
+        @endif
         @foreach($gradeCards as $card)
             <x-grade.grade-card 
                 :academicPeriod="$card['academicPeriod']" 
