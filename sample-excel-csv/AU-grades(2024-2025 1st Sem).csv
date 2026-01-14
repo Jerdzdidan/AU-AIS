@@ -1,0 +1,13 @@
+student_number,subject_code,subject_name,unit_type,faculty,credit_unit,grade
+23-12345,CS 210,Discrete Structures 1,lec,"Delos Reyes, Amelita M.",3,1.25
+23-12345,CS 211,Object-Oriented Programming,lab,"Torres, Jay R",1,1.25
+23-12345,CS 211,Object-Oriented Programming,lec,"Torres, Jay R",2,1.25
+23-12345,GCAS 07,"Science, Technology and Society",lec,"Magistrado, Irene",3,1
+23-12345,GCAS 17,PE-3 Dance/Swimming,lec,"Roxas, Jerome D.",2,1.5
+23-12345,ITC 123,Applications Dev't & Emerging Tech.,lab,"Santiago, Archie G.",1,1
+23-12345,ITC 123,Applications Dev't & Emerging Tech.,lec,"Santiago, Archie G.",2,1
+23-12345,ITC 124,Fundamentals of Database Systems,lab,"Torres, Jay R",1,1.25
+23-12345,ITC 124,Fundamentals of Database Systems,lec,"Torres, Jay R",2,1.25
+23-12345,ITC 125,Data Structure & Algorithms,lab,"Carpio, Jennifer",1,1.25
+23-12345,ITC 125,Data Structure & Algorithms,lec,"Carpio, Jennifer",2,1.25
+23-12345,STAT 01C,Probability Statistics,lec,"Abalos, Zenaida",3,1
