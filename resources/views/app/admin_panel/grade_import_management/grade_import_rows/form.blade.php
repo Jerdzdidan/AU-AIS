@@ -6,7 +6,6 @@
     submitButtonName="Submit"
 >
 
-
 {{-- student_id and subject_code --}}
 <div class="col-sm-12 form-control-validation">
     <x-input.input-field

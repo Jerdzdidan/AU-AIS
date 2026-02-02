@@ -147,6 +147,8 @@ Route::prefix('admin')->middleware('auth')->group(function () {
 
             Route::post('commit-row/{gradeImportRowId}', [GradeImportRowController::class, 'commitRow'])->name('grades.import.rows.commitRow');
             Route::post('commit-all/{gradeImportId}', [GradeImportRowController::class, 'commitAll'])->name('grades.import.rows.commitAll');
+
+            Route::get('errors/{gradeImportRowId}', [GradeImportRowController::class, 'fetchErrors'])->name('grades.import.rows.errors');
         });
               
         Route::get('commit/{gradeImport}', [GradeImportController::class, 'commit'])->name('grades.import.commit');

@@ -78,6 +78,7 @@
         </div>
 
         @include('app.admin_panel.grade_import_management.grade_import_rows.form')
+        @include('app.admin_panel.grade_import_management.grade_import_rows.modal')
     </div>
 </div>
 @endsection
@@ -93,7 +94,7 @@ $(document).ready(function() {
 
     // Initialize DataTable
     const gradeImportRowsTable = new GenericDataTable({
-        order: [[0, 'desc']],
+        order: [[2, 'desc']],
         tableId: 'gradeImportRowsTable',
         ajaxUrl: "{{ route('grades.import.rows.data', $gradeImportId) }}",
         columns: [
@@ -129,7 +130,7 @@ $(document).ready(function() {
                 responsivePriority: 1,
                 render: (data, type, row) => {
                     return `
-                        ${row.status === 'invalid' ? `<button class="btn btn-sm btn-outline-primary" title="See errors" onclick="gradeImportRowsCRUD.toggleStatus('${row.id}', '${row.name}')">
+                        ${row.validity === 'invalid' ? `<button class="btn btn-sm btn-outline-primary" title="See errors" onclick="openErrorModal('${row.id}')">
                             <i class="fa-solid fa-circle-question"></i>
                         </button>` : ''}
                         
@@ -186,7 +187,7 @@ $(document).ready(function() {
 
     gradeImportRowsCRUD.onEditSuccess = (data) => {
         $('#add-or-update-form input[name="id"]').val(data.id);
-        $('#add-or-update-form input[name="student_id"]').val(data.student_id);
+        $('#add-or-update-form input[name="student_number"]').val(data.student_number);
         $('#add-or-update-form input[name="subject_code"]').val(data.subject_code);
         $('#add-or-update-form input[name="subject_name"]').val(data.subject_name);
         $('#add-or-update-form input[name="grade"]').val(data.grade);
@@ -216,6 +217,74 @@ $(document).ready(function() {
         }
     });
 });
+
+function openErrorModal(rowId) {
+    $('#modal').modal('show');
+
+    populateErrorMessages(rowId);
+}
+
+function populateErrorMessages(rowId) {
+    $.get("{{ route('grades.import.rows.errors', ':id') }}".replace(':id', rowId), function (data) {
+        const container = $('#error-messages-container');
+        container.empty();
+
+        if (!data.messages) {
+            container.append(
+                '<div class="alert alert-info">No errors found.</div>'
+            );
+            return;
+        }
+
+        let messages = [];
+        let parsedMessages = data.messages;
+
+        // Parse if it's a JSON string
+        if (typeof data.messages === 'string') {
+            try {
+                parsedMessages = JSON.parse(data.messages);
+            } catch (e) {
+                parsedMessages = data.messages;
+            }
+        }
+
+        // Normalize everything into a flat array
+        if (Array.isArray(parsedMessages)) {
+            parsedMessages.forEach(item => {
+                if (Array.isArray(item)) {
+                    messages.push(...item);
+                } else {
+                    messages.push(item);
+                }
+            });
+        } else if (typeof parsedMessages === 'object') {
+            Object.values(parsedMessages).forEach(value => {
+                if (Array.isArray(value)) {
+                    messages.push(...value);
+                } else {
+                    messages.push(value);
+                }
+            });
+        } else {
+            messages.push(parsedMessages);
+        }
+
+        if (messages.length === 0) {
+            container.append(
+                '<div class="alert alert-info">No errors found.</div>'
+            );
+            return;
+        }
+
+        messages.forEach(msg => {
+            container.append(
+                `<div class="alert alert-danger" role="alert">${msg}</div>`
+            );
+        });
+    });
+}
+
+
 </script>
 
 @endsection
