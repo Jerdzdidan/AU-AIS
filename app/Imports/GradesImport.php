@@ -26,42 +26,41 @@ class GradesImport implements ToCollection, WithHeadingRow
             $student = null;
             $subject = null;
 
-            // if (isset($row['student_id'])) {
-            //     $student = Student::where('student_number', $row['student_id'])
-            //         ->orWhere('id', $row['student_id'])
-            //         ->first();
-                
-            //     if (!$student) {
-            //         $errors[] = 'Student not found';
-            //     }
-            // } else {
-            //     $errors[] = 'Student ID is required';
-            // }
+            if (isset($row['student_number'])) {
+                $student = Student::where('student_number', $row['student_number'])
+                    ->first();
+                if (!$student) {
+                    $errors[] = 'Student not found';
+                }
+            } else {
+                $errors[] = 'Student ID is required';
+            }
 
-            // if (isset($row['subject_code'])) {
-            //     $subject = Subject::where('code', $row['subject_code'])->first();
+            if (isset($row['subject_code'])) {
+                $subject = Subject::where('code', $row['subject_code'])->first();
                 
-            //     if (!$subject) {
-            //         $errors[] = 'Subject not found';
-            //     }
-            // } else {
-            //     $errors[] = 'Subject code is required';
-            // }
+                if (!$subject) {
+                    $errors[] = 'Subject not found';
+                }
+            } else {
+                $errors[] = 'Subject code is required';
+            }
 
-            // if (!isset($row['unit_type'])) {
-            //     $errors[] = 'Unit Type is required';
-            // }
+            if (!isset($row['unit_type'])) {
+                $errors[] = 'Unit Type is required';
+            }
+
+            if (!isset($row['faculty'])) {
+                $errors[] = 'Faculty is required';
+            }
+
+            if (!isset($row['credit_unit']) || !is_numeric($row['credit_unit'])) {
+                $errors[] = 'Invalid credit unit';
+            }
             
-            // if (!isset($row['grade']) || !is_numeric($row['grade'])) {
-            //     $errors[] = 'Invalid grade';
-            // }
-            // if (!isset($row['school_year'])) {
-            //     $errors[] = 'School year is required';
-            // }
-
-            // if (!isset($row['semester'])) {
-            //     $errors[] = 'Semester is required';
-            // }
+            if (!isset($row['grade']) || !is_numeric($row['grade'])) {
+                $errors[] = 'Invalid grade';
+            }
 
             $gradeImport = GradeImport::where('id', $this->gradeImportId)->first();
 
@@ -71,7 +70,6 @@ class GradesImport implements ToCollection, WithHeadingRow
             // Create import row
             GradeImportRow::create([
                 'grade_import_id' => $this->gradeImportId,
-                // 'student_id' => $student?->id,
                 'student_number' => $row['student_number'] ?? '',
                 'subject_code' => $row['subject_code'] ?? null,
                 'subject_name' => $row['subject_name'] ?? null,
