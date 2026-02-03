@@ -163,15 +163,23 @@ class AcademicPeriodController extends Controller
         $decrypted = Crypt::decryptString($id);
         $academicPeriod = AcademicPeriod::findOrFail($decrypted);
 
-        AcademicPeriod::where('is_current', true)->update(['is_current' => false]);
+        if ($academicPeriod->is_current) {
+            return response()->json([
+                'success' => false,
+                'message' => 'The selected Academic Period is already the current period.'
+            ]);
+        }
+        else {
+            AcademicPeriod::where('is_current', true)->update(['is_current' => false]);
 
-        $academicPeriod->is_current = true;
-        $academicPeriod->save();
+            $academicPeriod->is_current = true;
+            $academicPeriod->save();
 
-        return response()->json([
-            'success' => true,
-            'message' => 'Academic Period status updated successfully.'
-        ]);
+            return response()->json([
+                'success' => true,
+                'message' => 'Academic Period status updated successfully.'
+            ]);
+        }
     }
 
     public function getAcademicPeriodsForSelect(Request $request) {

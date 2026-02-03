@@ -94,7 +94,15 @@ $(document).ready(function() {
                 data: null,
                 orderable: false,
                 render: (data, type, row) => {
+                    const toggleIcon = row.is_current
+                        ? '<i class="fa-solid fa-toggle-on"></i>'
+                        : '<i class="fa-solid fa-toggle-off"></i>';
+
                     return `
+                        <button class="btn btn-sm btn-outline-primary" title="Toggle academic period status" onclick="academicPeriodCRUD.toggleStatus('${row.id}', '${row.name}')">
+                            ${toggleIcon}
+                        </button>
+                        
                         <button class="btn btn-sm btn-outline-warning" title="Edit academic period: ${row.name}" onclick="academicPeriodCRUD.edit('${row.id}')">
                             <i class="fa-solid fa-pencil"></i>
                         </button>
@@ -122,6 +130,7 @@ $(document).ready(function() {
         editUrl: "{{ route('academic_periods.edit', ':id') }}",
         updateUrl: "{{ route('academic_periods.update', ':id') }}",
         destroyUrl: "{{ route('academic_periods.destroy', ':id') }}",
+        toggleUrl: "{{ route('academic_periods.toggle', ':id') }}",
 
         entityName: 'Academic Period',
         dataTable: academicPeriodsTable,
