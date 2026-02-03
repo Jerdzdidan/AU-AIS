@@ -58,7 +58,33 @@
             <th>Actions</th>
         </x-table.table>
 
-        <div class="container">
+        @if ($hasStagedData && $valid)
+            <div class="container" id="commit-section">
+                <div class="card mt-3">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h6 class="mb-0">Commit and Display?</h6>
+                                <small class="text-muted">Commit and display the staged grade data for the students to see?</small>
+                            </div>
+                            <div>
+                                <button class="btn btn-success" id="btn-commit" onclick="commitAll()">
+                                    <i class="fa-solid fa-check me-2"></i>
+                                    Commit Records
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        @elseif (!$valid)
+            <div class="alert alert-warning mt-3" role="alert">
+                <i class="fa-solid fa-triangle-exclamation me-2"></i>
+                There are invalid grade import records that need to be addressed before committing. Please review and correct the errors.
+            </div>
+        @endif
+
+        <div class="container" id="commit-section-alt" style="display: none;">
             <div class="card mt-3">
                 <div class="card-body">
                     <div class="d-flex justify-content-between align-items-center">
@@ -67,7 +93,7 @@
                             <small class="text-muted">Commit and display the staged grade data for the students to see?</small>
                         </div>
                         <div>
-                            <button class="btn btn-success" id="btn-commit">
+                            <button class="btn btn-success" id="btn-commit" onclick="commitAll()">
                                 <i class="fa-solid fa-check me-2"></i>
                                 Commit Records
                             </button>
@@ -93,7 +119,7 @@ $(document).ready(function() {
     });
 
     // Initialize DataTable
-    const gradeImportRowsTable = new GenericDataTable({
+    window.gradeImportRowsTable = new GenericDataTable({
         order: [[2, 'desc']],
         tableId: 'gradeImportRowsTable',
         ajaxUrl: "{{ route('grades.import.rows.data', $gradeImportId) }}",
@@ -133,6 +159,10 @@ $(document).ready(function() {
                         ${row.validity === 'invalid' ? `<button class="btn btn-sm btn-outline-primary" title="See errors" onclick="openErrorModal('${row.id}')">
                             <i class="fa-solid fa-circle-question"></i>
                         </button>` : ''}
+
+                        ${row.status === 'committed' ? `<button class="btn btn-sm btn-outline-secondary" title="Uncommit data for: ${row.student_id}" onclick="unCommit('${row.id}')">
+                            <i class="fa-solid fa-rotate-left"></i>
+                        </button>` : ''}
                         
                         <button class="btn btn-sm btn-outline-warning" title="Edit data for: ${row.student_id}" onclick="gradeImportRowsCRUD.edit('${row.id}')">
                             <i class="fa-solid fa-pencil"></i>
@@ -166,7 +196,7 @@ $(document).ready(function() {
         // toggleUrl: "",
 
         entityName: 'Grade Import Data',
-        dataTable: gradeImportRowsTable,
+        dataTable: window.gradeImportRowsTable,
         csrfToken: "{{ csrf_token() }}",
         form: '#add-or-update-form',
         modal: '#add-or-update-modal'
@@ -202,19 +232,16 @@ $(document).ready(function() {
         $('#add-or-update-form select').val(null).trigger('change');
     });
 
+    gradeImportRowsCRUD.onUpdateSuccess = (data) => {
+        window.location.reload();
+    };
+
     // $('#filter-status').on('change', function() {
     //     gradeImportRowsTable.reload();
     // });
 
     $('#btn-commit').on('click', function() {
-        if (confirm('Are you sure you want to commit all valid grade import records? This action cannot be undone.')) {
-            $.post("{{ route('grades.import.rows.commitAll', $gradeImportId) }}", {_token: "{{ csrf_token() }}"}, function(response) {
-                alert(response.message);
-                gradeImportRowsTable.reload();
-            }).fail(function(xhr) {
-                alert('An error occurred while committing the records: ' + xhr.responseText);
-            });
-        }
+
     });
 });
 
@@ -239,7 +266,6 @@ function populateErrorMessages(rowId) {
         let messages = [];
         let parsedMessages = data.messages;
 
-        // Parse if it's a JSON string
         if (typeof data.messages === 'string') {
             try {
                 parsedMessages = JSON.parse(data.messages);
@@ -248,7 +274,6 @@ function populateErrorMessages(rowId) {
             }
         }
 
-        // Normalize everything into a flat array
         if (Array.isArray(parsedMessages)) {
             parsedMessages.forEach(item => {
                 if (Array.isArray(item)) {
@@ -281,6 +306,89 @@ function populateErrorMessages(rowId) {
                 `<div class="alert alert-danger" role="alert">${msg}</div>`
             );
         });
+    });
+}
+
+function unCommit(rowId) {
+    Swal.fire({
+        title: 'Confirm Uncommit',
+        html: `Are you sure you want to uncommit this grade record?`,
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#F8BB86",
+        cancelButtonColor: "#91a8b3ff",
+        confirmButtonText: "Confirm",
+        cancelButtonText: "Cancel"
+    }).then((result) => {
+        if (result.isConfirmed) {
+            $.ajax({
+                url: "{{ route('grades.import.rows.uncommit', ':id') }}".replace(':id', rowId),
+                method: 'POST',
+                headers: { 'X-CSRF-TOKEN': '{{ csrf_token() }}' },
+                success: (response) => {
+                    toastr.success(response.message || "Grade record has been uncommitted.");
+                    window.gradeImportRowsTable.reload();
+                    $('#commit-section-alt').show();
+                },
+                error: (xhr) => {
+                    if (xhr.status === 403) {
+                        const msg = xhr.responseJSON?.message || 'Action forbidden';
+                        toastr.error(msg, 'Forbidden');
+                        return;
+                    }
+
+                    if (xhr.status === 500) {
+                        const msg = xhr.responseJSON?.message || 'Internal server error';
+                        toastr.error(msg, 'Server Error');
+                        return;
+                    }
+                    
+                    toastr.error(xhr.responseJSON?.message || 'An error occurred while uncommitting the record.', 'Error');
+                }
+            });
+        }
+    });
+}
+
+function commitAll() {
+    Swal.fire({
+        title: 'Confirm Commit All',
+        html: `Are you sure you want to commit all valid grade import records? This action cannot be undone.`,
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#F8BB86",
+        cancelButtonColor: "#91a8b3ff",
+        confirmButtonText: "Confirm",
+        cancelButtonText: "Cancel"
+    }).then((result) => {
+        if (result.isConfirmed) {
+            $.ajax({
+                url: "{{ route('grades.import.rows.commitAll', $gradeImportId) }}",
+                method: 'POST',
+                headers: { 'X-CSRF-TOKEN': '{{ csrf_token() }}' },
+                success: (response) => {
+                    toastr.success(response.message || "All valid grade import records have been committed.");
+                    $('#commit-section').hide();
+                    $('#commit-section-alt').hide();
+                    window.gradeImportRowsTable.reload();
+                },
+                error: (xhr) => {
+                    if (xhr.status === 403) {
+                        const msg = xhr.responseJSON?.message || 'Action forbidden';
+                        toastr.error(msg, 'Forbidden');
+                        return;
+                    }
+
+                    if (xhr.status === 500) {
+                        const msg = xhr.responseJSON?.message || 'Internal server error';
+                        toastr.error(msg, 'Server Error');
+                        return;
+                    }
+                    
+                    toastr.error(xhr.responseJSON?.message || 'An error occurred while committing the records.', 'Error');
+                }
+            });
+        }
     });
 }
 
