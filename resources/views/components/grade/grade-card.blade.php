@@ -1,4 +1,5 @@
-<div class="card">
+<hr>
+<div class="card mb-4">
     <!-- Card Header -->
     <div class="card-header bg-primary py-3 py-md-4">
         <h5 class="mb-0 text-white fw-bold">{{ $academicPeriod }}</h5>

@@ -63,10 +63,6 @@ class AcademicPeriodController extends Controller
 
         $validated['school_year'] = $validated['year_start'] . '-' . $validated['year_end'];
 
-        if ($academicPeriods->where('school_year', $validated['school_year'])->count() > 0) {
-            $errors['school_year'] = ['The school year already exists.'];
-        }
-
         if ($academicPeriods->where('school_year', $validated['school_year'])->where('semester', $validated['semester'])->count() > 0) {
             $errors['semester'] = ['The semester already exists for the specified school year.'];
         }
@@ -128,10 +124,6 @@ class AcademicPeriodController extends Controller
         }
 
         $validated['school_year'] = $validated['year_start'] . '-' . $validated['year_end'];
-
-        if (AcademicPeriod::where('id', '!=', $academicPeriod->id)->where('school_year', $validated['school_year'])->count() > 0) {
-            $errors['school_year'] = ['The school year already exists.'];
-        }
 
         if (AcademicPeriod::where('id', '!=', $academicPeriod->id)->where('school_year', $validated['school_year'])->where('semester', $validated['semester'])->count() > 0) {
             $errors['semester'] = ['The semester already exists for the specified school year.'];

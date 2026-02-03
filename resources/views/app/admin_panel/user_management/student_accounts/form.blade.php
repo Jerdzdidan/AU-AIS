@@ -1,7 +1,7 @@
 
 <x-modals.creation-and-update-modal 
     id="add-or-update-modal"
-    title="New Officer"
+    title="New Student"
     action=""
     submitButtonName="Submit"
 >
