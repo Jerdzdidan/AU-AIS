@@ -15,16 +15,16 @@
     <!-- Card Footer -->
     <div class="card-footer bg-secondary py-2 py-md-3">
         <div class="row h-100 g-2">
-            <div class="col-12 col-md-6 d-flex align-items-center justify-content-start">
-                    <small class="text-white">General Weighted Average (GWA):</small>
-                    <span class="text-white fw-semibold px-2 border-bottom border-1 border-white">
-                        <small>{{ $gwa }}</small>
-                    </span>
-            </div>
-            <div class="col-12 col-md-6 d-flex align-items-center justify-content-start justify-content-md-end">
+            <div class="col-12 col-md-6 d-flex align-items-center justify-content-start justify-content-md-start">
                     <small class="text-white">Total Credit Units:</small>
                     <span class="text-white fw-semibold px-2 border-bottom border-1 border-white">
                         <small>{{ $totalUnits }}</small>
+                    </span>
+            </div>
+            <div class="col-12 col-md-6 d-flex align-items-center justify-content-end">
+                    <small class="text-white">General Weighted Average (GWA):</small>
+                    <span class="text-white fw-semibold px-2 border-bottom border-1 border-white">
+                        <small>{{ $gwa }}</small>
                     </span>
             </div>
         </div>

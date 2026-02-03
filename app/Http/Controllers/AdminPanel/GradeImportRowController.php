@@ -7,9 +7,12 @@ use App\Models\Grade;
 use App\Models\GradeImport;
 use App\Models\GradeImportRow;
 use App\Models\Student;
+use App\Models\Subject;
+use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\DB;
+use League\Config\Exception\ValidationException;
 
 class GradeImportRowController extends Controller
 {
@@ -18,9 +21,14 @@ class GradeImportRowController extends Controller
         $decrypted = Crypt::decryptString($gradeImportId);
         $gradeImport = GradeImport::findOrFail($decrypted);
 
+        $invalid = $gradeImport->rows()->where('validity', 'invalid')->count();
+        $staged = $gradeImport->rows()->where('status', 'staged')->count();
+
         return view('app.admin_panel.grade_import_management.grade_import_rows.index', [
             'gradeImportId' => Crypt::encryptString($gradeImport->id),
             'gradeImportName' => $gradeImport->filename,
+            'valid' => $invalid <= 0 ? true : false,
+            'hasStagedData' => $staged > 0 ? true : false,
         ]);
     }
 
@@ -70,7 +78,7 @@ class GradeImportRowController extends Controller
         return response()->json(['success' => true]);
 
         }
-        catch (\Illuminate\Validation\ValidationException $e) {
+        catch (ValidationException $e) {
             return response()->json([
                 'success' => false,
                 'errors' => $e->errors(),
@@ -111,6 +119,65 @@ class GradeImportRowController extends Controller
         ]);
 
         $row->update($validated);
+
+        $valid = true;
+
+        if (isset($row['student_number'])) {
+            $student = Student::where('student_number', $row['student_number'])
+                ->first();
+            if (!$student) {
+                $valid = false;
+            }
+        } else {
+            $valid = false;
+        }
+
+        if (isset($row['subject_code'])) {
+            $subject = Subject::where('code', $row['subject_code'])->first();
+            
+            if (!$subject) {
+                $valid = false;
+            }
+        } else {
+            $valid = false;
+        }
+
+        if (!isset($row['unit_type'])) {
+            $valid = false;
+        }
+
+        if (!isset($row['faculty'])) {
+            $valid = false;
+        }
+
+        if (!isset($row['credit_unit']) || !is_numeric($row['credit_unit'])) {
+            $valid = false;
+        }
+        
+        if (!isset($row['grade']) || !is_numeric($row['grade'])) {
+            $valid = false;
+        }
+
+        if ($valid){
+            if ($row->validity !== 'valid') {
+                $row->validity = 'valid';
+                $row->save();
+                $gradeImport = $row->gradeImport;
+                $gradeImport->valid_rows += 1;
+                $gradeImport->invalid_rows = max(0, $gradeImport->invalid_rows - 1);
+                $gradeImport->save();
+            }
+        } else {
+            if ($row->validity !== 'invalid') {
+                $row->validity = 'invalid';
+                $row->save();
+                $gradeImport = $row->gradeImport;
+                $gradeImport->invalid_rows += 1;
+                $gradeImport->valid_rows = max(0, $gradeImport->valid_rows - 1);
+                $gradeImport->save();
+            }
+        }
+
 
         return response()->json(['success' => true]);
     }
@@ -176,41 +243,97 @@ class GradeImportRowController extends Controller
 
         $rows = $gradeImport->rows()->where('status', 'staged')->get();
 
+        $invalid = $rows->where('validity', 'invalid')->count();
 
-        DB::beginTransaction();
-            foreach ($rows as $row) {
-                $student = Student::where('student_number', $row->student_number)->first();
 
-                Grade::create([
-                    'student_id' => $student->id,
-                    'subject_code' => $row->subject_code,
-                    'subject_name' => $row->subject_name,
-                    'unit_type' => $row->unit_type,
-                    'school_year' => $row->school_year,
-                    'semester' => $row->semester,
-                    'faculty' => $row->faculty,
-                    'credit_unit' => $row->credit_unit,
-                    'grade' => $row->grade,
-                    'grade_import_id' => $row->grade_import_id,
-                    'grade_import_row_id' => $row->id,
+        if ($invalid > 0) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Cannot commit all rows. There are invalid rows present.'
+            ], 400);
+        }
+        else{
+            if ($rows->isEmpty()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'No staged rows to commit.'
+                ], 400);
+            }
+            else{
+                DB::beginTransaction();
+                    foreach ($rows as $row) {
+                        $student = Student::where('student_number', $row->student_number)->first();
+
+                        Grade::create([
+                            'student_id' => $student->id,
+                            'subject_code' => $row->subject_code,
+                            'subject_name' => $row->subject_name,
+                            'unit_type' => $row->unit_type,
+                            'school_year' => $row->school_year,
+                            'semester' => $row->semester,
+                            'faculty' => $row->faculty,
+                            'credit_unit' => $row->credit_unit,
+                            'grade' => $row->grade,
+                            'grade_import_id' => $row->grade_import_id,
+                            'grade_import_row_id' => $row->id,
+                        ]);
+
+                        $row->status = 'committed';
+                        $row->save();
+                    }
+
+                    $stagedRows = $gradeImport->rows()->where('status', 'staged')->count();
+                    if ($stagedRows === 0) {
+                        $gradeImport->status = 'committed';
+                    }
+
+                    $gradeImport->processed_at = now();
+                    $gradeImport->save();
+                DB::commit();
+
+                return response()->json([
+                    'success' => true,
+                    'message' => 'All staged grade data rows committed successfully.'
                 ]);
-
-                $row->status = 'committed';
-                $row->save();
             }
+        }
+        
+    }
 
-            $stagedRows = $gradeImport->rows()->where('status', 'staged')->count();
-            if ($stagedRows === 0) {
-                $gradeImport->status = 'committed';
-            }
+    public function unCommit($gradeImportRowId) {
+        $decrypted = Crypt::decryptString($gradeImportRowId);
+        $row = GradeImportRow::findOrFail($decrypted);
 
-            $gradeImport->processed_at = now();
-            $gradeImport->save();
-        DB::commit();
+        Grade::where('grade_import_row_id', $row->id)->delete();
+
+        $row->status = 'staged';
+        $row->save();
 
         return response()->json([
             'success' => true,
-            'message' => 'All staged grade data rows committed successfully.'
+            'message' => 'Grade data row uncommitted successfully.'
         ]);
+    }
+
+    public function fetchErrors($gradeImportRowId) {
+        try {
+            
+            $decrypted = Crypt::decryptString($gradeImportRowId);
+            $row = GradeImportRow::findOrFail($decrypted);
+            
+            $errors = $row->errors;
+
+            return response()->json([
+                'success' => true,
+                'messages' => $errors
+            ]);
+        } catch (Exception $e) {
+            
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage(),
+                'errors' => []
+            ], 500);
+        }
     }
 }

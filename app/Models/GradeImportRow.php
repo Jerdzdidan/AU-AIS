@@ -36,4 +36,9 @@ class GradeImportRow extends Model
     public function grade(){
         return $this->hasOne(Grade::class);
     }
+
+    public function getErrorMessages()
+    {
+        return $this->errors ?? [];
+    }
 }
