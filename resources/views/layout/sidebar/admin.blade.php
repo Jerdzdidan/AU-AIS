@@ -20,7 +20,15 @@
 
 <x-sidebar.item route='curricula.index' name='Curricula' icon='fa-solid fa-file-pen me-2' class="{{ request()->routeIs('subjects.*') ? 'active' : '' }}"/>
 
+<x-sidebar.item route='#' name='Grades' icon='fa-solid fa-book-open me-2' />
+
+<li class="menu-header small text-uppercase">
+    <span class="menu-header-text">Data Import</span>
+</li>
+
 <x-sidebar.item route='grades.import.index' name='Grades Import' icon='fa-solid fa-file-import me-2' />
+
+<x-sidebar.item route='#' name='Student Import' icon='fa-solid fa-file-import me-2' />
 
 <li class="menu-header small text-uppercase">
     <span class="menu-header-text">User Management</span>

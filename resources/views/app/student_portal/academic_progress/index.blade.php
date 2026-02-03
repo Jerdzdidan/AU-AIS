@@ -21,7 +21,7 @@ Academic Progress
             subtitle="View academic progress details"
         />
         
-        <!-- Statistics Cards (Optional) -->
+        <!-- Statistics Cards -->
         <div class="row mb-4">
 
             {{-- UNITS PROGRESS --}}
@@ -139,7 +139,7 @@ $(document).ready(function() {
 
     // Initialize DataTable
     const academicProgressTable = new GenericDataTable({
-        order: [[6, "asc"], [7, "asc"], [8, "asc"]],
+        order: [[6, "asc"], [7, "asc"], [8, "asc"], [1, "asc"]],
         tableId: 'academicProgressTable',
         ajaxUrl: "{{ route('student.academic_progress.data') }}",
         ajaxData: function(d) {

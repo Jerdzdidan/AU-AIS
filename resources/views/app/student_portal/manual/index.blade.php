@@ -63,7 +63,7 @@ Student Manual
     <div class="content-container">
         <!-- Page Header -->
         <x-table.page-header 
-            title="Student Manual" 
+            title="" 
             subtitle="Official Arellano University Student Handbook"
         />
         

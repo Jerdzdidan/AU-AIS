@@ -3,9 +3,11 @@
 namespace App\Providers;
 
 use App\Events\StudentAcademicProgressCreate;
+use App\Events\StudentCheckProgress;
 use App\Events\StudentCreationEvent;
 use App\Listeners\CreateStudentSubjectProgressRecords;
 use App\Listeners\StudentCreationListener;
+use App\Listeners\UpdateAcademicProgress;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\ServiceProvider;
 
@@ -33,6 +35,11 @@ class AppServiceProvider extends ServiceProvider
         Event::listen(
             StudentAcademicProgressCreate::class,
             CreateStudentSubjectProgressRecords::class,
+        );
+
+        Event::listen(
+            StudentCheckProgress::class,
+            UpdateAcademicProgress::class,
         );
     }
 }

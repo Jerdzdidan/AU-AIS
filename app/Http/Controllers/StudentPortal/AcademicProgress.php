@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\StudentPortal;
 
 use App\Events\StudentAcademicProgressCreate;
+use App\Events\StudentCheckProgress;
 use App\Http\Controllers\Controller;
 use App\Models\StudentSubjectProgress;
 use Exception;
@@ -19,13 +20,14 @@ class AcademicProgress extends Controller
         $student = Auth::user()->student;
 
         event(new StudentAcademicProgressCreate($student));
+        event(new StudentCheckProgress($student));
 
         return view('app.student_portal.academic_progress.index');
     }
 
     public function getData(Request $request)
     {
-        $academicProgress = StudentSubjectProgress::where(
+        $query = StudentSubjectProgress::where(
                 'student_id',
                 Auth::user()->student->id
             )
@@ -37,26 +39,28 @@ class AcademicProgress extends Controller
                 'student_subject_progress.laboratory_completed',
             ]);
 
-        if ($request->filled('status') && $request->status !== 'All') {
-            if ($request->status === 'Complete') {
-                $academicProgress->where('lecture_completed', true)->where('laboratory_completed', true);
-            } elseif ($request->status === 'Incomplete') {
-                $academicProgress->where('lecture_completed', false)->where('laboratory_completed', false);
-            }
-        }
-
         if ($request->filled('year_level') && $request->year_level !== 'all') {
             if ($request->year_level === 'minor') {
                 // Filter for minor subjects
-                $academicProgress->whereHas('subject', function($q) {
+                $query->whereHas('subject', function($q) {
                     $q->where('subject_category', 'Minor');
                 });
             } else {
                 // Filter by specific year level (1, 2, 3, 4)
-                $academicProgress->whereHas('subject', function($q) use ($request) {
+                $query->whereHas('subject', function($q) use ($request) {
                     $q->where('year_level', $request->year_level);
                 });
             }
+        }
+
+        $academicProgress = $query->get();
+
+        if ($request->filled('status') && $request->status !== 'All') {
+            $academicProgress = $academicProgress->filter(function ($progress) use ($request) {
+                return $request->status === 'Complete'
+                    ? $progress->isCompleted()
+                    : !$progress->isCompleted();
+            });
         }
 
 

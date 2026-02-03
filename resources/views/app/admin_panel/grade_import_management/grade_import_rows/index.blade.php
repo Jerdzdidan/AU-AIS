@@ -164,13 +164,15 @@ $(document).ready(function() {
                             <i class="fa-solid fa-rotate-left"></i>
                         </button>` : ''}
                         
-                        <button class="btn btn-sm btn-outline-warning" title="Edit data for: ${row.student_id}" onclick="gradeImportRowsCRUD.edit('${row.id}')">
-                            <i class="fa-solid fa-pencil"></i>
-                        </button>
+                        ${row.status === 'staged' ? `
+                            <button class="btn btn-sm btn-outline-warning" title="Edit data for: ${row.student_id}" onclick="gradeImportRowsCRUD.edit('${row.id}')">
+                                <i class="fa-solid fa-pencil"></i>
+                            </button>
 
-                        <button class="btn btn-sm btn-outline-danger" title="Delete data for: ${row.student_id}" onclick="gradeImportRowsCRUD.delete('${row.id}', 'grade record for student: ${row.student_id}')">
-                            <i class="fa-solid fa-trash"></i>
-                        </button>
+                            <button class="btn btn-sm btn-outline-danger" title="Delete data for: ${row.student_id}" onclick="gradeImportRowsCRUD.delete('${row.id}', 'grade record for student: ${row.student_id}')">
+                                <i class="fa-solid fa-trash"></i>
+                            </button>
+                        ` : ''}
                     `;
                 }
             }
