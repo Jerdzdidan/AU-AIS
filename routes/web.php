@@ -167,6 +167,7 @@ Route::prefix('student')->middleware('auth')->group(function () {
     Route::get('academic-progress', [AcademicProgress::class, 'index'])->name('student.academic_progress.index');
     Route::get('academic-progress/data', [AcademicProgress::class, 'getData'])->name('student.academic_progress.data');
     Route::get('academic-progress/stats', [AcademicProgress::class, 'getStats'])->name('student.academic_progress.stats');
+    Route::get('academic-progress/download-pdf', [AcademicProgress::class, 'downloadPdf'])->name('student.academic_progress.download_pdf');
 
     // GRADE VIEWING
     Route::get('grades', [GradeController::class, 'index'])->name('student.grades.index');
