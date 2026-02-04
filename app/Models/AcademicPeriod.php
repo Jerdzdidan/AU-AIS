@@ -2,11 +2,13 @@
 
 namespace App\Models;
 
+use App\Traits\ChecksAssociations;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class AcademicPeriod extends Model
 {
+    use ChecksAssociations;
     use HasFactory;
     //
     protected $fillable = [
@@ -17,6 +19,13 @@ class AcademicPeriod extends Model
         'semester',
         'is_current',
     ];
+
+    protected function getRelationshipsToCheck()
+    {
+        return [
+            'grade_imports' => 'grade import/s',
+        ];
+    }
 
     public function grade_imports()
     {

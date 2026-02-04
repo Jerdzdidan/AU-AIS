@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->integer('user_id');
             $table->string('filename')->unique();
-            $table->foreignId('academic_period_id')->constrained('academic_periods')->onDelete('cascade');
+            $table->foreignId('academic_period_id')->constrained('academic_periods');
             $table->integer('total_rows')->default(0);
             $table->integer('valid_rows')->default(0);
             $table->integer('invalid_rows')->default(0);

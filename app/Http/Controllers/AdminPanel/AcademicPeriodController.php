@@ -150,7 +150,18 @@ class AcademicPeriodController extends Controller
     public function destroy($id)
     {
         $decrypted = Crypt::decryptString($id);
-        AcademicPeriod::findOrFail($decrypted)->delete();
+        $academicPeriod = AcademicPeriod::findOrFail($decrypted);
+
+        $check = $academicPeriod->checkAssociations();
+        
+        if ($check['hasAssociations']) {
+            return response()->json([
+                'success' => false,
+                'message' => $check['message']
+            ], 422);
+        }
+
+        $academicPeriod->delete();
                      
         return response()->json([
             'success' => true,
