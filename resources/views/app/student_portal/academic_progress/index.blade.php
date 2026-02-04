@@ -120,22 +120,6 @@ Academic Progress
             <th>Prerequisites</th>
         </x-table.table>
         
-            <div class="card mt-3">
-                <div class="card-body">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div>
-                            <h6 class="mb-0">Download PDF?</h6>
-                            <small class="text-muted">For a smoother process of enrollment please download the PDF of your academic progress.</small>
-                        </div>
-                        <div>
-                            <a href="{{ route('student.academic_progress.download_pdf') }}" class="btn btn-danger">
-                                <i class="fa-solid fa-file-pdf me-2"></i>
-                                Download PDF
-                            </a>
-                        </div>
-                    </div>
-                </div>
-            </div>
 
     </div>
 </div>

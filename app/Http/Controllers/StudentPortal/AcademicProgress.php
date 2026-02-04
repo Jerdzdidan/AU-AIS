@@ -6,7 +6,6 @@ use App\Events\StudentAcademicProgressCreate;
 use App\Events\StudentCheckProgress;
 use App\Http\Controllers\Controller;
 use App\Models\StudentSubjectProgress;
-use App\Services\AcademicProgressPdfGenerator;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -119,18 +118,5 @@ class AcademicProgress extends Controller
             'total_subjects' => $total_subjects,
             'subjects_completed' => $subjects_completed,
         ]);
-    }
-
-    public function downloadPdf()
-    {
-        try {
-            $student = Auth::user()->student;
-            
-            $pdfGenerator = new AcademicProgressPdfGenerator($student);
-            
-            return $pdfGenerator->download('academic_progress_' . $student->student_number . '.pdf');
-        } catch (Exception $e) {
-            return back()->with('error', 'Failed to generate PDF: ' . $e->getMessage());
-        }
     }
 }
