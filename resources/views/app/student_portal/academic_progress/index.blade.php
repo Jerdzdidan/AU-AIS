@@ -249,7 +249,7 @@ $(document).ready(function() {
         }
         
         // Reload the table with the new year level filter
-        academicProgressTable.reload();
+        academicProgressTable.table.page('first').draw('page');
     });
 
 });

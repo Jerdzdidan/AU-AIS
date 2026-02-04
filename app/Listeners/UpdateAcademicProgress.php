@@ -24,6 +24,11 @@ class UpdateAcademicProgress
     {
         $student = $event->student;
 
+        StudentSubjectProgress::where('student_id', $student->id)->update([
+            'lecture_completed' => false,
+            'laboratory_completed' => false,
+        ]);
+
         $subjects = $student->studentSubjectProgress;
         $grades = $student->grades()->get();
 

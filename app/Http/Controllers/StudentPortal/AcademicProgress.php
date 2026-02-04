@@ -41,12 +41,10 @@ class AcademicProgress extends Controller
 
         if ($request->filled('year_level') && $request->year_level !== 'all') {
             if ($request->year_level === 'minor') {
-                // Filter for minor subjects
                 $query->whereHas('subject', function($q) {
                     $q->where('subject_category', 'Minor');
                 });
             } else {
-                // Filter by specific year level (1, 2, 3, 4)
                 $query->whereHas('subject', function($q) use ($request) {
                     $q->where('year_level', $request->year_level);
                 });
