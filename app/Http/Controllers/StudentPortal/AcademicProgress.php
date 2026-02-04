@@ -91,17 +91,24 @@ class AcademicProgress extends Controller
             ->get();
 
         $units_completed = $academicProgress->sum(function ($progress) {
-            return ($progress->isCompleted()) ? ($progress->lec_units + $progress->lab_units) : 0;
+            if ($progress->isCompleted()) {
+                return ($progress->subject?->lec_units ?? 0) + ($progress->subject?->lab_units ?? 0);
+            }
+
+            return 0;
         });
+
         $total_units = $academicProgress->sum(function ($progress) {
-            return $progress->lec_units + $progress->lab_units;
+            return ($progress->subject?->lec_units ?? 0) + ($progress->subject?->lab_units ?? 0);
         });
+
         $units_progress = $total_units > 0 ? $units_completed / $total_units * 100 : 0;
 
 
-        $subjects_completed = $academicProgress->where('lecture_status', 'completed')
-                  ->where('lab_status', 'completed')
-                  ->count();
+        $subjects_completed = $academicProgress->where('lecture_completed', true)
+            ->where('laboratory_completed', true)
+            ->count();
+
         $total_subjects = $academicProgress->count();
 
         return response()->json([
