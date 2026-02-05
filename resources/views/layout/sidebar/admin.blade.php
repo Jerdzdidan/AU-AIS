@@ -23,7 +23,7 @@
 <x-sidebar.item route='#' name='Grades' icon='fa-solid fa-book-open me-2' />
 
 <li class="menu-header small text-uppercase">
-    <span class="menu-header-text">Data Import</span>
+    <span class="menu-header-text">Data Imports</span>
 </li>
 
 <x-sidebar.item route='grades.import.index' name='Grades Import' class="{{ request()->routeIs('grades.import.*') ? 'active' : '' }}" icon='fa-solid fa-file-import me-2' />
