@@ -21,6 +21,11 @@ class Grade extends Model
         'grade_import_row_id',
     ];
 
+    public function is_passed()
+    {
+        return $this->grade >= 1.00 && $this->grade <= 3.00;
+    }
+
     public function student(){
         return $this->belongsTo(Student::class);
     }

@@ -27,16 +27,6 @@
         placeholder="Subject Code (e.g. CS 101, IT 202)" 
         help=""
     />
-
-    <x-input.input-field
-        id="subject_name" 
-        name="subject_name"
-        label="Subject Name"
-        type="text"
-        icon="fa-solid fa-book fa-1x" 
-        placeholder="Subject Name" 
-        help=""
-    />
 </div>
 
 {{-- Unit Type and Faculty --}}

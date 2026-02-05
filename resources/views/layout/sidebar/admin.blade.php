@@ -26,7 +26,7 @@
     <span class="menu-header-text">Data Import</span>
 </li>
 
-<x-sidebar.item route='grades.import.index' name='Grades Import' icon='fa-solid fa-file-import me-2' />
+<x-sidebar.item route='grades.import.index' name='Grades Import' class="{{ request()->routeIs('grades.import.*') ? 'active' : '' }}" icon='fa-solid fa-file-import me-2' />
 
 <x-sidebar.item route='#' name='Student Import' icon='fa-solid fa-file-import me-2' />
 

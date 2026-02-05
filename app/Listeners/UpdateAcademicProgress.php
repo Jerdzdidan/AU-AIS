@@ -41,11 +41,11 @@ class UpdateAcademicProgress
                 continue;
             }
 
-            if ($grade->unit_type == 'lec')
+            if ($grade->unit_type == 'lec' && $grade->is_passed())
             {
                 $subjectProgress->lecture_completed = true;
             }
-            if ($grade->unit_type == 'lab')
+            if ($grade->unit_type == 'lab' && $grade->is_passed())
             {
                 $subjectProgress->laboratory_completed = true;
             }

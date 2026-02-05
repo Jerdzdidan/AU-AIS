@@ -42,12 +42,18 @@ class GradesImport implements ToCollection, WithHeadingRow
                 if (!$subject) {
                     $errors[] = 'Subject not found';
                 }
+                else {
+                    $row['subject_name'] = $subject->name;
+                }
             } else {
                 $errors[] = 'Subject code is required';
             }
 
             if (!isset($row['unit_type'])) {
                 $errors[] = 'Unit Type is required';
+            }
+            else if ($row['unit_type'] !== 'lec' && $row['unit_type'] !== 'lab') {
+                $errors[] = 'Invalid Unit Type (should be "lec" or "lab")';
             }
 
             if (!isset($row['faculty'])) {

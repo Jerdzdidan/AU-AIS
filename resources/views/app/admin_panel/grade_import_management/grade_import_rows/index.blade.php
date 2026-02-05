@@ -58,7 +58,7 @@
             <th>Actions</th>
         </x-table.table>
 
-        @if ($hasStagedData && $valid)
+        {{-- @if ($hasStagedData && $valid)
             <div class="container" id="commit-section">
                 <div class="card mt-3">
                     <div class="card-body">
@@ -78,11 +78,11 @@
                 </div>
             </div>
         @elseif (!$valid)
-            <div class="alert alert-warning mt-3" role="alert">
+            <div class="alert alert-warning mt-3" id="invalid-records-alert" role="alert">
                 <i class="fa-solid fa-triangle-exclamation me-2"></i>
                 There are invalid grade import records that need to be addressed before committing. Please review and correct the errors.
             </div>
-        @endif
+        @endif --}}
 
         <div class="container" id="commit-section-alt" style="display: none;">
             <div class="card mt-3">
@@ -103,6 +103,11 @@
             </div>
         </div>
 
+        <div class="alert alert-warning mt-3" id="invalid-records-alert-alt" role="alert" style="display: none;">
+            <i class="fa-solid fa-triangle-exclamation me-2"></i>
+            There are invalid grade import records that need to be addressed before committing. Please review and correct the errors.
+        </div>
+
         @include('app.admin_panel.grade_import_management.grade_import_rows.form')
         @include('app.admin_panel.grade_import_management.grade_import_rows.modal')
     </div>
@@ -117,6 +122,12 @@ $(document).ready(function() {
     $('#unit_type').select2({
         placeholder: 'Select Unit Type',
     });
+
+    @if ($hasStagedData && $valid)
+        $('#commit-section-alt').show();
+    @elseif (!$valid)
+        $('#invalid-records-alert-alt').show();
+    @endif
 
     // Initialize DataTable
     window.gradeImportRowsTable = new GenericDataTable({
@@ -235,7 +246,14 @@ $(document).ready(function() {
     });
 
     gradeImportRowsCRUD.onUpdateSuccess = (data) => {
-        window.location.reload();
+        if (data.allValid) {
+            $('#invalid-records-alert').remove();
+            $('#commit-section-alt').show();
+        }
+        else {
+            $('#commit-section-alt').hide();
+            $('#invalid-records-alert-alt').show();
+        }
     };
 
     // $('#filter-status').on('change', function() {

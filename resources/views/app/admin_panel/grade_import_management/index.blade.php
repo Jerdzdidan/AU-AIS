@@ -67,13 +67,13 @@ $(document).ready(function() {
                     const gradeImportDownloadUrl = "{{ route('grades.import.download', ':id') }}".replace(':id', row.id);
 
                     return `
-                            <a href="${gradeImportDownloadUrl}" class="text-primary hover-underline-ltr" title="Download CSV">
+                            <a href="${gradeImportDownloadUrl}" class="${row.invalid_rows > 0 ? 'text-danger' : 'text-primary'} hover-underline-ltr" title="Download CSV">
                                 <i class="fa-solid fa-file-excel me-1"></i>${data}
                             </a>
                         `;
                 }
             },
-            { data: "academic_period_name"},
+            { data: "academic_period_name" },
             { data: "valid_rows", className: "none" },
             { data: "invalid_rows", className: "none" },
             { data: "total_rows" },

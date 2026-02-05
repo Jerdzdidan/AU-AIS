@@ -24,6 +24,74 @@ class GradeImportRowController extends Controller
         $invalid = $gradeImport->rows()->where('validity', 'invalid')->count();
         $staged = $gradeImport->rows()->where('status', 'staged')->count();
 
+        $rows = $gradeImport->rows()->get();
+
+        foreach ($rows as $row) {
+            $student = null;
+            $subject = null;
+
+            $row->errors = null;
+
+            $errors = [];
+
+            if (isset($row['student_number'])) {
+                $student = Student::where('student_number', $row['student_number'])
+                    ->first();
+                if (!$student) {
+                    $errors[] = 'Student not found';
+                }
+                else {
+                    $row->student_number = $student->student_number;
+                }
+            } else {
+                $errors[] = 'Student ID is required';
+            }
+
+            if (isset($row['subject_code'])) {
+                $subject = Subject::where('code', $row['subject_code'])->first();
+                
+                if (!$subject) {
+                    $row->subject_name = null;
+                    $errors[] = 'Subject not found';
+                }
+                else {
+                    $row->subject_code = $subject->code;
+                    $row->subject_name = $subject->name;
+                }
+            } else {
+                $errors[] = 'Subject code is required';
+            }
+
+            if (!isset($row['unit_type'])) {
+                $errors[] = 'Unit Type is required';
+            } else {
+                if ($row['unit_type'] !== 'lec' && $row['unit_type'] !== 'lab') {
+                    $errors[] = 'Invalid Unit Type (should be "lec" or "lab")';
+                }
+            }
+
+            if (!isset($row['faculty'])) {
+                $errors[] = 'Faculty is required';
+            }
+
+            if (!isset($row['credit_unit']) || !is_numeric($row['credit_unit'])) {
+                $errors[] = 'Invalid credit unit';
+            }
+            
+            if (!isset($row['grade']) || !is_numeric($row['grade'])) {
+                $errors[] = 'Invalid grade';
+            }
+
+            $row->validity =  empty($errors) ? 'valid' : 'invalid';
+
+            $row->errors = json_encode($errors);
+            $row->save();
+        }
+
+        $gradeImport->valid_rows = $gradeImport->rows()->where('validity', 'valid')->count();
+        $gradeImport->invalid_rows = $gradeImport->rows()->where('validity', 'invalid')->count();
+        $gradeImport->save();
+
         return view('app.admin_panel.grade_import_management.grade_import_rows.index', [
             'gradeImportId' => Crypt::encryptString($gradeImport->id),
             'gradeImportName' => $gradeImport->filename,
@@ -49,33 +117,49 @@ class GradeImportRowController extends Controller
     public function store(Request $request, $gradeImportId)
     {
         try{
-             $decrypted = Crypt::decryptString($gradeImportId);
+            $decrypted = Crypt::decryptString($gradeImportId);
 
-        $validated = $request->validate([
-            'student_number' => 'required|string|max:50',
-            'subject_code' => 'required|string|max:50',
-            'subject_name' => 'required|string|max:255',
-            'unit_type' => 'required|string|max:100',
-            'grade' => 'required|numeric|min:0|max:100',
-            'faculty' => 'required|string|max:255',
-            'credit_unit' => 'required|numeric|min:0|max:5',
-        ]);
+            $validated = $request->validate([
+                'student_number' => 'required|string|max:50',
+                'subject_code' => 'required|string|max:50',
+                'unit_type' => 'required|string|max:100',
+                'grade' => 'required|numeric|min:0|max:100',
+                'faculty' => 'required|string|max:255',
+                'credit_unit' => 'required|numeric|min:0|max:5',
+            ]);
 
-        $grade_import = GradeImport::findOrFail($decrypted);
+            $student = Student::where('student_number', $validated['student_number'])->first();
+            if (!$student) {
+                return response()->json([
+                    'success' => false,
+                    'errors' => ['student_number' => ['Student with this number does not exist.']],
+                ], 422);
+            }
 
-        $validated['school_year'] = $grade_import->academic_period->year_start . '-' . $grade_import->academic_period->year_end;
-        $validated['semester'] = $grade_import->academic_period->semester;
+            $subject = Subject::where('code', $validated['subject_code'])->first();
+            if (!$subject) {
+                return response()->json([
+                    'success' => false,
+                    'errors' => ['subject_code' => ['Subject with this code does not exist.']],
+                ], 422);
+            }
 
-        $validated['validity'] = 'valid';
-        $grade_import->valid_rows += 1;
-        $grade_import->total_rows += 1;
-        $grade_import->save();
+            $grade_import = GradeImport::findOrFail($decrypted);
 
-        $validated['status'] = 'staged';
+            $validated['school_year'] = $grade_import->academic_period->year_start . '-' . $grade_import->academic_period->year_end;
+            $validated['semester'] = $grade_import->academic_period->semester;
+            $validated['subject_name'] = $subject->name;
 
-        $validated['grade_import_id'] = $decrypted;
-        GradeImportRow::create($validated);
-        return response()->json(['success' => true]);
+            $validated['validity'] = 'valid';
+            $grade_import->valid_rows += 1;
+            $grade_import->total_rows += 1;
+            $grade_import->save();
+
+            $validated['status'] = 'staged';
+
+            $validated['grade_import_id'] = $decrypted;
+            GradeImportRow::create($validated);
+            return response()->json(['success' => true]);
 
         }
         catch (ValidationException $e) {
@@ -95,7 +179,6 @@ class GradeImportRowController extends Controller
             'id' => Crypt::encryptString($row->id),
             'student_number' => $row->student_number,
             'subject_code' => $row->subject_code,
-            'subject_name' => $row->subject_name,
             'unit_type' => $row->unit_type,
             'grade' => $row->grade,
             'faculty' => $row->faculty,
@@ -111,7 +194,6 @@ class GradeImportRowController extends Controller
         $validated = $request->validate([
             'student_number' => 'required|string|max:50',
             'subject_code' => 'required|string|max:50',
-            'subject_name' => 'required|string|max:255',
             'unit_type' => 'required|string|max:100',
             'grade' => 'required|numeric|min:0|max:100',
             'faculty' => 'required|string|max:255',
@@ -138,6 +220,10 @@ class GradeImportRowController extends Controller
             if (!$subject) {
                 $valid = false;
             }
+            else {
+                $row->subject_name = $subject->name;
+                $row->save();
+            }
         } else {
             $valid = false;
         }
@@ -162,24 +248,22 @@ class GradeImportRowController extends Controller
             if ($row->validity !== 'valid') {
                 $row->validity = 'valid';
                 $row->save();
-                $gradeImport = $row->gradeImport;
-                $gradeImport->valid_rows += 1;
-                $gradeImport->invalid_rows = max(0, $gradeImport->invalid_rows - 1);
-                $gradeImport->save();
             }
         } else {
             if ($row->validity !== 'invalid') {
                 $row->validity = 'invalid';
                 $row->save();
-                $gradeImport = $row->gradeImport;
-                $gradeImport->invalid_rows += 1;
-                $gradeImport->valid_rows = max(0, $gradeImport->valid_rows - 1);
-                $gradeImport->save();
             }
         }
 
+        $grade_import = $row->gradeImport;
+        $grade_import->valid_rows = $grade_import->rows()->where('validity', 'valid')->count();
+        $grade_import->invalid_rows = $grade_import->rows()->where('validity', 'invalid')->count();
+        $grade_import->save();
 
-        return response()->json(['success' => true]);
+        $allValid = $grade_import->rows()->where('validity', 'invalid')->count() <= 0 ? true : false;
+
+        return response()->json(['success' => true, 'allValid' => $allValid]);
     }
 
     public function destroy($gradeImportRowId) {
