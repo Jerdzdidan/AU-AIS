@@ -6,8 +6,8 @@
         <div class="fw-semibold">{{ $subjectCode }}</div>
         <div class="small text-muted">{{ $subjectName }}</div>
     </td>
-    <td class="py-2 text-center">
-        <span>{{ $grade }}</span>
+    <td class="py-2 text-center {{ $grade >= 1 && $grade <= 3 ? 'text-success' : 'text-danger' }}">
+        <span>{{ ($grade < 1 || $grade > 3) || $grade != 5 ? 'INC' : $grade }}</span>
     </td>
 </tr>
 <tr class="details-row">
