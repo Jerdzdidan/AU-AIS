@@ -81,6 +81,12 @@ class GradeImportRowController extends Controller
             if (!isset($row['grade']) || !is_numeric($row['grade'])) {
                 $errors[] = 'Invalid grade';
             }
+            else
+            {
+                if ($row['grade'] != 0 && ($row['grade'] < 1 || $row['grade'] > 3) && $row['grade'] != 5) {
+                    $errors[] = 'Grade must be 0, between 1 and 3, or 5';
+                }
+            }
 
             $row->validity =  empty($errors) ? 'valid' : 'invalid';
 
@@ -123,7 +129,17 @@ class GradeImportRowController extends Controller
                 'student_number' => 'required|string|max:50',
                 'subject_code' => 'required|string|max:50',
                 'unit_type' => 'required|string|max:100',
-                'grade' => 'required|numeric|min:0|max:100',
+                'grade' => [
+                    'required', 
+                    'numeric', 
+                    'min:0', 
+                    'max:100',
+                    function ($attribute, $value, $fail) {
+                        if ($value != 0 && ($value < 1 || $value > 3) && $value != 5) {
+                            $fail('The '.$attribute.' must be 0, between 1 and 3, or 5.');
+                        }
+                    }
+                ],
                 'faculty' => 'required|string|max:255',
                 'credit_unit' => 'required|numeric|min:0|max:5',
             ]);
@@ -195,7 +211,17 @@ class GradeImportRowController extends Controller
             'student_number' => 'required|string|max:50',
             'subject_code' => 'required|string|max:50',
             'unit_type' => 'required|string|max:100',
-            'grade' => 'required|numeric|min:0|max:100',
+            'grade' => [
+                'required', 
+                'numeric', 
+                'min:0', 
+                'max:100',
+                function ($attribute, $value, $fail) {
+                    if ($value != 0 && ($value < 1 || $value > 3) && $value != 5) {
+                        $fail('The '.$attribute.' must be 0, between 1 and 3, or 5.');
+                    }
+                }
+            ],
             'faculty' => 'required|string|max:255',
             'credit_unit' => 'required|numeric|min:0|max:5',
         ]);
@@ -242,6 +268,12 @@ class GradeImportRowController extends Controller
         
         if (!isset($row['grade']) || !is_numeric($row['grade'])) {
             $valid = false;
+        }
+        else
+        {
+            if ($row['grade'] != 0 && ($row['grade'] < 1 || $row['grade'] > 3) && $row['grade'] != 5) {
+                $valid = false;
+            }
         }
 
         if ($valid){

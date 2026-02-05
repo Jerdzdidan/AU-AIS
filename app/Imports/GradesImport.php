@@ -67,6 +67,12 @@ class GradesImport implements ToCollection, WithHeadingRow
             if (!isset($row['grade']) || !is_numeric($row['grade'])) {
                 $errors[] = 'Invalid grade';
             }
+            else
+            {
+                if ($row['grade'] != 0 && ($row['grade'] < 1 || $row['grade'] > 3) && $row['grade'] != 5) {
+                    $errors[] = 'Grade must be 0, between 1 and 3, or 5';
+                }
+            }
 
             $gradeImport = GradeImport::where('id', $this->gradeImportId)->first();
 
