@@ -25,8 +25,10 @@ class GradeController extends Controller
             $totalUnits = 0;
 
             foreach ($sortedGrades as $grade) {
-                $totalWeightedGrade += ($grade->grade * $grade->credit_unit);
-                $totalUnits += $grade->credit_unit;
+                if ($grade->grade >= 1 && $grade->grade <= 3) {
+                    $totalWeightedGrade += ($grade->grade * $grade->credit_unit);
+                    $totalUnits += $grade->credit_unit;
+                }
             }
 
             $gwa = $totalUnits > 0 ? round($totalWeightedGrade / $totalUnits, 2) : 0;
