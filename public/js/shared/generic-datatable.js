@@ -8,6 +8,7 @@ class GenericDataTable {
         this.table = null;
         this.order = config.order || [[1, "asc"]];
         this.lengthMenu = config.lengthMenu || null;
+        this.initComplete = config.initComplete || null;
     }
     
     init() {
@@ -39,6 +40,9 @@ class GenericDataTable {
             },
             drawCallback: () => {
                 if (this.statsCards) this.updateStats();
+            },
+            initComplete: () => {
+                if (this.initComplete) this.initComplete(this.table);
             }
         });
         

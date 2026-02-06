@@ -37,7 +37,11 @@ class AcademicProgress extends Controller
                 'student_subject_progress.subject_id',
                 'student_subject_progress.lecture_completed',
                 'student_subject_progress.laboratory_completed',
-            ]);
+            ])
+            ->join('subjects', 'student_subject_progress.subject_id', '=', 'subjects.id')
+            ->orderBy('subjects.year_level', 'asc')
+            ->orderBy('subjects.semester', 'asc')
+            ->orderBy('subjects.code', 'asc');
 
         if ($request->filled('year_level') && $request->year_level !== 'all') {
             if ($request->year_level === 'minor') {
