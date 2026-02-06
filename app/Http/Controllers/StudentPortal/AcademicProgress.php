@@ -105,8 +105,9 @@ class AcademicProgress extends Controller
         $units_progress = $total_units > 0 ? $units_completed / $total_units * 100 : 0;
 
 
-        $subjects_completed = $academicProgress->isCompleted()
-            ->count();
+        $subjects_completed = $academicProgress->filter(function ($progress) {
+            return $progress->isCompleted();
+        })->count();
 
         $total_subjects = $academicProgress->count();
 
