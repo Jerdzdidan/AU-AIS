@@ -105,8 +105,7 @@ class AcademicProgress extends Controller
         $units_progress = $total_units > 0 ? $units_completed / $total_units * 100 : 0;
 
 
-        $subjects_completed = $academicProgress->where('lecture_completed', true)
-            ->where('laboratory_completed', true)
+        $subjects_completed = $academicProgress->isCompleted()
             ->count();
 
         $total_subjects = $academicProgress->count();
