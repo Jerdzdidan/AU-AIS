@@ -204,7 +204,7 @@ Academic Progress
                         <small class="text-muted">Download the pdf in order to ensure a smooth enrollment process.</small>
                     </div>
                     <div>
-                        <button class="btn btn-danger" id="btnDownloadPDF" disabled>
+                        <button class="btn btn-danger" id="btnDownloadPDF" disabled style="display: none;">
                             <i class="fa-solid fa-file-pdf fa-1x me-2"></i>
                             Download PDF
                         </button>
@@ -258,6 +258,7 @@ $(document).ready(function() {
     
     // Disable button and show spinner
     $pdfButton.prop('disabled', true).html('<i class="fas fa-spinner fa-spin me-2"></i> Loading...');
+    $pdfButton.show();
     
     // Function to check if both are loaded
     function checkIfReady() {
