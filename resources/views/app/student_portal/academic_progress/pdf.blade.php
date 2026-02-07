@@ -209,7 +209,7 @@
                     <div class="card-body">
                         <div class="d-flex justify-content-between">
                             <div>
-                                <h6 class="card-title mb-0 text-white">Units Progress</h6>
+                                <h6 class="card-title mb-0 text-white fw-bold">Units Progress</h6>
                                 <p class="mb-0 text-white mt-2">
                                     <span id="unitsEarnedDisplay">{{ $stats['units_earned'] }}</span>/<span id="unitsRequiredDisplay">{{ $stats['total_units'] }}</span>
                                 </p>
@@ -232,7 +232,7 @@
                     <div class="card-body">
                         <div class="d-flex justify-content-between">
                             <div>
-                                <h6 class="card-title mb-0 text-white">Total <br> Subjects</h6>
+                                <h6 class="card-title mb-0 text-white fw-bold">Total <br> Subjects</h6>
                                 <h6 class="mb-0 text-white">{{ $stats['total_subjects'] }}</h6>
                             </div>
                             <div class="align-self-center">
@@ -248,7 +248,7 @@
                     <div class="card-body">
                         <div class="d-flex justify-content-between">
                             <div>
-                                <h6 class="card-title mb-0 text-white">Subjects Completed</h6>
+                                <h6 class="card-title mb-0 text-white fw-bold">Subjects Completed</h6>
                                 <h6 class="mb-0 text-white">{{ $stats['subjects_completed'] }}</h6>
                             </div>
                             <div class="align-self-center">
