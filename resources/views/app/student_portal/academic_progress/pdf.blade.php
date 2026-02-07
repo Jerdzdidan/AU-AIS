@@ -167,7 +167,7 @@
 <body>
     <div id="spinnerOverlay" aria-hidden="true" class="text-center">
         <div class="loader" role="status" aria-hidden="true"></div>
-        <p class="text-center" style="font-weight:600; color:#333;">Downloading PDF...</p>
+        <p class="text-center" style="margin-left:5px!important; font-weight:600; color:#333;">Downloading PDF...</p>
     </div>
 
     <div class="pdf-wrapper" id="pdfContent">
