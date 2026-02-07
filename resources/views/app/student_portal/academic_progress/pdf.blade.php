@@ -131,6 +131,30 @@
             font-weight: 600;
             font-size: 14px;
         }
+
+        /* Spinner overlay (outside capture so it won't appear in PDF) */
+        #spinnerOverlay{
+            position:fixed;
+            inset:0;
+            display:flex;
+            align-items:center;
+            justify-content:center;
+            flex-direction:column;
+            gap:12px;
+            background:rgb(255, 255, 255);
+            z-index:9999;
+            text-align:center;
+            padding:16px;
+        }
+        #spinnerOverlay .loader{
+            width:48px;
+            height:48px;
+            border:6px solid #e9ecef;
+            border-top-color:#0d6efd;
+            border-radius:50%;
+            animation:spin .8s linear infinite;
+        }
+        @keyframes spin{to{transform:rotate(360deg)}}
     </style>
 
     <!-- Helpers -->
@@ -141,6 +165,11 @@
     <script src="{{ asset('themes/sneat/assets/js/config.js') }}"></script>
 </head>
 <body>
+    <div id="spinnerOverlay" aria-hidden="true" class="text-center">
+        <div class="loader" role="status" aria-hidden="true"></div>
+        <p class="text-center" style="font-weight:600; color:#333;">Downloading PDF...</p>
+    </div>
+
     <div class="pdf-wrapper" id="pdfContent">
         <!-- Header -->
         <div class="pdf-header">
