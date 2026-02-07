@@ -123,4 +123,78 @@ class AcademicProgress extends Controller
             'subjects_completed' => $subjects_completed,
         ]);
     }
+
+    public function downloadPDFView()
+    {
+        $student = Auth::user()->student;
+        $user = Auth::user();
+
+        $allProgress = StudentSubjectProgress::where(
+                'student_id',
+                Auth::user()->student->id
+            )
+            ->with('subject:id,code,name,lec_units,lab_units,prerequisites,subject_category,year_level,semester')
+            ->select([
+                'student_subject_progress.id',
+                'student_subject_progress.subject_id',
+                'student_subject_progress.lecture_completed',
+                'student_subject_progress.laboratory_completed',
+            ])
+            ->join('subjects', 'student_subject_progress.subject_id', '=', 'subjects.id')
+            ->orderBy('subjects.year_level', 'asc')
+            ->orderBy('subjects.semester', 'asc')
+            ->orderBy('subjects.code', 'asc')
+            ->get();
+
+        // Group by year level and category (minor)
+        $years = [
+            '1' => [],
+            '2' => [],
+            '3' => [],
+            '4' => [],
+            'minor' => []
+        ];
+
+        // Populate the years array
+        foreach ($allProgress as $progress) {
+            if ($progress->subject->subject_category === 'MINOR') {
+                $years['minor'][] = $progress;
+            } else {
+                $yearLevel = (string) $progress->subject->year_level;
+                if (isset($years[$yearLevel])) {
+                    $years[$yearLevel][] = $progress;
+                }
+            }
+        }
+
+        // Calculate stats
+        $units_completed = $allProgress->sum(function ($progress) {
+            if ($progress->isCompleted()) {
+                return ($progress->subject?->lec_units ?? 0) + ($progress->subject?->lab_units ?? 0);
+            }
+            return 0;
+        });
+
+        $total_units = $allProgress->sum(function ($progress) {
+            return ($progress->subject?->lec_units ?? 0) + ($progress->subject?->lab_units ?? 0);
+        });
+
+        $units_progress = $total_units > 0 ? $units_completed / $total_units * 100 : 0;
+        $subjects_completed = $allProgress->filter(function ($progress) {
+            return $progress->isCompleted();
+        })->count();
+
+        return view('app.student_portal.academic_progress.pdf', [
+            'user' => $user,
+            'student' => $student,
+            'years' => $years,
+            'stats' => [
+                'units_earned' => $units_completed,
+                'total_units' => $total_units,
+                'units_progress' => round($units_progress, 2),
+                'total_subjects' => $allProgress->count(),
+                'subjects_completed' => $subjects_completed,
+            ]
+        ]);
+    }
 }
