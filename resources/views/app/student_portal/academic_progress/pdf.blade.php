@@ -194,10 +194,9 @@
                 <div class="col-6">
                     <p class="mb-2"><strong>Name:</strong> {{ $user->name }}</p>
                     <p class="mb-2"><strong>Student Number:</strong> {{ $student->student_number }}</p>
-                    <p class="mb-2"><strong>Year Level:</strong> {{ $student->year_level }}</p>
                 </div>
                 <div class="col-6">
-                    <p class="mb-2"><strong>Program:</strong> {{ $student->program->name ?? 'N/A' }}</p>
+                    <p class="mb-2"><strong>Program:</strong> {{ $student->program->code ?? 'N/A' }} <small class="text-muted">({{ $student->program->name ?? 'N/A' }})</small></p>
                 </div>
             </div>
         </div>
