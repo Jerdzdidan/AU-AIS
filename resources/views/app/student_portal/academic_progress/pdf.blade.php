@@ -221,7 +221,7 @@
                             </div>
                             <div class="align-self-center">
                                 <i class="fa-solid fa-book fa-2x"></i>
-                            </div>
+                            </div>      
                         </div>
                     </div>
                 </div>

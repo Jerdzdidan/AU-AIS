@@ -8,7 +8,9 @@ use App\Events\StudentCreationEvent;
 use App\Listeners\CreateStudentSubjectProgressRecords;
 use App\Listeners\StudentCreationListener;
 use App\Listeners\UpdateAcademicProgress;
+use App\Models\User;
 use Illuminate\Support\Facades\Event;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -41,5 +43,14 @@ class AppServiceProvider extends ServiceProvider
             StudentCheckProgress::class,
             UpdateAcademicProgress::class,
         );
+
+
+        // GATES
+        Gate::define('is-admin', function (User $user) {
+            return $user->user_type === 'ADMIN';
+        });
+        Gate::define('is-student', function (User $user) {
+            return $user->user_type === 'STUDENT';
+        });
     }
 }
