@@ -18,7 +18,6 @@ class PreventSelfAction
      */
     public function handle(Request $request, Closure $next): Response
     {
-
         $enc = $request->route('id');
 
         if (!$enc) {

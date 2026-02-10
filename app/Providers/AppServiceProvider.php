@@ -5,8 +5,10 @@ namespace App\Providers;
 use App\Events\StudentAcademicProgressCreate;
 use App\Events\StudentCheckProgress;
 use App\Events\StudentCreationEvent;
+use App\Events\StudentInformationCheck;
 use App\Listeners\CreateStudentSubjectProgressRecords;
 use App\Listeners\StudentCreationListener;
+use App\Listeners\StudentInformationCheckUpdate;
 use App\Listeners\UpdateAcademicProgress;
 use App\Models\User;
 use Illuminate\Support\Facades\Event;
@@ -44,6 +46,10 @@ class AppServiceProvider extends ServiceProvider
             UpdateAcademicProgress::class,
         );
 
+        Event::listen(
+            StudentInformationCheck::class,
+            StudentInformationCheckUpdate::class,
+        );
 
         // GATES
         Gate::define('is-admin', function (User $user) {
