@@ -1,0 +1,12 @@
+student_number,subject_code,unit_type,faculty,credit_unit,grade
+23-12345,ITC 120,lec,"Torres, Jay-R",2,1.25
+23-12345,ITC 120,lab,"Torres, Jay-R",1,1.25
+23-12345,ITC 121,lec,"Santiago, Archie",2,1.00
+23-12345,ITC 121,lab,"Santiago, Archie",1,1.00
+23-12345,ITC 122,lec,"Mandigma, Jonnifer",2,1.00
+23-12345,ITC 122,lab,"Mandigma, Jonnifer",1,1.00
+23-12345,GCAS 01,lec,"Rivera, Jemima",3,1.00
+23-12345,GCAS 03,lec,"Hermogenes, Michael",3,1.75
+23-12345,GCAS 05,lec,"Magistrado, Irene",3,1.25
+23-12345,GCAS 08,lec,"Agcaoili, Rosminea",3,1.25
+23-12345,GCAS 16,lec,"Trinidad, Nazarene",2,1.25

@@ -1,0 +1,13 @@
+student_number,subject_code,unit_type,faculty,credit_unit,grade
+23-12345,CS 221,lec,"Mercado, Ryan",2,1.25
+23-12345,CS 221,lab,"Mercado, Ryan",1,1.25
+23-12345,CS 222,lec,"Santiago, Al",2,1.75
+23-12345,CS 222,lab,"Santiago, Al",1,1.75
+23-12345,CS 223,lec,"Delos Reyes, Amelita M.",3,1.75
+23-12345,CS 224,lec,"Pamiloza, Christopher",2,1.75
+23-12345,CS 224,lab,"Pamiloza, Christopher",1,1.75
+23-12345,ITC 126,lec,"Rilles, Geraldine",3,1.25
+23-12345,ITC 127,lec,"Torres, Jay-R",2,1.25
+23-12345,ITC 127,lab,"Torres, Jay-R",1,1.25
+23-12345,GCAS 11,lec,"Cureg, Generosa",3,1.25
+23-12345,GCAS 18,lec,"Francisco, Mauricia",2,1.25

@@ -572,7 +572,7 @@ class DatabaseSeeder extends Seeder
 
         Subject::factory()->create([
             'curriculum_id' => 1,
-            'code' => 'GCAS 08',
+            'code' => 'GCAS 06',
             'name' => 'Purposive Communication',
             'year_level' => null,
             'semester' => null,
@@ -676,7 +676,7 @@ class DatabaseSeeder extends Seeder
 
         Subject::factory()->create([
             'curriculum_id' => 1,
-            'code' => 'GCAS 15',
+            'code' => 'GCAS 16',
             'name' => 'PE 2 - Fitness Exercises',
             'year_level' => null,
             'semester' => null,

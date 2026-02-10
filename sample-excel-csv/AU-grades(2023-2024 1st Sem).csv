@@ -1,0 +1,11 @@
+student_number,subject_code,unit_type,faculty,credit_unit,grade
+23-12345,ITC 110,lec,"Latip, Merlita",2,1.00
+23-12345,ITC 110,lab,"Latip, Merlita",1,1.25
+23-12345,ITC 111,lec,"Mandigma, Jonnifer",2,1.00
+23-12345,ITC 111,lab,"Mandigma, Jonnifer",1,1.00
+23-12345,ITC 112,lec,"Latip, Merlita",2,1.00
+23-12345,ITC 112,lab,"Latip, Merlita",1,1.25
+23-12345,GCAS 02,lec,"Gadaingan, Harold",3,1.25
+23-12345,GCAS 06,lec,"Gomez, Elvira",3,1.50
+23-12345,GCAS 09,lec,"Gadaingan, Harold",3,1.25
+23-12345,GCAS 15,lec,"Francisco, Mauricia",2,1.00
