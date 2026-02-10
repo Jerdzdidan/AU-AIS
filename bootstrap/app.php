@@ -2,6 +2,7 @@
 
 use App\Http\Middleware\CacheStaticAssets;
 use App\Http\Middleware\PreventSelfAction;
+use App\Http\Middleware\StudentInformationCheck;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
@@ -18,6 +19,7 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->redirectGuestsTo(fn (Request $request) => route('auth.index'));
         $middleware->append(PreventSelfAction::class);
         $middleware->append(CacheStaticAssets::class);
+        $middleware->append(StudentInformationCheck::class);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         //

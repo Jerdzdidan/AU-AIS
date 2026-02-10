@@ -46,11 +46,6 @@ class AppServiceProvider extends ServiceProvider
             UpdateAcademicProgress::class,
         );
 
-        Event::listen(
-            StudentInformationCheck::class,
-            StudentInformationCheckUpdate::class,
-        );
-
         // GATES
         Gate::define('is-admin', function (User $user) {
             return $user->user_type === 'ADMIN';

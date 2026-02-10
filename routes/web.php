@@ -17,6 +17,7 @@ use App\Http\Controllers\Auth\StudentAuthController;
 use App\Http\Controllers\StudentPortal\AcademicProgress;
 use App\Http\Controllers\StudentPortal\GradeController;
 use App\Http\Middleware\PreventSelfAction;
+use App\Http\Middleware\StudentInformationCheck;
 use Illuminate\Support\Facades\Route;
 
 // PLACEHOLDER ROUTE
@@ -161,7 +162,7 @@ Route::prefix('admin')->middleware('auth')->can('is-admin')->group(function () {
 });
 
 
-Route::prefix('student')->middleware('auth')->can('is-student')->group(function () {
+Route::prefix('student')->middleware('auth', StudentInformationCheck::class)->can('is-student')->group(function () {
     
     // ACADEMIC PROGRESS
     Route::get('academic-progress', [AcademicProgress::class, 'index'])->name('student.academic_progress.index');
