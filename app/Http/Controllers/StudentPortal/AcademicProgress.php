@@ -5,6 +5,7 @@ namespace App\Http\Controllers\StudentPortal;
 use App\Events\StudentAcademicProgressCreate;
 use App\Events\StudentCheckProgress;
 use App\Http\Controllers\Controller;
+use App\Models\Grade;
 use App\Models\StudentSubjectProgress;
 use Exception;
 use Illuminate\Http\Request;
@@ -31,12 +32,19 @@ class AcademicProgress extends Controller
                 'student_id',
                 Auth::user()->student->id
             )
-            ->with('subject:id,code,name,lec_units,lab_units,prerequisites,subject_category,year_level,semester')
+            ->with([
+                'subject:id,code,name,lec_units,lab_units,prerequisites,subject_category,year_level,semester',
+                'student:id,student_number'
+            ])
             ->select([
                 'student_subject_progress.id',
                 'student_subject_progress.subject_id',
-                'student_subject_progress.lecture_completed',
-                'student_subject_progress.laboratory_completed',
+                'student_subject_progress.lecture_status',
+                'student_subject_progress.laboratory_status',
+                'student_subject_progress.lecture_grade',
+                'student_subject_progress.laboratory_grade',
+                'student_subject_progress.grade',
+                'student_subject_progress.remarks',
             ])
             ->join('subjects', 'student_subject_progress.subject_id', '=', 'subjects.id')
             ->orderBy('subjects.year_level', 'asc')
@@ -64,7 +72,6 @@ class AcademicProgress extends Controller
                     : !$progress->isCompleted();
             });
         }
-
 
         return DataTables::of($academicProgress)
             ->editColumn('id', function ($row) {
@@ -137,8 +144,12 @@ class AcademicProgress extends Controller
             ->select([
                 'student_subject_progress.id',
                 'student_subject_progress.subject_id',
-                'student_subject_progress.lecture_completed',
-                'student_subject_progress.laboratory_completed',
+                'student_subject_progress.lecture_status',
+                'student_subject_progress.laboratory_status',
+                'student_subject_progress.lecture_grade',
+                'student_subject_progress.laboratory_grade',
+                'student_subject_progress.grade',
+                'student_subject_progress.remarks',
             ])
             ->join('subjects', 'student_subject_progress.subject_id', '=', 'subjects.id')
             ->orderBy('subjects.year_level', 'asc')

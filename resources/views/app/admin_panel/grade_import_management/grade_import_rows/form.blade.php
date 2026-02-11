@@ -66,13 +66,13 @@
         help=""
     />
 
-    <x-input.integer-field 
-        id="grade"
+    <x-input.input-field
+        id="grade" 
+        name="grade"
         label="Grade"
-        icon="fa-solid fa-chalkboard-teacher"
-        placeholder="Grade"
-        :min="0"
-        :step="0.25"
+        type="text"
+        icon="fa-solid fa-chalkboard-teacher" 
+        placeholder="Grade" 
         help=""
     />
 </div>

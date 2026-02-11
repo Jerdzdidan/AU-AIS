@@ -22,7 +22,7 @@ return new class extends Migration
             $table->string('semester')->nullable();
             $table->string('faculty')->nullable();
             $table->decimal('credit_unit', 5, 2)->nullable();
-            $table->decimal('grade', 5, 2)->nullable();
+            $table->string('grade')->nullable();
             $table->string('validity')->default('invalid');
             $table->string('status')->default('staged');
             $table->json('errors')->nullable();

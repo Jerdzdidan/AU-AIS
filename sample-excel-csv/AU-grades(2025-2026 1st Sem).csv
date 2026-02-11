@@ -1,13 +1,12 @@
 student_number,subject_code,unit_type,faculty,credit_unit,grade
-23-12345,CS 210,lec,"Delos Reyes, Amelita M.",3,1.25
-23-12345,CS 211,lab,"Torres, Jay R",1,1.25
-23-12345,CS 211,lec,"Torres, Jay R",2,1.25
-23-12345,GCAS 07,lec,"Magistrado, Irene",3,1
-23-12345,GCAS 17,lec,"Roxas, Jerome D.",2,1.5
-23-12345,ITC 123,lab,"Santiago, Archie G.",1,1
-23-12345,ITC 123,lec,"Santiago, Archie G.",2,1
-23-12345,ITC 124,lab,"Torres, Jay R",1,1.25
-23-12345,ITC 124,lec,"Torres, Jay R",2,1.25
-23-12345,ITC 125,lab,"Carpio, Jennifer",1,1.25
-23-12345,ITC 125,lec,"Carpio, Jennifer",2,1.25
-23-12345,STAT 01C,lec,"Abalos, Zenaida",3,1
+23-12345,CS 310,lec,"Santiago, Al",2,1.50
+23-12345,CS 310,lab,"Santiago, Al",1,1.50
+23-12345,CS 311,lec,"Torres, Jay-R",2,1.25
+23-12345,CS 311,lab,"Torres, Jay-R",1,1.25
+23-12345,CS 312,lec,"Francisco, Dan",2,1.75
+23-12345,CS 312,lab,"Francisco, Dan",1,1.75
+23-12345,CS 313,lec,"Francisco, Dan",2,1.50
+23-12345,CS 313,lab,"Francisco, Dan",1,1.50
+23-12345,CS 314,lec,"Delos Reyes, Amelita M.",3,1.50
+23-12345,GCAS 19,lec,"Agcaoili, Rosminea",3,1.25
+23-12345,GCAS IR,lec,"Ansula, Andreline",3,1.25

@@ -23,7 +23,8 @@ class Grade extends Model
 
     public function is_passed()
     {
-        return $this->grade >= 1.00 && $this->grade <= 3.00;
+        $grade = (float) $this->grade;
+        return $grade >= 1.00 && $grade <= 3.00;
     }
 
     public function student(){

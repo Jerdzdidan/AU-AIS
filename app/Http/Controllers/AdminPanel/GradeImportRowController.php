@@ -78,13 +78,19 @@ class GradeImportRowController extends Controller
                 $errors[] = 'Invalid credit unit';
             }
             
-            if (!isset($row['grade']) || !is_numeric($row['grade'])) {
-                $errors[] = 'Invalid grade';
+            if (!isset($row['grade'])) {
+                $errors[] = 'Grade is required';
             }
             else
             {
-                if ($row['grade'] != 0 && ($row['grade'] < 1 || $row['grade'] > 3) && $row['grade'] != 5) {
-                    $errors[] = 'Grade must be 0, between 1 and 3, or 5';
+                $grade = $row['grade'];
+
+                if ($grade !== "DRP" && $grade !== "INC") {
+                    $numericGrade = (float) $grade;
+
+                    if (($numericGrade < 1 || $numericGrade > 3) && $numericGrade != 5) {
+                        $errors[] = 'Grade must be between 1 and 3, 5, OR DRP or INC';
+                    }
                 }
             }
 
@@ -131,12 +137,10 @@ class GradeImportRowController extends Controller
                 'unit_type' => 'required|string|max:100',
                 'grade' => [
                     'required', 
-                    'numeric', 
-                    'min:0', 
-                    'max:100',
+                    'string',
                     function ($attribute, $value, $fail) {
-                        if ($value != 0 && ($value < 1 || $value > 3) && $value != 5) {
-                            $fail('The '.$attribute.' must be 0, between 1 and 3, or 5.');
+                        if ($value != "DRP" && $value != "INC" && ($value < 1 || $value > 3) && $value != 5) {
+                            $fail('The '.$attribute.' must be 0, between 1 and 3, 5 OR INC or DRP.');
                         }
                     }
                 ],
@@ -213,12 +217,25 @@ class GradeImportRowController extends Controller
             'unit_type' => 'required|string|max:100',
             'grade' => [
                 'required', 
-                'numeric', 
-                'min:0', 
-                'max:100',
+                'string',
                 function ($attribute, $value, $fail) {
-                    if ($value != 0 && ($value < 1 || $value > 3) && $value != 5) {
-                        $fail('The '.$attribute.' must be 0, between 1 and 3, or 5.');
+                    $grade = $value;
+
+                    if ($grade != "DRP" && $grade != "INC") {
+                        if (!is_numeric($grade)) {
+                            $fail('The '.$attribute.' must be 0, between 1 and 3, 5 OR INC or DRP.');
+                        } else {
+                            try {
+                                $numericgrade = (float) $grade;
+
+                                if (($numericgrade < 1 || $numericgrade > 3) && $numericgrade != 5) {
+                                    $fail('The '.$attribute.' must be 0, between 1 and 3, 5 OR INC or DRP.');
+                                }
+                            }
+                            catch (Exception $e) {
+                                $fail($e);
+                            }
+                        }
                     }
                 }
             ],
@@ -266,13 +283,27 @@ class GradeImportRowController extends Controller
             $valid = false;
         }
         
-        if (!isset($row['grade']) || !is_numeric($row['grade'])) {
+        if (!isset($row['grade'])) {
             $valid = false;
         }
-        else
-        {
-            if ($row['grade'] != 0 && ($row['grade'] < 1 || $row['grade'] > 3) && $row['grade'] != 5) {
-                $valid = false;
+        else {
+            $grade = $row['grade'];
+
+            if ($grade !== "DRP" && $grade !== "INC") {
+                if (!is_numeric($grade)) {
+                    $valid = false;
+                } else {
+                    try {
+                        $numericgrade = (float) $grade;
+
+                        if (($numericgrade < 1 || $numericgrade > 3) && $numericgrade != 5) {
+                            $valid = false;
+                        }
+                    }
+                    catch (Exception $e) {
+                        $valid = false;
+                    }
+                }
             }
         }
 

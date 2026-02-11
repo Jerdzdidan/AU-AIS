@@ -25,7 +25,6 @@ class GradeImportRow extends Model
 
     protected $casts = [
         'errors' => 'array',
-        'grade' => 'decimal:2',
         'credit_unit' => 'decimal:2',
     ];
 

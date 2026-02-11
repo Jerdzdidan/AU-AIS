@@ -110,7 +110,10 @@ Academic Progress
             <th>Subject Name</th>
             <th>LEC</th>
             <th>LAB</th>
-            <th>Status</th>
+            <th>Lecture Grade</th>
+            <th>Laboratory Grade</th>
+            <th>Grade</th>
+            <th>Remarks</th>
             <th>Category</th>
             <th>Year Level</th>
             <th>Semester</th>
@@ -182,7 +185,7 @@ $(document).ready(function() {
 
     // Initialize DataTable
     const academicProgressTable = new GenericDataTable({
-        order: [[6, "asc"], [7, "asc"], [8, "asc"], [1, "asc"]],
+        order: [[7, "asc"], [8, "asc"], [9, "asc"], [1, "asc"]],
         tableId: 'academicProgressTable',
         ajaxUrl: "{{ route('student.academic_progress.data') }}",
         ajaxData: function(d) {
@@ -194,35 +197,108 @@ $(document).ready(function() {
             { data: "subject.code" },
             { data: "subject.name" },
             { 
-                data: "lecture_completed",
+                data: "lecture_status",
                 responsivePriority: 1,
                 render: (data, type, row) => {
                     if (!row.has_lec)
                     {
                         return '<span class="text-muted">-</span>';
                     }
-
-                    return row.lecture_completed ? '<i class="fa-solid fa-check-circle text-success"></i>' : '<i class="fa-solid fa-times-circle text-danger"></i>';
+                    else 
+                    {
+                        if (row.lecture_status === "NOT_TAKEN")
+                        {
+                            return '<i class="fa-solid fa-times-circle text-danger"></i>';
+                        }
+                        else if (row.lecture_status === "FAILED")
+                        {
+                            return '<i class="fa-solid fa-circle-minus text-warning"></i>';
+                        }
+                        else if (row.lecture_status === "COMPLETED")
+                        {
+                            return '<i class="fa-solid fa-check-circle text-success"></i>';
+                        }
+                        
+                    }
                 }
             },
             { 
-                data: "laboratory_completed",
+                data: "laboratory_status",
                 responsivePriority: 1,
                 render: (data, type, row) => {
                     if (!row.has_lab)
                     {
                         return '<span class="text-muted">-</span>';
                     }
-
-                    return row.laboratory_completed ? '<i class="fa-solid fa-check-circle text-success"></i>' : '<i class="fa-solid fa-times-circle text-danger"></i>';
+                    else 
+                    {
+                        if (row.laboratory_status === "NOT_TAKEN")
+                        {
+                            return '<i class="fa-solid fa-times-circle text-danger"></i>';
+                        }
+                        else if (row.laboratory_status === "FAILED")
+                        {
+                            return '<i class="fa-solid fa-circle-minus text-warning"></i>';
+                        }
+                        else if (row.laboratory_status === "COMPLETED")
+                        {
+                            return '<i class="fa-solid fa-check-circle text-success"></i>';
+                        }
+                        
+                    }
                 }
             },
             {
-                data: "is_completed",
+                data: "lecture_grade", className: "none",
                 render: (data, type, row) => {
-                    const status = row.is_completed ? 'Completed' : 'Incomplete';
-                    const badge = row.is_completed ? 'success' : 'warning';
-                    return `<span class="badge bg-label-${badge}">${status}</span>`;
+                    if (!row.has_lec)
+                    {
+                        return '<span class="text-muted">-</span>';
+                    }
+
+                    return data ?? '<span class="text-muted">-</span>';
+                }
+            },
+            {
+                data: "laboratory_grade", className: "none",
+                render: (data, type, row) => {
+                    if (!row.has_lab)
+                    {
+                        return '<span class="text-muted">-</span>';
+                    }
+
+                    return data ?? '<span class="text-muted">-</span>';
+                }
+            },
+            {
+                data: "grade",
+                render: (data, type, row) => {
+                    return row.grade ?? '-';
+                }              
+            },
+            {
+                data: "remarks",
+                render: (data, type, row) => {
+                    if (row.remarks == "NOT_TAKEN")
+                    {
+                        return '<span class="text-muted">-</span>';
+                    }
+                    else if (row.remarks == "FAILED")
+                    {
+                        return '<span class="badge bg-label-danger">Failed</span>';
+                    }
+                    else if (row.remarks == "INCOMPLETE")
+                    {
+                        return '<span class="badge bg-label-warning">Incomplete</span>';
+                    }
+                    else if (row.remarks == "DROPPED")
+                    {
+                        return '<span class="badge bg-label-dark">Dropped</span>';
+                    }
+                    else if (row.remarks == "COMPLETED")
+                    {
+                        return '<span class="badge bg-label-success">Completed</span>';
+                    }
                 }
             },
             { data: "subject.subject_category", className: "none" },
