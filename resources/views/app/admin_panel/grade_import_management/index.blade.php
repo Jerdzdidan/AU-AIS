@@ -51,9 +51,9 @@ Grades Import Management
 
 <script>
 $(document).ready(function() {
-    prefetchAndInitSelect2('#academic_period_id', "{{ route('academic_periods.select') }}", 'Select academic period');
+    prefetchAndInitSelect2('#academic_period_id', "{{ route('academic_periods.select') }}", 'Select academic period', '#grade-import-create-modal');
 
-    prefetchAndInitSelect2('#academic_period_update_id', "{{ route('academic_periods.select') }}", 'Select academic period');
+    prefetchAndInitSelect2('#academic_period_update_id', "{{ route('academic_periods.select') }}", 'Select academic period', '#grade-import-update-modal');
 
     // Initialize DataTable
     const gradeImportsTable = new GenericDataTable({

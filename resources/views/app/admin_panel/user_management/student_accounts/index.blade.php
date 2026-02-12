@@ -110,7 +110,7 @@ $(document).ready(function() {
     });
 
     // Select2
-    prefetchAndInitSelect2('#program_id', "{{ route('programs.select') }}", 'Select a program');
+    prefetchAndInitSelect2('#program_id', "{{ route('programs.select') }}", 'Select a program', '#add-or-update-modal');
 
     // Initialize DataTable
     const studentsTable = new GenericDataTable({

@@ -60,7 +60,7 @@ Programs Management
 $(document).ready(function() {
     // Select2
     let departmentsCache = [];
-    prefetchAndInitSelect2('#department_id', "{{ route('departments.select') }}", 'Select a department');
+    prefetchAndInitSelect2('#department_id', "{{ route('departments.select') }}", 'Select a department', '#add-or-update-modal');
 
     // Initialize DataTable
     const programsTable = new GenericDataTable({

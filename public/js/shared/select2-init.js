@@ -2,7 +2,7 @@
  * Simple Select2 Initializer with Badge Styling
  * Clean and reusable for Laravel projects
  */
-function prefetchAndInitSelect2(selector, url, placeholder) {
+function prefetchAndInitSelect2(selector, url, placeholder, dropDownParent = null) {
     return new Promise((resolve, reject) => {
         $.get(url)
             .done(function(data) {
@@ -12,7 +12,7 @@ function prefetchAndInitSelect2(selector, url, placeholder) {
                     code: item.code
                 }));
 
-                initSelect2(selector, { placeholder, preloadedData });
+                initSelect2(selector, { placeholder, preloadedData, dropDownParent });
                 resolve(preloadedData); 
             })
             .fail(function(error) {
@@ -28,7 +28,8 @@ function initSelect2(selector, options = {}) {
         badgeKey = 'code',
         badgeClass = 'bg-primary',
         placeholder = 'Select an option',
-        preloadedData = null 
+        preloadedData = null,
+        dropDownParent = null
     } = options;
 
     const $element = $(selector);
@@ -37,12 +38,29 @@ function initSelect2(selector, options = {}) {
     const config = {
         allowClear: true,
         placeholder: placeholder,
+        minimumResultsForSearch: 0,
         templateResult: formatWithBadge,
         templateSelection: formatWithBadge,
-        language: {
-            searching: function() { return null; }
+        matcher: function(params, data) {
+            if ($.trim(params.term) === '') return data;
+            if (typeof data.text === 'undefined') return null;
+
+            const searchTerm = params.term.toLowerCase();
+
+            if (
+                data.text.toLowerCase().includes(searchTerm) ||
+                (data.code && data.code.toLowerCase().includes(searchTerm))
+            ) {
+                return data;
+            }
+
+            return null;
         }
     };
+
+    if (dropDownParent) {
+        config.dropdownParent = $(dropDownParent);
+    }
 
     if (preloadedData) {
         $element.empty().append('<option></option>');

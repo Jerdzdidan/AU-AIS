@@ -94,7 +94,7 @@ Curriculum Management
 $(document).ready(function() {
     // Select2
     let programsCache = [];
-    prefetchAndInitSelect2('#program_id', "{{ route('programs.select') }}", 'Select a program');
+    prefetchAndInitSelect2('#program_id', "{{ route('programs.select') }}", 'Select a program', '#add-or-update-modal');
     
     $('#filter-status').select2({
         minimumResultsForSearch: -1,
