@@ -75,7 +75,7 @@ Route::prefix('admin')->middleware('auth')->can('is-admin')->group(function () {
         Route::get('data', [AcademicPeriodController::class, 'getData'])->name('academic_periods.data');
         Route::get('stats', [AcademicPeriodController::class, 'getStats'])->name('academic_periods.stats');
         Route::post('toggle/{id}', [AcademicPeriodController::class, 'toggle'])->name('academic_periods.toggle');
-        
+
         // FOR SELECT2
         Route::get('select', [AcademicPeriodController::class, 'getAcademicPeriodsForSelect'])->name('academic_periods.select');
     });
@@ -125,7 +125,7 @@ Route::prefix('admin')->middleware('auth')->can('is-admin')->group(function () {
     });
 
     // GRADE IMPORT FEATURE
-    Route::prefix('grades/import')->group(function() {
+    Route::prefix('grades/import')->group(function () {
         // GRADE IMPORTS
         Route::get('/', [GradeImportController::class, 'index'])->name('grades.import.index');
         Route::get('data', [GradeImportController::class, 'getData'])->name('grades.import.data');
@@ -137,7 +137,7 @@ Route::prefix('admin')->middleware('auth')->can('is-admin')->group(function () {
         Route::delete('destroy/{gradeImport}', [GradeImportController::class, 'destroy'])->name('grades.import.destroy');
 
         // GRADE IMPORT ROWS
-        Route::prefix('rows')->group(function() {
+        Route::prefix('rows')->group(function () {
             Route::get('/{gradeImportId}', [GradeImportRowController::class, 'index'])->name('grades.import.rows.index');
             Route::get('data/{gradeImportId}', [GradeImportRowController::class, 'getData'])->name('grades.import.rows.data');
 
@@ -146,24 +146,24 @@ Route::prefix('admin')->middleware('auth')->can('is-admin')->group(function () {
             Route::put('update/{gradeImportRowId}', [GradeImportRowController::class, 'update'])->name('grades.import.rows.update');
             Route::delete('destroy/{gradeImportRowId}', [GradeImportRowController::class, 'destroy'])->name('grades.import.rows.destroy');
 
+            Route::post('import/{gradeImportId}', [GradeImportRowController::class, 'import'])->name('grades.import.rows.import');
+
             Route::post('commit-row/{gradeImportRowId}', [GradeImportRowController::class, 'commitRow'])->name('grades.import.rows.commitRow');
             Route::post('commit-all/{gradeImportId}', [GradeImportRowController::class, 'commitAll'])->name('grades.import.rows.commitAll');
 
+            Route::post('uncommitAll/{gradeImportRowId}', [GradeImportRowController::class, 'uncommitAll'])->name('grades.import.rows.uncommitAll');
             Route::post('uncommit/{gradeImportRowId}', [GradeImportRowController::class, 'unCommit'])->name('grades.import.rows.uncommit');
 
             Route::get('errors/{gradeImportRowId}', [GradeImportRowController::class, 'fetchErrors'])->name('grades.import.rows.errors');
         });
-              
-        Route::get('commit/{gradeImport}', [GradeImportController::class, 'commit'])->name('grades.import.commit');
-        
-    });
 
-    
+        Route::get('commit/{gradeImport}', [GradeImportController::class, 'commit'])->name('grades.import.commit');
+    });
 });
 
 
 Route::prefix('student')->middleware('auth', StudentInformationCheck::class)->can('is-student')->group(function () {
-    
+
     // ACADEMIC PROGRESS
     Route::get('academic-progress', [AcademicProgress::class, 'index'])->name('student.academic_progress.index');
     Route::get('academic-progress/data', [AcademicProgress::class, 'getData'])->name('student.academic_progress.data');
@@ -181,3 +181,4 @@ Route::prefix('student')->middleware('auth', StudentInformationCheck::class)->ca
     // Help
     Route::view('help', 'app.student_portal.general_information.help')->name('student.help.index');
 });
+

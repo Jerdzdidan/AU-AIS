@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\AdminPanel;
 
 use App\Http\Controllers\Controller;
+use App\Imports\GradesImport;
 use App\Models\Grade;
 use App\Models\GradeImport;
 use App\Models\GradeImportRow;
@@ -16,17 +17,18 @@ use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\ValidationException;
+use Maatwebsite\Excel\Facades\Excel;
 
 class GradeImportRowController extends Controller
 {
     // Status Constants
     const STATUS_STAGED = 'staged';
     const STATUS_COMMITTED = 'committed';
-    
+
     // Validity Constants
     const VALIDITY_VALID = 'valid';
     const VALIDITY_INVALID = 'invalid';
-    
+
     // Unit Type Constants
     const UNIT_TYPE_LEC = 'lec';
     const UNIT_TYPE_LAB = 'lab';
@@ -43,7 +45,7 @@ class GradeImportRowController extends Controller
     {
         try {
             $gradeImport = $this->findGradeImport($gradeImportId);
-            
+
             // Validate all rows within a transaction
             DB::transaction(function () use ($gradeImport) {
                 $this->validateAllRows($gradeImport);
@@ -52,13 +54,16 @@ class GradeImportRowController extends Controller
             // Update grade import statistics
             $this->updateGradeImportStatistics($gradeImport);
 
-            $invalidCount = $gradeImport->rows()->where('validity', self::VALIDITY_INVALID)->count();
-            $stagedCount = $gradeImport->rows()->where('status', self::STATUS_STAGED)->count();
+            $invalidCount = $gradeImport->rows()->where('validity', $this::VALIDITY_INVALID)->count();
+            $stagedCount = $gradeImport->rows()->where('status', $this::STATUS_STAGED)->count();
+
+            $allCommited = $gradeImport->rows()->where('status', $this::STATUS_STAGED)->count() === 0;
 
             return view('app.admin_panel.grade_import_management.grade_import_rows.index', [
                 'gradeImportId' => Crypt::encryptString($gradeImport->id),
                 'gradeImportName' => $gradeImport->filename,
                 'valid' => $invalidCount === 0,
+                'allCommited' => $allCommited,
                 'hasStagedData' => $stagedCount > 0,
             ]);
         } catch (Exception $e) {
@@ -66,17 +71,37 @@ class GradeImportRowController extends Controller
                 'grade_import_id' => $gradeImportId,
                 'error' => $e->getMessage()
             ]);
-            
+
             return redirect()->back()->with('error', 'An error occurred while loading grade import rows.');
         }
     }
 
     // Get data for DataTables
-    public function getData(string $gradeImportId): JsonResponse
+    public function getData(Request $request, string $gradeImportId): JsonResponse
     {
         try {
             $gradeImport = $this->findGradeImport($gradeImportId);
-            $gradeImportRows = $gradeImport->rows;
+            $gradeImportRows = $gradeImport->rows();
+
+            if ($request->filled('status') && $request->status !== 'All') {
+                $gradeImportRows->where('status', $request->status);
+            }
+
+            if ($request->filled('validity') && $request->validity !== 'All') {
+                $gradeImportRows->where('validity', $request->validity);
+            }
+
+            // Filter by program/course (frontend sends `course`)
+            if ($request->filled('program') && $request->program !== 'All') {
+                $programId = $request->program;
+
+                // Join students table to filter by program_id using student_number
+                $gradeImportRows->join('students', 'students.student_number', '=', 'grade_import_rows.student_number')
+                    ->where('students.program_id', $programId)
+                    ->select('grade_import_rows.*');
+            }
+
+            $gradeImportRows = $gradeImportRows->get();
 
             return datatables()->of($gradeImportRows)
                 ->editColumn('id', fn($row) => Crypt::encryptString($row->id))
@@ -86,7 +111,7 @@ class GradeImportRowController extends Controller
                 'grade_import_id' => $gradeImportId,
                 'error' => $e->getMessage()
             ]);
-            
+
             return response()->json([
                 'success' => false,
                 'message' => 'Error fetching data'
@@ -99,10 +124,10 @@ class GradeImportRowController extends Controller
     {
         try {
             $gradeImport = $this->findGradeImport($gradeImportId);
-            
+
             // Validate input
             $validated = $this->validateRequest($request);
-            
+
             // Verify student and subject exist
             $student = $this->findStudentOrFail($validated['student_number']);
             $subject = $this->findSubjectOrFail($validated['subject_code']);
@@ -113,19 +138,18 @@ class GradeImportRowController extends Controller
             DB::transaction(function () use ($gradeImport, $data) {
                 // Create the new row
                 $newRow = GradeImportRow::create($data);
-                
+
                 // Validate all rows including the new one
                 $this->validateAllRows($gradeImport);
-                
+
                 // Update statistics
                 $this->updateGradeImportStatistics($gradeImport);
             });
 
-            $allValid = $gradeImport->rows()->where('validity', self::VALIDITY_INVALID)->count() === 0;
-            $allCommited = $gradeImport->rows()->where('status', self::STATUS_STAGED)->count() === 0;
+            $allValid = $gradeImport->rows()->where('validity', $this::VALIDITY_INVALID)->count() === 0;
+            $allCommited = $gradeImport->rows()->where('status', $this::STATUS_STAGED)->count() === 0;
 
             return response()->json(['success' => true, 'allValid' => $allValid, 'allCommited' => $allCommited]);
-            
         } catch (ValidationException $e) {
             return response()->json([
                 'success' => false,
@@ -136,7 +160,51 @@ class GradeImportRowController extends Controller
                 'grade_import_id' => $gradeImportId,
                 'error' => $e->getMessage()
             ]);
-            
+
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    public function import(Request $request, string $gradeImportId): JsonResponse
+    {
+        try {
+            $validated = $request->validate([
+                'file' => 'required|file|mimes:csv,xlsx,xls,txt|mimetypes:text/plain,text/csv,text/x-csv,application/csv,application/x-csv,text/comma-separated-values,text/x-comma-separated-values,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet|max:10240',
+            ]);
+
+            $file = $validated['file'];
+            $gradeImport = $this->findGradeImport($gradeImportId);
+            Excel::import(new GradesImport($gradeImport->id), $file);
+
+            // Validate all rows after import
+            DB::transaction(function () use ($gradeImport) {
+                $this->validateAllRows($gradeImport);
+                $this->updateGradeImportStatistics($gradeImport);
+            });
+
+            $allValid = $gradeImport->rows()->where('validity', $this::VALIDITY_INVALID)->count() === 0;
+            $allCommited = $gradeImport->rows()->where('status', $this::STATUS_STAGED)->count() === 0;
+
+            return response()->json([
+                'success' => true,
+                'message' => 'File imported successfully',
+                'allValid' => $allValid,
+                'allCommited' => $allCommited
+            ]);
+        } catch (ValidationException $e) {
+            return response()->json([
+                'success' => false,
+                'errors' => $e->errors(),
+            ], 422);
+        } catch (Exception $e) {
+            Log::error('Error importing grade import row', [
+                'grade_import_id' => $gradeImportId,
+                'error' => $e->getMessage()
+            ]);
+
             return response()->json([
                 'success' => false,
                 'message' => $e->getMessage()
@@ -164,7 +232,7 @@ class GradeImportRowController extends Controller
                 'grade_import_row_id' => $gradeImportRowId,
                 'error' => $e->getMessage()
             ]);
-            
+
             return response()->json([
                 'success' => false,
                 'message' => 'Row not found'
@@ -177,10 +245,10 @@ class GradeImportRowController extends Controller
     {
         try {
             $row = $this->findGradeImportRow($gradeImportRowId);
-            
+
             // Validate input
             $validated = $this->validateRequest($request);
-            
+
             // Verify student and subject exist
             $student = $this->findStudentOrFail($validated['student_number']);
             $subject = $this->findSubjectOrFail($validated['subject_code']);
@@ -188,28 +256,27 @@ class GradeImportRowController extends Controller
             DB::transaction(function () use ($row, $validated, $subject) {
                 // Update the row
                 $row->update($validated);
-                
+
                 // Update subject name
                 $row->subject_name = $subject->name;
                 $row->save();
-                
+
                 // Validate all rows in the import
                 $this->validateAllRows($row->gradeImport);
-                
+
                 // Update statistics
                 $this->updateGradeImportStatistics($row->gradeImport);
             });
 
             $gradeImport = $row->fresh()->gradeImport;
-            $allValid = $gradeImport->rows()->where('validity', self::VALIDITY_INVALID)->count() === 0;
-            $allCommited = $gradeImport->rows()->where('status', self::STATUS_STAGED)->count() === 0;
+            $allValid = $gradeImport->rows()->where('validity', $this::VALIDITY_INVALID)->count() === 0;
+            $allCommited = $gradeImport->rows()->where('status', $this::STATUS_STAGED)->count() === 0;
 
             return response()->json([
                 'success' => true,
                 'allValid' => $allValid,
                 'allCommited' => $allCommited
             ]);
-            
         } catch (ValidationException $e) {
             return response()->json([
                 'success' => false,
@@ -220,7 +287,7 @@ class GradeImportRowController extends Controller
                 'grade_import_row_id' => $gradeImportRowId,
                 'error' => $e->getMessage()
             ]);
-            
+
             return response()->json([
                 'success' => false,
                 'message' => $e->getMessage()
@@ -237,12 +304,12 @@ class GradeImportRowController extends Controller
 
             DB::transaction(function () use ($row, $gradeImport) {
                 // Update counts before deletion
-                if ($row->validity === self::VALIDITY_VALID) {
+                if ($row->validity === $this::VALIDITY_VALID) {
                     $gradeImport->valid_rows = max(0, $gradeImport->valid_rows - 1);
-                } elseif ($row->validity === self::VALIDITY_INVALID) {
+                } elseif ($row->validity === $this::VALIDITY_INVALID) {
                     $gradeImport->invalid_rows = max(0, $gradeImport->invalid_rows - 1);
                 }
-                
+
                 $gradeImport->total_rows = max(0, $gradeImport->total_rows - 1);
                 $gradeImport->save();
 
@@ -254,8 +321,8 @@ class GradeImportRowController extends Controller
                 $this->updateGradeImportStatistics($gradeImport);
             });
 
-            $allValid = $gradeImport->rows()->where('validity', self::VALIDITY_INVALID)->count() === 0;
-            $allCommited = $gradeImport->rows()->where('status', self::STATUS_STAGED)->count() === 0;
+            $allValid = $gradeImport->rows()->where('validity', $this::VALIDITY_INVALID)->count() === 0;
+            $allCommited = $gradeImport->rows()->where('status', $this::STATUS_STAGED)->count() === 0;
 
             return response()->json([
                 'success' => true,
@@ -263,13 +330,12 @@ class GradeImportRowController extends Controller
                 'allCommited' => $allCommited,
                 'message' => 'Grade data record deleted successfully.'
             ]);
-            
         } catch (Exception $e) {
             Log::error('Error deleting grade import row', [
                 'grade_import_row_id' => $gradeImportRowId,
                 'error' => $e->getMessage()
             ]);
-            
+
             return response()->json([
                 'success' => false,
                 'message' => 'Error deleting record'
@@ -282,8 +348,8 @@ class GradeImportRowController extends Controller
     {
         try {
             $row = $this->findGradeImportRow($gradeImportRowId);
-            
-            if ($row->validity !== self::VALIDITY_VALID) {
+
+            if ($row->validity !== $this::VALIDITY_VALID) {
                 return response()->json([
                     'success' => false,
                     'message' => 'Cannot commit invalid row.'
@@ -292,7 +358,7 @@ class GradeImportRowController extends Controller
 
             DB::transaction(function () use ($row) {
                 $student = Student::where('student_number', $row->student_number)->firstOrFail();
-                
+
                 Grade::create([
                     'student_id' => $student->id,
                     'subject_code' => $row->subject_code,
@@ -307,7 +373,7 @@ class GradeImportRowController extends Controller
                     'grade_import_row_id' => $row->id,
                 ]);
 
-                $row->status = self::STATUS_COMMITTED;
+                $row->status = $this::STATUS_COMMITTED;
                 $row->save();
             });
 
@@ -315,13 +381,12 @@ class GradeImportRowController extends Controller
                 'success' => true,
                 'message' => 'Grade data row committed successfully.'
             ]);
-            
         } catch (Exception $e) {
             Log::error('Error committing grade import row', [
                 'grade_import_row_id' => $gradeImportRowId,
                 'error' => $e->getMessage()
             ]);
-            
+
             return response()->json([
                 'success' => false,
                 'message' => 'Error committing row'
@@ -334,9 +399,9 @@ class GradeImportRowController extends Controller
     {
         try {
             $gradeImport = $this->findGradeImport($gradeImportId);
-            
+
             $rows = $gradeImport->rows()
-                ->where('status', self::STATUS_STAGED)
+                ->where('status', $this::STATUS_STAGED)
                 ->get();
 
             // Validate before committing
@@ -347,7 +412,7 @@ class GradeImportRowController extends Controller
                 ], 400);
             }
 
-            $invalidCount = $rows->where('validity', self::VALIDITY_INVALID)->count();
+            $invalidCount = $rows->where('validity', $this::VALIDITY_INVALID)->count();
             if ($invalidCount > 0) {
                 return response()->json([
                     'success' => false,
@@ -365,7 +430,7 @@ class GradeImportRowController extends Controller
 
                 foreach ($rows as $row) {
                     $student = $students->get($row->student_number);
-                    
+
                     if (!$student) {
                         throw new Exception("Student not found: {$row->student_number}");
                     }
@@ -384,16 +449,16 @@ class GradeImportRowController extends Controller
                         'grade_import_row_id' => $row->id,
                     ]);
 
-                    $row->status = self::STATUS_COMMITTED;
+                    $row->status = $this::STATUS_COMMITTED;
                     $row->save();
                 }
 
                 // Update grade import status
-                $stagedCount = $gradeImport->rows()->where('status', self::STATUS_STAGED)->count();
+                $stagedCount = $gradeImport->rows()->where('status', $this::STATUS_STAGED)->count();
                 if ($stagedCount === 0) {
-                    $gradeImport->status = self::STATUS_COMMITTED;
+                    $gradeImport->status = $this::STATUS_COMMITTED;
                 }
-                
+
                 $gradeImport->processed_at = now();
                 $gradeImport->save();
             });
@@ -402,13 +467,12 @@ class GradeImportRowController extends Controller
                 'success' => true,
                 'message' => 'All staged grade data rows committed successfully.'
             ]);
-            
         } catch (Exception $e) {
             Log::error('Error committing all grade import rows', [
                 'grade_import_id' => $gradeImportId,
                 'error' => $e->getMessage()
             ]);
-            
+
             return response()->json([
                 'success' => false,
                 'message' => 'Error committing rows: ' . $e->getMessage()
@@ -424,8 +488,8 @@ class GradeImportRowController extends Controller
 
             DB::transaction(function () use ($row) {
                 Grade::where('grade_import_row_id', $row->id)->delete();
-                
-                $row->status = self::STATUS_STAGED;
+
+                $row->status = $this::STATUS_STAGED;
                 $row->save();
             });
 
@@ -433,16 +497,53 @@ class GradeImportRowController extends Controller
                 'success' => true,
                 'message' => 'Grade data row uncommitted successfully.'
             ]);
-            
         } catch (Exception $e) {
             Log::error('Error uncommitting grade import row', [
                 'grade_import_row_id' => $gradeImportRowId,
                 'error' => $e->getMessage()
             ]);
-            
+
             return response()->json([
                 'success' => false,
                 'message' => 'Error uncommitting row'
+            ], 500);
+        }
+    }
+
+    public function uncommitAll(string $gradeImportId): JsonResponse
+    {
+        try {
+            $gradeImport = $this->findGradeImport($gradeImportId);
+
+            DB::transaction(function () use ($gradeImport) {
+                Grade::where('grade_import_id', $gradeImport->id)->delete();
+
+                $gradeImport->rows()
+                    ->where('status', $this::STATUS_COMMITTED)
+                    ->update(['status' => $this::STATUS_STAGED]);
+            });
+
+            $gradeImport->processed_at = now();
+            $gradeImport->save();
+
+            // Validate all remaining rows to ensure consistency
+            $this->validateAllRows($gradeImport);
+            // Update statistics after validation
+            $this->updateGradeImportStatistics($gradeImport);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'All staged grade data rows committed successfully.'
+            ]);
+        } catch (Exception $e) {
+            Log::error('Error committing all grade import rows', [
+                'grade_import_id' => $gradeImportId,
+                'error' => $e->getMessage()
+            ]);
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Error committing rows: ' . $e->getMessage()
             ], 500);
         }
     }
@@ -452,20 +553,19 @@ class GradeImportRowController extends Controller
     {
         try {
             $row = $this->findGradeImportRow($gradeImportRowId);
-            
+
             $errors = $row->errors ? json_decode($row->errors, true) : [];
 
             return response()->json([
                 'success' => true,
                 'messages' => $errors
             ]);
-            
         } catch (Exception $e) {
             Log::error('Error fetching errors for grade import row', [
                 'grade_import_row_id' => $gradeImportRowId,
                 'error' => $e->getMessage()
             ]);
-            
+
             return response()->json([
                 'success' => false,
                 'message' => $e->getMessage(),
@@ -496,15 +596,15 @@ class GradeImportRowController extends Controller
     protected function validateAllRows(GradeImport $gradeImport): void
     {
         $rows = $gradeImport->rows()->get();
-        
+
         // Eager load students and subjects to avoid N+1 queries
         $studentNumbers = $rows->pluck('student_number')->unique()->filter();
         $subjectCodes = $rows->pluck('subject_code')->unique()->filter();
-        
+
         $students = Student::whereIn('student_number', $studentNumbers)
             ->get()
             ->keyBy('student_number');
-            
+
         $subjects = Subject::whereIn('code', $subjectCodes)
             ->get()
             ->keyBy('code');
@@ -516,8 +616,8 @@ class GradeImportRowController extends Controller
                 $subjects,
                 $gradeImport
             );
-            
-            $row->validity = empty($errors) ? self::VALIDITY_VALID : self::VALIDITY_INVALID;
+
+            $row->validity = empty($errors) ? $this::VALIDITY_VALID : $this::VALIDITY_INVALID;
             $row->errors = json_encode($errors);
             $row->save();
         }
@@ -527,15 +627,15 @@ class GradeImportRowController extends Controller
     protected function updateGradeImportStatistics(GradeImport $gradeImport): void
     {
         $gradeImport->valid_rows = $gradeImport->rows()
-            ->where('validity', self::VALIDITY_VALID)
+            ->where('validity', $this::VALIDITY_VALID)
             ->count();
-            
+
         $gradeImport->invalid_rows = $gradeImport->rows()
-            ->where('validity', self::VALIDITY_INVALID)
+            ->where('validity', $this::VALIDITY_INVALID)
             ->count();
 
         $gradeImport->total_rows = $gradeImport->rows()->count();
-            
+
         $gradeImport->save();
     }
 
@@ -545,7 +645,7 @@ class GradeImportRowController extends Controller
         return $request->validate([
             'student_number' => 'required|string|max:50',
             'subject_code' => 'required|string|max:50',
-            'unit_type' => 'required|string|in:' . self::UNIT_TYPE_LEC . ',' . self::UNIT_TYPE_LAB,
+            'unit_type' => 'required|string|in:' . $this::UNIT_TYPE_LEC . ',' . $this::UNIT_TYPE_LAB,
             'grade' => [
                 'required',
                 'numeric',
@@ -566,13 +666,13 @@ class GradeImportRowController extends Controller
     protected function findStudentOrFail(string $studentNumber): Student
     {
         $student = Student::where('student_number', $studentNumber)->first();
-        
+
         if (!$student) {
             throw ValidationException::withMessages([
                 'student_number' => ['Student with this number does not exist.']
             ]);
         }
-        
+
         return $student;
     }
 
@@ -580,13 +680,13 @@ class GradeImportRowController extends Controller
     protected function findSubjectOrFail(string $subjectCode): Subject
     {
         $subject = Subject::where('code', $subjectCode)->first();
-        
+
         if (!$subject) {
             throw ValidationException::withMessages([
                 'subject_code' => ['Subject with this code does not exist.']
             ]);
         }
-        
+
         return $subject;
     }
 
@@ -594,12 +694,12 @@ class GradeImportRowController extends Controller
     protected function prepareRowData(array $validated, GradeImport $gradeImport, Subject $subject): array
     {
         return array_merge($validated, [
-            'school_year' => $gradeImport->academic_period->year_start . '-' . 
-                           $gradeImport->academic_period->year_end,
+            'school_year' => $gradeImport->academic_period->year_start . '-' .
+                $gradeImport->academic_period->year_end,
             'semester' => $gradeImport->academic_period->semester,
             'subject_name' => $subject->name,
-            'validity' => self::VALIDITY_VALID,
-            'status' => self::STATUS_STAGED,
+            'validity' => $this::VALIDITY_VALID,
+            'status' => $this::STATUS_STAGED,
             'grade_import_id' => $gradeImport->id,
         ]);
     }

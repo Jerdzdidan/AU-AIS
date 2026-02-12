@@ -16,8 +16,8 @@
 <div class="container-fluid">
     <div class="content-container">
         <!-- Page Header -->
-        <x-table.page-header 
-            title="" 
+        <x-table.page-header
+            title=""
             subtitle="Manage grade import data"
             showBackButton="true"
             backUrl="{{ route('grades.import.index') }}">
@@ -27,19 +27,59 @@
                 Add New Data
             </button>
         </x-table.page-header>
-        
+
         <!-- Statistics Cards (Optional) -->
         <div class="row">
-            
+
         </div>
 
         <div class="text-end">
+            <a class="btn btn-outline-primary text-primary" data-bs-toggle="offcanvas" id="btn-import" data-bs-target="#import-modal">
+                <i class="fa-solid fa-file-import fa-1x me-2"></i>
+                Import CSV
+            </a>
             <a class="btn btn-outline-success" href="{{ route('grades.import.download', $gradeImportId) }}" role="button">
                 <i class="fa-solid fa-file-export fa-1x me-2"></i>
                 Export CSV
             </a>
         </div>
-        
+
+        <!-- Status Filter -->
+        <div class="row">
+            <div class="col-md-2">
+                <x-input.select-field
+                    id="filter-status"
+                    label="Filter by Status:"
+                    icon="fa-solid fa-tags"
+                    :options="[
+                        ['value' => 'All', 'text' => 'All Status'],
+                        ['value' => 'staged', 'text' => 'Staged'],
+                        ['value' => 'committed', 'text' => 'Committed'],
+                    ]"
+                    placeholder="Select Status"
+                />
+            </div>
+            <div class="col-md-2">
+                <x-input.select-field
+                    id="filter-validity"
+                    label="Filter by Validity:"
+                    icon="fa-solid fa-tags"
+                    :options="[
+                        ['value' => 'All', 'text' => 'All Validity'],
+                        ['value' => 'valid', 'text' => 'Valid'],
+                        ['value' => 'invalid', 'text' => 'Invalid'],
+                    ]"
+                    placeholder="Select Valdity"
+                />
+            </div>
+            <div class="col-md-2">
+                <x-input.select-field
+                    id="filter-program"
+                    label="Program"
+                    placeholder="Select a program"
+                />
+        </div>
+
         <!-- DataTable -->
         <x-table.table id="gradeImportRowsTable">
             {{-- Columns --}}
@@ -57,32 +97,6 @@
             <th>Status</th>
             <th>Actions</th>
         </x-table.table>
-
-        {{-- @if ($hasStagedData && $valid)
-            <div class="container" id="commit-section">
-                <div class="card mt-3">
-                    <div class="card-body">
-                        <div class="d-flex justify-content-between align-items-center">
-                            <div>
-                                <h6 class="mb-0">Commit and Display?</h6>
-                                <small class="text-muted">Commit and display the staged grade data for the students to see?</small>
-                            </div>
-                            <div>
-                                <button class="btn btn-success" id="btn-commit" onclick="commitAll()">
-                                    <i class="fa-solid fa-check me-2"></i>
-                                    Commit Records
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        @elseif (!$valid)
-            <div class="alert alert-warning mt-3" id="invalid-records-alert" role="alert">
-                <i class="fa-solid fa-triangle-exclamation me-2"></i>
-                There are invalid grade import records that need to be addressed before committing. Please review and correct the errors.
-            </div>
-        @endif --}}
 
         <div class="container" id="commit-section-alt" style="display: none;">
             <div class="card mt-3">
@@ -108,8 +122,28 @@
             There are invalid grade import records that need to be addressed before committing. Please review and correct the errors.
         </div>
 
+        <div class="container" id="uncommitAll-section-alt" style="display: none;">
+            <div class="card mt-3">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="mb-0">Uncommit all?</h6>
+                            <small class="text-muted">Uncommit all staged grade data for the students?</small>
+                        </div>
+                        <div>
+                            <button class="btn btn-danger" id="btn-uncommit" onclick="uncommitAll()">
+                                <i class="fa-solid fa-times me-2"></i>
+                                Uncommit Records
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         @include('app.admin_panel.grade_import_management.grade_import_rows.form')
         @include('app.admin_panel.grade_import_management.grade_import_rows.modal')
+        @include('app.admin_panel.grade_import_management.grade_import_rows.import_form')
     </div>
 </div>
 @endsection
@@ -117,11 +151,29 @@
 @section('scripts')
 <script src="{{ asset('js/shared/generic-datatable.js') }}"></script>
 <script src="{{ asset('js/shared/generic-crud.js') }}"></script>
+<script src="{{ asset('js/shared/select2-init.js') }}"></script>
 <script>
 $(document).ready(function() {
+
+    @if ($allCommited)
+        $('#uncommitAll-section-alt').show();
+    @endif
+
     $('#unit_type').select2({
         placeholder: 'Select Unit Type',
     });
+
+    $('#filter-status').select2({
+        minimumResultsForSearch: -1,
+        placeholder: 'All Status'
+    });
+
+    $('#filter-validity').select2({
+        minimumResultsForSearch: -1,
+        placeholder: 'All Validity'
+    });
+
+    prefetchAndInitSelect2('#filter-program', "{{ route('programs.select') }}", 'Select a program');
 
     @if ($hasStagedData && $valid)
         $('#commit-section-alt').show();
@@ -134,6 +186,11 @@ $(document).ready(function() {
         order: [[2, 'desc']],
         tableId: 'gradeImportRowsTable',
         ajaxUrl: "{{ route('grades.import.rows.data', $gradeImportId) }}",
+        ajaxData: function(d) {
+            d.status = $('#filter-status').val();
+            d.validity = $('#filter-validity').val();
+            d.program = $('#filter-program').val();
+        },
         columns: [
             { data: "id", visible: false },
             { data: "student_number" },
@@ -161,7 +218,7 @@ $(document).ready(function() {
                     return `<span class="badge bg-label-${badge}">${data}</span>`;
                 }
             },
-            { 
+            {
                 data: null,
                 orderable: false,
                 responsivePriority: 1,
@@ -174,7 +231,7 @@ $(document).ready(function() {
                         ${row.status === 'committed' ? `<button class="btn btn-sm btn-outline-secondary" title="Uncommit data for: ${row.student_id}" onclick="unCommit('${row.id}')">
                             <i class="fa-solid fa-rotate-left"></i>
                         </button>` : ''}
-                        
+
                         ${row.status === 'staged' ? `
                             <button class="btn btn-sm btn-outline-warning" title="Edit data for: ${row.student_id}" onclick="gradeImportRowsCRUD.edit('${row.id}')">
                                 <i class="fa-solid fa-pencil"></i>
@@ -199,7 +256,7 @@ $(document).ready(function() {
             }
         }
     }).init();
-    
+
     window.gradeImportRowsCRUD = new GenericCRUD({
         baseUrl: '/admin/grades/import/rows',
         storeUrl: "{{ route('grades.import.rows.store', $gradeImportId) }}",
@@ -247,11 +304,12 @@ $(document).ready(function() {
 
     gradeImportRowsCRUD.onCreateSuccess = (data) => {
         if (data.allValid && data.allCommited) {
-            $('#invalid-records-alert').remove();
+            $('#invalid-records-alert-alt').remove();
             $('#commit-section-alt').remove();
+            $('#uncommitAll-section-alt').show();
         }
         else if (data.allValid && !data.allCommited) {
-            $('#invalid-records-alert').remove();
+            $('#invalid-records-alert-alt').remove();
             $('#commit-section-alt').show();
         }
         else {
@@ -262,11 +320,12 @@ $(document).ready(function() {
 
     gradeImportRowsCRUD.onUpdateSuccess = (data) => {
         if (data.allValid && data.allCommited) {
-            $('#invalid-records-alert').remove();
-            $('#commit-section-alt').remove();
+            $('#invalid-records-alert-alt').hide();
+            $('#commit-section-alt').hide();
+            $('#uncommitAll-section-alt').show();
         }
         else if (data.allValid && !data.allCommited) {
-            $('#invalid-records-alert').remove();
+            $('#invalid-records-alert-alt').hide();
             $('#commit-section-alt').show();
         }
         else {
@@ -277,11 +336,12 @@ $(document).ready(function() {
 
     gradeImportRowsCRUD.onDeleteSuccess = (data) => {
         if (data.allValid && data.allCommited) {
-            $('#invalid-records-alert').remove();
-            $('#commit-section-alt').remove();
+            $('#invalid-records-alert-alt').hide();
+            $('#commit-section-alt').hide();
+            $('#uncommitAll-section-alt').show();
         }
         else if (data.allValid && !data.allCommited) {
-            $('#invalid-records-alert').remove();
+            $('#invalid-records-alert-alt').hide();
             $('#commit-section-alt').show();
         }
         else {
@@ -293,10 +353,49 @@ $(document).ready(function() {
     // $('#filter-status').on('change', function() {
     //     gradeImportRowsTable.reload();
     // });
+    window.Import = new GenericCRUD({
+        baseUrl: '/admin/grades/import/rows',
+        storeUrl: "{{ route('grades.import.rows.import', $gradeImportId) }}",
 
-    $('#btn-commit').on('click', function() {
-
+        entityName: 'Grade Import Data',
+        csrfToken: "{{ csrf_token() }}",
+        form: '#grade-import-form',
+        modal: '#import-modal'
     });
+
+    $('#grade-import-form').on('submit', function(e) {
+        e.preventDefault();
+        const fd = new FormData(this);
+
+        Import.create(fd);
+    });
+
+    Import.onCreateSuccess = (data) => {
+        if (data.allValid && data.allCommited) {
+            $('#invalid-records-alert-alt').hide();
+            $('#commit-section-alt').hide();
+            $('#uncommitAll-section-alt').show();
+        }
+        else if (data.allValid && !data.allCommited) {
+            $('#invalid-records-alert-alt').hide();
+            $('#commit-section-alt').show();
+        }
+        else {
+            $('#commit-section-alt').hide();
+            $('#invalid-records-alert-alt').show();
+        }
+    };
+
+    $('#filter-status').on('change', function() {
+        gradeImportRowsTable.reload();
+    });
+    $('#filter-validity').on('change', function() {
+        gradeImportRowsTable.reload();
+    });
+    $('#filter-program').on('change', function() {
+        gradeImportRowsTable.reload();
+    });
+
 });
 
 function openErrorModal(rowId) {
@@ -396,7 +495,7 @@ function unCommit(rowId) {
                         toastr.error(msg, 'Server Error');
                         return;
                     }
-                    
+
                     toastr.error(xhr.responseJSON?.message || 'An error occurred while uncommitting the record.', 'Error');
                 }
             });
@@ -424,8 +523,9 @@ function commitAll() {
                     toastr.success(response.message || "All valid grade import records have been committed.");
                     $('#commit-section').hide();
                     $('#commit-section-alt').hide();
-                    $('#invalid-records-alert').remove();
-                    $('#invalid-records-alert-alt').remove();
+                    $('#invalid-records-alert').hide();
+                    $('#invalid-records-alert-alt').hide();
+                    $('#uncommitAll-section-alt').show();
                     window.gradeImportRowsTable.reload();
                 },
                 error: (xhr) => {
@@ -440,7 +540,50 @@ function commitAll() {
                         toastr.error(msg, 'Server Error');
                         return;
                     }
-                    
+
+                    toastr.error(xhr.responseJSON?.message || 'An error occurred while committing the records.', 'Error');
+                }
+            });
+        }
+    });
+}
+
+function uncommitAll() {
+    Swal.fire({
+        title: 'Confirm Uncommit All',
+        html: `Are you sure you want to uncommit all valid grade import records? This action cannot be undone.`,
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#F8BB86",
+        cancelButtonColor: "#91a8b3ff",
+        confirmButtonText: "Confirm",
+        cancelButtonText: "Cancel"
+    }).then((result) => {
+        if (result.isConfirmed) {
+            $.ajax({
+                url: "{{ route('grades.import.rows.uncommitAll', $gradeImportId) }}",
+                method: 'POST',
+                headers: { 'X-CSRF-TOKEN': '{{ csrf_token() }}' },
+                success: (response) => {
+                    toastr.success(response.message || "All valid grade import records have been uncommitted.");
+                    $('#commit-section-alt').show();
+                    $('#invalid-records-alert-alt').hide();
+                    $('#uncommitAll-section-alt').hide();
+                    window.gradeImportRowsTable.reload();
+                },
+                error: (xhr) => {
+                    if (xhr.status === 403) {
+                        const msg = xhr.responseJSON?.message || 'Action forbidden';
+                        toastr.error(msg, 'Forbidden');
+                        return;
+                    }
+
+                    if (xhr.status === 500) {
+                        const msg = xhr.responseJSON?.message || 'Internal server error';
+                        toastr.error(msg, 'Server Error');
+                        return;
+                    }
+
                     toastr.error(xhr.responseJSON?.message || 'An error occurred while committing the records.', 'Error');
                 }
             });
