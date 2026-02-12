@@ -22,7 +22,7 @@ return new class extends Migration
             $table->string('semester');
             $table->string('faculty')->nullable();
             $table->decimal('credit_unit', 5, 2);
-            $table->string('grade');
+            $table->decimal('grade', 5, 2);
             $table->foreignId('grade_import_row_id')->nullable()->constrained('grade_import_rows')->cascadeOnDelete();
             $table->foreignId('grade_import_id')->nullable()->constrained('grade_imports')->cascadeOnDelete();
             $table->timestamps();

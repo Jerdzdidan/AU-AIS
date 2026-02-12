@@ -64,22 +64,13 @@ class GradesImport implements ToCollection, WithHeadingRow
                 $errors[] = 'Invalid credit unit';
             }
             
-            if (!isset($row['grade'])) {
-                $errors[] = 'Grade is required';
+            if (!isset($row['grade']) || !is_numeric($row['grade'])) {
+                $errors[] = 'Invalid grade';
             }
-            else {
-                $grade = $row['grade'];
-
-                if ($grade !== "DRP" && $grade !== "INC") {
-                    if (!is_numeric($grade)) {
-                        $valid = false;
-                    } else {
-                        $numericgrade = (float) $grade;
-
-                        if (($numericgrade < 1 || $numericgrade > 3) && $numericgrade != 5) {
-                            $valid = false;
-                        }
-                    }
+            else
+            {
+                if ($row['grade'] != 0 && ($row['grade'] < 1 || $row['grade'] > 3) && $row['grade'] != 5) {
+                    $errors[] = 'Grade must be 0, between 1 and 3, or 5';
                 }
             }
 
