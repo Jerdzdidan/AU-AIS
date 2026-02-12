@@ -165,14 +165,14 @@
     <script src="{{ asset('themes/sneat/assets/js/config.js') }}"></script>
 </head>
 <body>
-    {{-- <div id="spinnerOverlay" aria-hidden="true" class="text-center">
+    <div id="spinnerOverlay" aria-hidden="true" class="text-center">
         <div class="loader" role="status" aria-hidden="true"></div>
         <p class="text-center" style="margin-left:5px!important; font-weight:600; color:#333;">Downloading PDF...</p>
-    </div> --}}
+    </div>
 
     <div class="pdf-wrapper" id="pdfContent">
         <!-- Header -->
-        <div class="pdf-header mb-1">
+        <div class="pdf-header">
             <div class="d-flex align-items-center justify-content-between">
                 <div class="d-flex align-items-center">
                     <img src="{{ asset('img/logo/arellano_logo.png') }}" class="pdf-logo me-3" alt="Arellano University">
@@ -188,7 +188,7 @@
         </div>
 
         <!-- Student Information -->
-        <div class="mb-0 mt-0">
+        <div class="mb-4">
             <h5 class="fw-bold mb-3">Student Information</h5>
             <div class="row">
                 <div class="col-6">
@@ -214,14 +214,14 @@
                                     <span id="unitsEarnedDisplay">{{ $stats['units_earned'] }}</span>/<span id="unitsRequiredDisplay">{{ $stats['total_units'] }}</span>
                                 </p>
                                 <div class="progress mt-2" style="height: 8px;">
-                                    <div id="unitsProgressBar" class="progress-bar" role="progressbar"
+                                    <div id="unitsProgressBar" class="progress-bar" role="progressbar" 
                                             style="width: {{ $stats['units_progress'] }}%" aria-valuenow="{{ $stats['units_progress'] }}" aria-valuemin="0" aria-valuemax="100"></div>
                                 </div>
                                 <small class="text-white mt-1" id="unitsPercentage">{{ $stats['units_progress'] }}%</small>
                             </div>
                             <div class="align-self-center">
                                 <i class="fa-solid fa-book fa-2x"></i>
-                            </div>
+                            </div>      
                         </div>
                     </div>
                 </div>
@@ -282,18 +282,17 @@
         @foreach(['1', '2', '3', '4', 'minor'] as $yearKey)
             @if($years[$yearKey])
                 <div class="year-section mb-4">
-                    <div class="year-title bg-primary text-white mb-0 pt-1 pb-1">{{ $yearTitles[$yearKey] }}</div>
+                    <div class="year-title bg-primary text-white mb-0">{{ $yearTitles[$yearKey] }}</div>
                     <div class="table-responsive">
                         <table class="pdf-table">
                             <thead>
                                 <tr>
-                                    <th style="width: 10%;">Code</th>
-                                    <th style="width: 40%;">Subject Name</th>
-                                    <th style="width: 5%;">Lec</th>
-                                    <th style="width: 5%;">Lab</th>
-                                    <th style="width: 5%;">Units</th>
-                                    <th style="width: 5%;">Grade</th>
-                                    <th style="width: 15%;">Remarks</th>
+                                    <th style="width: 15%;">Code</th>
+                                    <th style="width: 30%;">Subject Name</th>
+                                    <th style="width: 10%;">Lec</th>
+                                    <th style="width: 10%;">Lab</th>
+                                    <th style="width: 10%;">Units</th>
+                                    <th style="width: 15%;">Status</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -301,69 +300,20 @@
                                     @php
                                         $hasLec = $progress->subject->lec_units > 0;
                                         $hasLab = $progress->subject->lab_units > 0;
-                                        $lecUnits = (int) $progress->subject->lec_units;
-                                        $labUnits = (int) $progress->subject->lab_units;
-
-                                        if ($progress->grade == "INC") {
-                                            $gradeClass = 'text-warning';
-                                        }
-                                        else if ($progress->grade == "DRP") {
-                                            $gradeClass = 'text-dark';
-                                        }
-                                        else if ($progress->grade >= 1 && $progress->grade <= 3) {
-                                            $gradeClass = 'text-success';
-                                        }
-                                        else if ($progress->grade == 5) {
-                                            $gradeClass = 'text-danger';
-                                        }
-                                        else if ($progress->grade == null)
-                                        {
-                                            $gradeClass = '';
-                                        }
-                                        else {
-                                            $gradeClass = 'text-danger';
-                                        }
-
-                                        $remarksClass = '';
-                                        $remark = '-';
-                                        if ($progress->remarks == "DROPPED") {
-                                            $remark = 'Dropped';
-                                            $remarksClass = 'text-dark~';
-                                        }
-                                        else if ($progress->remarks == "INCOMPLETE") {
-                                            $remark = 'Incomplete';
-                                            $remarksClass = 'text-warning';
-                                        }
-                                        else if ($progress->remarks == "FAILED") {
-                                            $remark = 'Failed';
-                                            $remarksClass = 'text-danger';
-                                        }
-                                        else if ($progress->remarks == "COMPLETED") {
-                                            $remark = 'Completed';
-                                            $remarksClass = 'text-success';
-                                        }
-
-                                        if ($hasLec && $hasLab) {
-                                            $units = $lecUnits + $labUnits;
-                                        } else if ($hasLec) {
-                                            $units = $lecUnits;
-                                        } else if ($hasLab) {
-                                            $units = $labUnits;
-                                        } else {
-                                            $units = 0;
-                                        }
-
-                                        $units = (int) $units;
+                                        $lecStatus = $hasLec ? ($progress->lecture_completed ? '<i class="fa-solid fa-check-circle text-success"></i>' : '<i class="fa-solid fa-times-circle text-danger"></i>') : '-';
+                                        $labStatus = $hasLab ? ($progress->laboratory_completed ? '<i class="fa-solid fa-check-circle text-success"></i>' : '<i class="fa-solid fa-times-circle text-danger"></i>') : '-';
+                                        $status = $progress->isCompleted() ? 'Completed' : 'Incomplete';
+                                        $statusClass = $progress->isCompleted() ? 'text-success' : 'text-warning';
+                                        $units = $progress->subject->lec_units + $progress->subject->lab_units;
                                     @endphp
 
                                     <tr>
-                                        <td style="padding: 3px;">{{ $progress->subject->code }}</td>
-                                        <td style="padding: 3px;">{{ $progress->subject->name }}</td>
-                                        <td style="padding: 3px;" class="text-center">{{ $lecUnits }}</td>
-                                        <td style="padding: 3px;" class="text-center">{{ $labUnits }}</td>
-                                        <td style="padding: 3px;" class="text-center">{{ $units }}</td>
-                                        <td style="padding: 3px;" class="text-center {{ $gradeClass }}">{{ $progress->grade ? $progress->grade : '-' }}</td>
-                                        <td style="padding: 3px;" class="text-center {{ $remarksClass }}">{{ $remark }}</td>
+                                        <td>{{ $progress->subject->code }}</td>
+                                        <td>{{ $progress->subject->name }}</td>
+                                        <td class="text-center">{!! $lecStatus !!}</td>
+                                        <td class="text-center">{!! $labStatus !!}</td>
+                                        <td class="text-center">{{ $units }}</td>
+                                        <td><span class="{{ $statusClass }}">{{ $status }}</span></td>
                                     </tr>
                                 @endforeach
                             </tbody>
@@ -440,6 +390,6 @@
     <!-- Place this tag before closing body tag for github widget button. -->
     <script async defer src="https://buttons.github.io/buttons.js"></script>
     <!-- html2pdf script -->
-
+    
 </body>
 </html>
