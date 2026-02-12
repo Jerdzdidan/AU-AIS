@@ -299,19 +299,6 @@ class DatabaseSeeder extends Seeder
 
         Subject::factory()->create([
             'curriculum_id' => 1,
-            'code' => 'ITC 129',
-            'name' => 'Networks and Communication',
-            'year_level' => 3,
-            'semester' => 'FIRST',
-            'subject_category' => 'MAJOR',
-            'lec_units' => 2.0,
-            'lab_units' => 1.0,
-            'prerequisites' => null,
-            'is_active' => true,
-        ]);
-
-        Subject::factory()->create([
-            'curriculum_id' => 1,
             'code' => 'CS 310',
             'name' => 'Software Engineering 1',
             'year_level' => 3,

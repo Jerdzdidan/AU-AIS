@@ -35,49 +35,6 @@ class GradeImportController extends Controller
             ->rawColumns(['status'])
             ->make(true);
     }
-
-    // public function store(Request $request)
-    // {
-    //     $validated = $request->validate([
-    //         'file' => 'required|file|mimes:xlsx,xls,csv|max:10240',
-    //     ]);
-
-    //     $file = $request->file('file');
-
-    //     $import = GradeImport::create([
-    //         'user_id' => auth()->id(),
-    //         'filename' => $file->getClientOriginalName(),
-    //         'status' => 'pending',
-    //     ]);
-
-    //     try {
-    //         Excel::import(new GradesImport($import->id), $file);
-            
-    //         $import->update([
-    //             'total_rows' => $import->rows()->count(),
-    //             'valid_rows' => $import->rows()->where('status', 'valid')->count(),
-    //             'invalid_rows' => $import->rows()->where('status', 'invalid')->count(),
-    //         ]);
-
-    //         return response()->json([
-    //             'success' => true,
-    //             'message' => 'File uploaded successfully',
-    //             'import_id' => $import->id,
-    //             'import' => $import
-    //         ]);
-
-    //     } catch (Exception $e) {
-    //         $import->update([
-    //             'status' => 'failed',
-    //             'notes' => $e->getMessage()
-    //         ]);
-
-    //         return response()->json([
-    //             'success' => false,
-    //             'message' => 'Upload failed: ' . $e->getMessage()
-    //         ], 500);
-    //     }
-    // }
     
     public function store(Request $request)
     {   
@@ -85,9 +42,10 @@ class GradeImportController extends Controller
             // FIXED VALIDATION - more flexible
             $validated = $request->validate([
                 'file' => 'required|file|mimes:csv,xlsx,xls,txt|mimetypes:text/plain,text/csv,text/x-csv,application/csv,application/x-csv,text/comma-separated-values,text/x-comma-separated-values,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet|max:10240',
-                'academic_period_id' => 'required|exists:academic_periods,id',
+                'academic_period_id' => 'required|exists:academic_periods,id|unique:grade_imports,academic_period_id,NULL,id,user_id,' . auth()->id(),
             ], [
                 'academic_period_id.required' => 'The academic period field is required.',
+                'academic_period_id.unique' => 'A grade import for this academic period already exists.',
             ]);
 
             $file = $request->file('file');
@@ -224,7 +182,11 @@ class GradeImportController extends Controller
 
         $validated = $request->validate([
             'filename' => 'required|string|max:255|unique:grade_imports,filename,' . $decrypted,
-            'academic_period_update_id' => 'required|exists:academic_periods,id',
+            'academic_period_update_id' => 'required|exists:academic_periods,id|unique:grade_imports,academic_period_id,' . $decrypted . ',id,user_id,' . auth()->id(),
+        ],
+        [
+            'academic_period_update_id.required' => 'The academic period field is required.',
+            'academic_period_update_id.unique' => 'A grade import for this academic period already exists.',
         ]);
 
         $grade_import->update([

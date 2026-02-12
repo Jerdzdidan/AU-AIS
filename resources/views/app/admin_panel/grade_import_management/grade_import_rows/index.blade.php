@@ -245,8 +245,42 @@ $(document).ready(function() {
         $('#add-or-update-form select').val(null).trigger('change');
     });
 
+    gradeImportRowsCRUD.onCreateSuccess = (data) => {
+        if (data.allValid && data.allCommited) {
+            $('#invalid-records-alert').remove();
+            $('#commit-section-alt').remove();
+        }
+        else if (data.allValid && !data.allCommited) {
+            $('#invalid-records-alert').remove();
+            $('#commit-section-alt').show();
+        }
+        else {
+            $('#commit-section-alt').hide();
+            $('#invalid-records-alert-alt').show();
+        }
+    };
+
     gradeImportRowsCRUD.onUpdateSuccess = (data) => {
-        if (data.allValid) {
+        if (data.allValid && data.allCommited) {
+            $('#invalid-records-alert').remove();
+            $('#commit-section-alt').remove();
+        }
+        else if (data.allValid && !data.allCommited) {
+            $('#invalid-records-alert').remove();
+            $('#commit-section-alt').show();
+        }
+        else {
+            $('#commit-section-alt').hide();
+            $('#invalid-records-alert-alt').show();
+        }
+    };
+
+    gradeImportRowsCRUD.onDeleteSuccess = (data) => {
+        if (data.allValid && data.allCommited) {
+            $('#invalid-records-alert').remove();
+            $('#commit-section-alt').remove();
+        }
+        else if (data.allValid && !data.allCommited) {
             $('#invalid-records-alert').remove();
             $('#commit-section-alt').show();
         }
@@ -390,6 +424,8 @@ function commitAll() {
                     toastr.success(response.message || "All valid grade import records have been committed.");
                     $('#commit-section').hide();
                     $('#commit-section-alt').hide();
+                    $('#invalid-records-alert').remove();
+                    $('#invalid-records-alert-alt').remove();
                     window.gradeImportRowsTable.reload();
                 },
                 error: (xhr) => {

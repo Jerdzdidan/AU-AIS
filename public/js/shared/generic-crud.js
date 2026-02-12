@@ -206,8 +206,9 @@ class GenericCRUD {
                     url: url,
                     method: 'DELETE',
                     headers: { 'X-CSRF-TOKEN': this.csrfToken },
-                    success: () => {
+                    success: async (response) => {
                         toastr.success(`${this.entityName} deleted successfully`);
+                        if (this.onDeleteSuccess) await this.onDeleteSuccess(response);
                         this.dataTable.reload();
                     },
                     error: (xhr) => {
