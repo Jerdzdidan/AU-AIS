@@ -62,7 +62,7 @@ class UpdateAcademicProgress
 
             $componentStatus = function ($grade) use ($isPassingNumeric) {
                 if ($grade === null) return 'NOT_TAKEN';
-                if ($grade === 'DRP') return 'NOT_TAKEN'; 
+                if ($grade === 'DRP') return 'FAILED'; 
                 if ($grade === 'INC') return 'FAILED';
                 if (is_numeric($grade)) {
                     return $isPassingNumeric($grade) ? 'COMPLETED' : 'FAILED';
@@ -111,7 +111,7 @@ class UpdateAcademicProgress
                 }
             }
 
-            $subject->grade = is_numeric($final_grade) ? $final_grade : $subject->grade; 
+            $subject->grade = $final_grade; 
             $subject->remarks = $remarks;
 
             $subject->save();
