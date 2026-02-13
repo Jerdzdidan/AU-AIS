@@ -92,6 +92,7 @@
             <th>Semester</th>
             <th>Faculty</th>
             <th>Credit Unit</th>
+            <th>Program</th>
             <th>Grade</th>
             <th>Validity</th>
             <th>Status</th>
@@ -201,6 +202,7 @@ $(document).ready(function() {
             { data: "semester", className: "none" },
             { data: "faculty", className: "none" },
             { data: "credit_unit", className: "none" },
+            { data: "program", className: "none"},
             { data: "grade" },
             {
                 data: "validity",

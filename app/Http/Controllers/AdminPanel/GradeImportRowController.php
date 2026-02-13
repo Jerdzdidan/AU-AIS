@@ -82,6 +82,9 @@ class GradeImportRowController extends Controller
         try {
             $gradeImport = $this->findGradeImport($gradeImportId);
             $gradeImportRows = $gradeImport->rows();
+            $gradeImportRows->join('students', 'students.student_number', '=', 'grade_import_rows.student_number')
+                ->join('programs', 'programs.id', '=', 'students.program_id')
+                ->select('grade_import_rows.*', 'programs.code as program_code');
 
             if ($request->filled('status') && $request->status !== 'All') {
                 $gradeImportRows->where('status', $request->status);
@@ -91,13 +94,11 @@ class GradeImportRowController extends Controller
                 $gradeImportRows->where('validity', $request->validity);
             }
 
-            // Filter by program/course (frontend sends `course`)
             if ($request->filled('program') && $request->program !== 'All') {
                 $programId = $request->program;
 
                 // Join students table to filter by program_id using student_number
-                $gradeImportRows->join('students', 'students.student_number', '=', 'grade_import_rows.student_number')
-                    ->where('students.program_id', $programId)
+                $gradeImportRows->where('students.program_id', $programId)
                     ->select('grade_import_rows.*');
             }
 
@@ -105,6 +106,7 @@ class GradeImportRowController extends Controller
 
             return datatables()->of($gradeImportRows)
                 ->editColumn('id', fn($row) => Crypt::encryptString($row->id))
+                ->addColumn('program', fn($row) => $row->program_code)
                 ->make(true);
         } catch (Exception $e) {
             Log::error('Error fetching grade import row data', [
