@@ -1,5 +1,5 @@
 
-<x-modals.creation-and-update-modal 
+<x-modals.creation-and-update-modal
     id="add-or-update-modal"
     title="New Data Entry"
     action=""
@@ -9,22 +9,22 @@
 {{-- student_id and subject_code --}}
 <div class="col-sm-12 form-control-validation">
     <x-input.input-field
-        id="student_number" 
-        name="student_number" 
+        id="student_number"
+        name="student_number"
         label="Student Number"
         type="text"
-        icon="fa-solid fa-id-card fa-1x" 
-        placeholder="Student Number (e.g. 23-12345)" 
+        icon="fa-solid fa-id-card fa-1x"
+        placeholder="Student Number (e.g. 23-12345)"
         help=""
     />
 
     <x-input.input-field
-        id="subject_code" 
+        id="subject_code"
         name="subject_code"
         label="Subject Code"
         type="text"
-        icon="fa-solid fa-book fa-1x" 
-        placeholder="Subject Code (e.g. CS 101, IT 202)" 
+        icon="fa-solid fa-book fa-1x"
+        placeholder="Subject Code (e.g. CS 101, IT 202)"
         help=""
     />
 </div>
@@ -44,19 +44,19 @@
     />
 
     <x-input.input-field
-        id="faculty" 
+        id="faculty"
         name="faculty"
         label="Faculty"
         type="text"
-        icon="fa-solid fa-user fa-1x" 
-        placeholder="Faculty (e.g. John Doe)" 
+        icon="fa-solid fa-user fa-1x"
+        placeholder="Faculty (e.g. John Doe)"
         help=""
     />
 </div>
 
 {{-- Credit Unit and Grade --}}
 <div class="col-sm-12 form-control-validation">
-    <x-input.integer-field 
+    <x-input.integer-field
         id="credit_unit"
         label="Credit Unit"
         icon="fa-solid fa-chalkboard-teacher"
@@ -66,13 +66,13 @@
         help=""
     />
 
-    <x-input.integer-field 
+    <x-input.input-field
         id="grade"
+        name="grade"
         label="Grade"
-        icon="fa-solid fa-chalkboard-teacher"
-        placeholder="Grade"
-        :min="0"
-        :step="0.25"
+        type="text"
+        icon="fa-solid fa-user fa-1x"
+        placeholder="Grade (INC, DRP, 1-3, 5)"
         help=""
     />
 </div>

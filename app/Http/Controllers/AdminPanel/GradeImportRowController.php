@@ -644,24 +644,34 @@ class GradeImportRowController extends Controller
     // Validate request data
     protected function validateRequest(Request $request): array
     {
-        return $request->validate([
+        $request = $request->validate([
             'student_number' => 'required|string|max:50',
             'subject_code' => 'required|string|max:50',
             'unit_type' => 'required|string|in:' . $this::UNIT_TYPE_LEC . ',' . $this::UNIT_TYPE_LAB,
             'grade' => [
                 'required',
-                'numeric',
-                'min:0',
-                'max:5',
+                'string',
                 function ($attribute, $value, $fail) {
-                    if ($value != 0 && ($value < 1 || $value > 3) && $value != 5) {
-                        $fail('The ' . $attribute . ' must be 0, between 1 and 3, or 5.');
+                    if ($value != "DRP" && $value != "INC" && ($value < 1 || $value > 3) && $value != 5) {
+                        $fail('The ' . $attribute . ' must be INC or DRP or between 1 and 3, or 5.');
                     }
                 }
             ],
             'faculty' => 'required|string|max:255',
             'credit_unit' => 'required|numeric|min:0|max:5',
         ]);
+
+        $grade = $request['grade'];
+
+        if ($grade == "DRP") {
+            $request['grade'] = -1;
+        } else if ($grade == "INC") {
+            $request['grade'] = 0;
+        } else {
+            $request['grade'] = round((float) $request['grade'], 2);
+        }
+
+        return $request;
     }
 
     // Find student or throw exception

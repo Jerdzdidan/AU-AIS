@@ -38,11 +38,10 @@ class GradesImport implements ToCollection, WithHeadingRow
 
             if (isset($row['subject_code'])) {
                 $subject = Subject::where('code', $row['subject_code'])->first();
-                
+
                 if (!$subject) {
                     $errors[] = 'Subject not found';
-                }
-                else {
+                } else {
                     $row['subject_name'] = $subject->name;
                 }
             } else {
@@ -51,8 +50,7 @@ class GradesImport implements ToCollection, WithHeadingRow
 
             if (!isset($row['unit_type'])) {
                 $errors[] = 'Unit Type is required';
-            }
-            else if ($row['unit_type'] !== 'lec' && $row['unit_type'] !== 'lab') {
+            } else if ($row['unit_type'] !== 'lec' && $row['unit_type'] !== 'lab') {
                 $errors[] = 'Invalid Unit Type (should be "lec" or "lab")';
             }
 
@@ -63,14 +61,12 @@ class GradesImport implements ToCollection, WithHeadingRow
             if (!isset($row['credit_unit']) || !is_numeric($row['credit_unit'])) {
                 $errors[] = 'Invalid credit unit';
             }
-            
-            if (!isset($row['grade']) || !is_numeric($row['grade'])) {
-                $errors[] = 'Invalid grade';
-            }
-            else
-            {
-                if ($row['grade'] != 0 && ($row['grade'] < 1 || $row['grade'] > 3) && $row['grade'] != 5) {
-                    $errors[] = 'Grade must be 0, between 1 and 3, or 5';
+
+            if (!isset($row['grade'])) {
+                $errors[] = 'Grade is required';
+            } else {
+                if ($row['grade'] != "DRP" && $row['grade'] != "INC" && ($row['grade'] < 1 || $row['grade'] > 3) && $row['grade'] != 5) {
+                    $errors[] = 'Grade must be INC or DRP or between 1 and 3, or 5.';
                 }
             }
 
@@ -78,6 +74,16 @@ class GradesImport implements ToCollection, WithHeadingRow
 
             $school_year = $gradeImport?->academic_period?->school_year ?? null;
             $semester = $gradeImport?->academic_period?->semester ?? null;
+
+            $grade = $row['grade'];
+
+            if ($grade == "DRP") {
+                $row['grade'] = -1;
+            } else if ($grade == "INC") {
+                $row['grade'] = 0;
+            } else {
+                $row['grade'] = round((float) $row['grade'], 2);
+            }
 
             // Create import row
             GradeImportRow::create([
@@ -98,3 +104,4 @@ class GradesImport implements ToCollection, WithHeadingRow
         }
     }
 }
+

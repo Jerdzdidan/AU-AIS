@@ -161,6 +161,7 @@ $(document).ready(function() {
     @endif
 
     $('#unit_type').select2({
+        minimumResultsForSearch: -1,
         placeholder: 'Select Unit Type',
     });
 
@@ -203,7 +204,28 @@ $(document).ready(function() {
             { data: "faculty", className: "none" },
             { data: "credit_unit", className: "none" },
             { data: "program", className: "none"},
-            { data: "grade" },
+            {
+                data: "grade",
+                render: (data, type, row) => {
+                    const grade = data;
+                    var display;
+
+                    if (grade == -1)
+                    {
+                        display = "DRP";
+                    }
+                    else if (grade == 0)
+                    {
+                        display = "INC";
+                    }
+                    else
+                    {
+                        display = grade;
+                    }
+
+                    return `${display}`;
+                }
+            },
             {
                 data: "validity",
                 render: (data, type, row) => {

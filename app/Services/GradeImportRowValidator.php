@@ -64,7 +64,7 @@ class GradeImportRowValidator
         }
 
         $student = $students->get($row->student_number);
-        
+
         if (!$student) {
             $errors[] = 'Student not found';
         } else {
@@ -88,7 +88,7 @@ class GradeImportRowValidator
         }
 
         $subject = $subjects->get($row->subject_code);
-        
+
         if (!$subject) {
             $row->subject_name = null;
             $errors[] = 'Subject not found';
@@ -150,7 +150,7 @@ class GradeImportRowValidator
                     ->where('semester', $duplicate->semester)
                     ->where('unit_type', $duplicate->unit_type)
                     ->delete();
-                
+
                 $duplicate->status = 'staged';
 
                 $duplicate->save();
@@ -203,12 +203,15 @@ class GradeImportRowValidator
         }
 
         // Grade must be 0, between 1 and 3, or 5
-        if ($row->grade != 0 && 
-            ($row->grade < 1 || $row->grade > 3) && 
-            $row->grade != 5) {
-            $errors[] = 'Grade must be 0, between 1 and 3, or 5';
+        // DRP = -1, INC = 0
+        if (
+            $row->grade != -1 && $row->grade != 0 && ($row->grade < 1 || $row->grade > 3) &&
+            $row->grade != 5
+        ) {
+            $errors[] = 'Grade must be INC or DRP or between 1 and 3, or 5.';
         }
 
         return $errors;
     }
 }
+
