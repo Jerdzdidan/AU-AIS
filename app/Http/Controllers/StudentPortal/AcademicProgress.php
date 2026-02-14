@@ -38,7 +38,7 @@ class AcademicProgress extends Controller
                 'student_subject_progress.lecture_status',
                 'student_subject_progress.laboratory_status',
                 'student_subject_progress.final_grade',
-                'student_subject_progress.remarks'
+                'student_subject_progress.remarks',
             ])
             ->join('subjects', 'student_subject_progress.subject_id', '=', 'subjects.id')
             ->orderBy('subjects.year_level', 'asc')
@@ -66,7 +66,6 @@ class AcademicProgress extends Controller
                     : !$progress->isCompleted();
             });
         }
-
 
         return DataTables::of($academicProgress)
             ->editColumn('id', function ($row) {

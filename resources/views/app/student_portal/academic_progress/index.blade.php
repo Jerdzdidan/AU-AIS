@@ -16,16 +16,16 @@ Academic Progress
 <div class="container-fluid">
     <div class="content-container">
         <!-- Page Header -->
-        <x-table.page-header 
-            title="" 
+        <x-table.page-header
+            title=""
             subtitle="View academic progress details"
         />
-        
+
         <!-- Statistics Cards -->
         <div class="row mb-4">
 
             {{-- UNITS PROGRESS --}}
-            <x-table.progress-card 
+            <x-table.progress-card
                 title="Units Progress"
                 icon="fa-solid fa-calculator fa-2x"
                 bgColor="bg-info"
@@ -37,19 +37,19 @@ Academic Progress
             />
 
             {{-- TOTAL Subjects --}}
-            <x-table.stats-card 
-                id="totalSubjects" 
-                title="Total Subjects" 
-                icon="fa-solid fa-file-pen fa-2x" 
-                bgColor="bg-primary" 
+            <x-table.stats-card
+                id="totalSubjects"
+                title="Total Subjects"
+                icon="fa-solid fa-file-pen fa-2x"
+                bgColor="bg-primary"
                 class="col-md-4"/>
-                    
+
             {{-- Subject Completed --}}
-            <x-table.stats-card 
-                id="completedSubjects" 
-                title="Subjects Completed" 
-                icon="fa-solid fa-check fa-2x" 
-                bgColor="bg-success" 
+            <x-table.stats-card
+                id="completedSubjects"
+                title="Subjects Completed"
+                icon="fa-solid fa-check fa-2x"
+                bgColor="bg-success"
                 class="col-md-4"/>
 
         </div>
@@ -101,7 +101,7 @@ Academic Progress
                 </li>
             </ul>
         </div>
-        
+
         <!-- DataTable -->
         <x-table.table id="academicProgressTable">
             {{-- Columns --}}
@@ -110,7 +110,8 @@ Academic Progress
             <th>Subject Name</th>
             <th>LEC</th>
             <th>LAB</th>
-            <th>Status</th>
+            <th>Grade</th>
+            <th>Remarks</th>
             <th>Category</th>
             <th>Year Level</th>
             <th>Semester</th>
@@ -182,7 +183,7 @@ $(document).ready(function() {
 
     // Initialize DataTable
     const academicProgressTable = new GenericDataTable({
-        order: [[6, "asc"], [7, "asc"], [8, "asc"], [1, "asc"]],
+        order: [[7, "asc"], [8, "asc"], [9, "asc"], [1, "asc"]],
         tableId: 'academicProgressTable',
         ajaxUrl: "{{ route('student.academic_progress.data') }}",
         ajaxData: function(d) {
@@ -193,8 +194,8 @@ $(document).ready(function() {
             { data: "id", visible: false },
             { data: "subject.code" },
             { data: "subject.name" },
-            { 
-                data: "lecture_completed",
+            {
+                data: "lecture_status",
                 responsivePriority: 1,
                 render: (data, type, row) => {
                     if (!row.has_lec)
@@ -202,35 +203,92 @@ $(document).ready(function() {
                         return '<span class="text-muted">-</span>';
                     }
 
-                    return row.lecture_completed ? '<i class="fa-solid fa-check-circle text-success"></i>' : '<i class="fa-solid fa-times-circle text-danger"></i>';
-                }
-            },
-            { 
-                data: "laboratory_completed",
-                responsivePriority: 1,
-                render: (data, type, row) => {
-                    if (!row.has_lab)
-                    {
-                        return '<span class="text-muted">-</span>';
+                    var display;
+
+                    if (row.lecture_status == "failed") {
+                        display = '<i class="fa-solid fa-times-circle text-danger"></i>';
+                    } else if (row.lecture_status == "incomplete") {
+                        display = '<i class="fa-solid fa-minus-circle text-warning"></i>';
+                    } else if (row.lecture_status == "completed") {
+                        display = '<i class="fa-solid fa-check-circle text-success"></i>';
+                    } else if (row.lecture_status == "dropped") {
+                        display = '<i class="fa-solid fa-minus-circle text-dark"></i>';
+                    } else {
+                        display = '<i class="fa-solid fa-minus-circle text-light"></i>';
                     }
 
-                    return row.laboratory_completed ? '<i class="fa-solid fa-check-circle text-success"></i>' : '<i class="fa-solid fa-times-circle text-danger"></i>';
+                    return display;
                 }
             },
             {
-                data: "is_completed",
+                data: "laboratory_status",
+                responsivePriority: 1,
                 render: (data, type, row) => {
-                    const status = row.is_completed ? 'Completed' : 'Incomplete';
-                    const badge = row.is_completed ? 'success' : 'warning';
-                    return `<span class="badge bg-label-${badge}">${status}</span>`;
+                    if (!row.has_lab) {
+                        return '<span class="text-muted">-</span>';
+                    }
+
+                    var display;
+                    if (row.laboratory_status == "failed") {
+                        display = '<i class="fa-solid fa-times-circle text-danger"></i>';
+                    } else if (row.laboratory_status == "incomplete") {
+
+                        display = '<i class="fa-solid fa-minus-circle text-warning"></i>';
+                    } else if (row.laboratory_status == "completed") {
+                        display = '<i class="fa-solid fa-check-circle text-success"></i>';
+                    } else if (row.laboratory_status == "dropped") {
+                        display = '<i class="fa-solid fa-minus-circle text-dark"></i>';
+                    } else {
+                        display = '<i class="fa-solid fa-minus-circle text-light"></i>';
+                    }
+
+                    return display;
+                }
+            },
+            {
+                data: "final_grade",
+                render: (data, type, row) => {
+                    var display;
+                    if (row.final_grade === "DRP") {
+                        display = '<i class="text-dark">DRP</i>';
+                    } else if (row.final_grade === "INC") {
+                        display = '<i class="text-warning">INC</i>';
+                    } else if (parseFloat(row.final_grade) === 5.00) {
+                        display = `<i class="text-danger">${parseFloat(row.final_grade).toFixed(2)}</i>`;
+                    } else if (parseFloat(row.final_grade) >= 1 && parseFloat(row.final_grade) <= 3) {
+                        display = `<i class="text-success">${parseFloat(row.final_grade).toFixed(2)}</i>`;
+                    } else {
+                        display = `<i class="text-light">-</i>`;
+                    }
+
+                    return display;
+                }
+            },
+            {
+                data: "remarks",
+                render: (data, type, row) => {
+                    var display;
+                    if (row.remarks === "dropped") {
+                        display = '<span class="badge bg-label-dark">Dropped</span>';
+                    } else if (row.remarks === "incomplete") {
+                        display = '<span class="badge bg-label-warning">Incomplete</span>';
+                    } else if (row.remarks === "failed") {
+                        display = '<span class="badge bg-label-danger">Failed</span>';
+                    } else if (row.remarks === "completed") {
+                        display = '<span class="badge bg-label-success">Completed</span>';
+                    } else {
+                        display = `<span class="text-light">-</span>`;
+                    }
+
+                    return display;
                 }
             },
             { data: "subject.subject_category", className: "none" },
-            { 
+            {
                 data: "subject.year_level",
                 defaultContent: '-'
             },
-            { 
+            {
                 data: "subject.semester",
                 defaultContent: '-'
             },
@@ -249,7 +307,7 @@ $(document).ready(function() {
 
                     $('#totalSubjects').text(data.total_subjects);
                     $('#completedSubjects').text(data.subjects_completed);
-                    
+
                     // Store stats data
                     statsData = {
                         unitsEarned: data.units_earned,
@@ -278,7 +336,7 @@ $(document).ready(function() {
     // Year level tab click handler
     $('#checklistYearTabs button[data-bs-toggle="tab"]').on('shown.bs.tab', function (e) {
         const targetTab = $(e.target).attr('id');
-        
+
         switch(targetTab) {
             case 'year1-tab':
                 selectedYearLevel = '1';
@@ -298,7 +356,7 @@ $(document).ready(function() {
             default:
                 selectedYearLevel = 'all';
         }
-        
+
         academicProgressTable.table.page('first').draw('page');
     });
 });

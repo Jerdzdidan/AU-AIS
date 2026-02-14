@@ -29,166 +29,161 @@ class UpdateAcademicProgress
         $student = $event->student;
 
         StudentSubjectProgress::where('student_id', $student->id)->update([
-            'lecture_status' => false,
-            'laboratory_status' => false,
+            'lecture_status' => null,
+            'laboratory_status' => null,
         ]);
 
         $subjects = $student->studentSubjectProgress;
 
-        // foreach ($grades as $grade) {
-        //     $subjectProgress = $subjects->first(function ($progress) use ($grade) {
-        //         return $progress->subject->code === $grade->subject_code;
-        //     });
-        //
-        //     if (!$subjectProgress) {
-        //         continue;
-        //     }
-        //
-        //
-        //     // First calculate lecture status
-        //     if ($grade->has_lec())
-        //     {
-        //
-        //     }
-        //
-        //     if ($grade->unit_type == 'lec' && $grade->is_passed()) {
-        //         $subjectProgress->lecture_status = "completed";
-        //     }
-        //     if ($grade->unit_type == 'lab' && $grade->is_passed()) {
-        //         $subjectProgress->laboratory_status = "completed";
-        //     }
-        //
-        //     $subjectProgress->save();
-        // }
+        // Preload all grades at once to avoid N+1 queries
+        $allGrades = Grade::where('student_id', $student->id)
+            ->orderByDesc('school_year')
+            ->orderByDesc('semester')
+            ->get()
+            ->groupBy('subject_code');
 
         foreach ($subjects as $subject) {
+            $subjectCode = $subject->subject->code;
+
+            // Get grades from preloaded data
+            $lecGrade = $this->getGradeFromCollection($allGrades, $subjectCode, 'lec');
+            $labGrade = $this->getGradeFromCollection($allGrades, $subjectCode, 'lab');
+            $lecUnit = $this->getUnitFromCollection($allGrades, $subjectCode, 'lec');
+            $labUnit = $this->getUnitFromCollection($allGrades, $subjectCode, 'lab');
+
+            // Update lecture status
             if ($subject->has_lec()) {
-                $grade = get_grade($student->id, $subject->subject->code, 'lec');
-
-                if ($grade == -1) {
-                    $subject->lecture_status = GradeStatus::DROPPED;
-                } else if ($grade = 0) {
-                    $subject->lecture_status = GradeStatus::INCOMPLETE;
-                } else if ($grade >= 1 && $grade <= 3) {
-                    $subject->lecture_status = GradeStatus::COMPLETED;
-                } else {
-                    $subject->lecture_status = GradeStatus::FAILED;
-                }
+                $subject->lecture_status = $this->determineStatus($lecGrade);
             }
 
+            // Update laboratory status
             if ($subject->has_lab()) {
-                $grade = get_grade($student->id, $subject->subject->code, 'lab');
-
-                if ($grade == -1) {
-                    $subject->lecture_status = GradeStatus::DROPPED;
-                } else if ($grade = 0) {
-                    $subject->lecture_status = GradeStatus::INCOMPLETE;
-                } else if ($grade >= 1 && $grade <= 3) {
-                    $subject->lecture_status = GradeStatus::COMPLETED;
-                } else {
-                    $subject->lecture_status = GradeStatus::FAILED;
-                }
+                $subject->laboratory_status = $this->determineStatus($labGrade);
             }
 
+            // Update remarks
             if ($subject->has_lec() && $subject->has_lab()) {
-                if ($subject->lecture_status == GradeStatus::DROPPED || $subject->laboratory_status == GradeStatus::DROPPED) {
-                    $subject->remarks = GradeStatus::DROPPED;
-                } else if ($subject->lecture_status == GradeStatus::INCOMPLETE || $subject->laboratory_status == GradeStatus::INCOMPLETE) {
-                    $subject->remarks = GradeStatus::INCOMPLETE;
-                } else if ($subject->lecture_status == GradeStatus::FAILED || $subject->laboratory_status == GradeStatus::FAILED) {
-                    $subject->remarks = GradeStatus::FAILED;
-                } else {
-                    $subject->remarks = GradeStatus::COMPLETED;
-                }
+                $subject->remarks = $this->determineCombinedRemarks(
+                    $lecGrade,
+                    $labGrade,
+                    $subject->lecture_status,
+                    $subject->laboratory_status
+                );
             } else if ($subject->has_lec()) {
-                if ($subject->lecture_status == GradeStatus::DROPPED) {
-                    $subject->remarks = GradeStatus::DROPPED;
-                } else if ($subject->lecture_status == GradeStatus::INCOMPLETE) {
-                    $subject->remarks = GradeStatus::INCOMPLETE;
-                } else if ($subject->lecture_status == GradeStatus::FAILED) {
-                    $subject->remarks = GradeStatus::FAILED;
-                } else {
-                    $subject->remarks = GradeStatus::COMPLETED;
-                }
+                $subject->remarks = $lecGrade === null ? null : $subject->lecture_status;
             } else {
-                if ($subject->laboratory_status == GradeStatus::DROPPED) {
-                    $subject->remarks = GradeStatus::DROPPED;
-                } else if ($subject->laboratory_status == GradeStatus::INCOMPLETE) {
-                    $subject->remarks = GradeStatus::INCOMPLETE;
-                } else if ($subject->laboratory_status == GradeStatus::FAILED) {
-                    $subject->remarks = GradeStatus::FAILED;
-                } else {
-                    $subject->remarks = GradeStatus::COMPLETED;
-                }
+                $subject->remarks = $labGrade === null ? null : $subject->laboratory_status;
             }
 
-            if ($subject->has_lec() && $subject->has_lab()) {
-                $lec_grade = get_grade($student->id, $subject->subject->code, 'lec');
-                $lab_grade = get_grade($student->id, $subject->subject->code, 'lab');
-                $lec_unit = get_unit($student->id, $subject->subject->code, 'lec');
-                $lab_unit = get_unit($student->id, $subject->subject->code, 'lab');
+            // Calculate final grade
+            $subject->final_grade = $this->calculateFinalGrade(
+                $lecGrade,
+                $labGrade,
+                $lecUnit,
+                $labUnit,
+                $subject->has_lec(),
+                $subject->has_lab()
+            );
 
-                if ($lec_grade == -1 || $lab_grade == -1) {
-                    $subject->final_grade = "DRP";
-                } else if ($lec_grade == 0 || $lab_grade == 0) {
-                    $subject->final_grade = "INC";
-                } else if ($lec_grade == 5 || $lab_grade == 5) {
-                    $subject->final_grade = 5;
-                } else {
-                    $f_grade = ($lec_grade + $lab_grade) / ($lec_unit + $lab_unit);
-                    $subject->final_grade = $f_grade;
-                }
-            } else if ($subject->has_lec()) {
-                $grade = get_grade($student->id, $subject->subject->code, 'lec');
+            $subject->save(); // CRITICAL: Save the changes
+        }
+    }
 
-                if ($grade == -1) {
-                    $subject->final_grade = "DRP";
-                } else if ($grade == 0) {
-                    $subject->final_grade = "INC";
-                } else if ($grade == 5) {
-                    $subject->final_grade = 5;
-                } else {
-                    $subject->final_grade = $grade;
-                }
-            } else {
-                $grade = get_grade($student->id, $subject->subject->code, 'lab');
-
-                if ($grade == -1) {
-                    $subject->final_grade = "DRP";
-                } else if ($grade == 0) {
-                    $subject->final_grade = "INC";
-                } else if ($grade == 5) {
-                    $subject->final_grade = 5;
-                } else {
-                    $subject->final_grade = $grade;
-                }
-            }
+    private function getGradeFromCollection($gradesCollection, $subjectCode, $unitType)
+    {
+        if (!isset($gradesCollection[$subjectCode])) {
+            return null;
         }
 
-        function get_grade($student_id, $subject_code, $unit_type)
-        {
-            $grade = Grade::where('student_id', $student_id)
-                ->where('subject_code', $subject_code)
-                ->where('unit_type', $unit_type)
-                ->orderByDesc('school_year')
-                ->orderByDesc('semester')
-                ->select('grade')
-                ->first();
+        $grade = $gradesCollection[$subjectCode]
+            ->where('unit_type', $unitType)
+            ->first();
 
+        return $grade ? $grade->grade : null;
+    }
+
+    private function getUnitFromCollection($gradesCollection, $subjectCode, $unitType)
+    {
+        if (!isset($gradesCollection[$subjectCode])) {
+            return null;
+        }
+
+        $grade = $gradesCollection[$subjectCode]
+            ->where('unit_type', $unitType)
+            ->first();
+
+        return $grade ? $grade->credit_unit : null;
+    }
+
+    private function determineStatus($grade)
+    {
+        if ($grade === null) {
+            return null;
+        } else if ($grade == -1) {
+            return GradeStatus::DROPPED;
+        } else if ($grade == 0) { // FIXED: was = instead of ==
+            return GradeStatus::INCOMPLETE;
+        } else if ($grade >= 1 && $grade <= 3) {
+            return GradeStatus::COMPLETED;
+        } else if ($grade == 5) {
+            return GradeStatus::FAILED;
+        }
+    }
+
+    private function determineCombinedRemarks($lecGrade, $labGrade, $lecStatus, $labStatus)
+    {
+        if ($lecGrade === null && $labGrade === null) {
+            return null;
+        } else if ($lecStatus == GradeStatus::DROPPED || $labStatus == GradeStatus::DROPPED) {
+            return GradeStatus::DROPPED;
+        } else if ($lecStatus == GradeStatus::INCOMPLETE || $labStatus == GradeStatus::INCOMPLETE) {
+            return GradeStatus::INCOMPLETE;
+        } else if ($lecStatus == GradeStatus::FAILED || $labStatus == GradeStatus::FAILED) {
+            return GradeStatus::FAILED;
+        } else {
+            return GradeStatus::COMPLETED;
+        }
+    }
+
+    private function calculateFinalGrade($lecGrade, $labGrade, $lecUnit, $labUnit, $hasLec, $hasLab)
+    {
+        if ($hasLec && $hasLab) {
+            if ($lecGrade === null && $labGrade === null) {
+                return null;
+            } else if ($lecGrade == -1 || $labGrade == -1) {
+                return "DRP";
+            } else if ($lecGrade == 0 || $labGrade == 0) {
+                return "INC";
+            } else if ($lecGrade == 5 || $labGrade == 5) {
+                return 5;
+            } else {
+                if ($lecGrade === null) {
+                    return round($labGrade / $labUnit);
+                } else if ($labGrade === null) {
+                    return round($lecGrade / $lecUnit); // FIXED: was $lec_grade / $lec_grade
+                } else {
+                    return round((($lecGrade * $lecUnit) + ($labGrade * $labUnit)) / ($lecUnit + $labUnit), 2);
+                }
+            }
+        } else if ($hasLec) {
+            return $this->calculateSingleGrade($lecGrade);
+        } else {
+            return $this->calculateSingleGrade($labGrade);
+        }
+    }
+
+    private function calculateSingleGrade($grade)
+    {
+        if ($grade === null) {
+            return null;
+        } else if ($grade == -1) {
+            return "DRP";
+        } else if ($grade == 0) {
+            return "INC";
+        } else if ($grade == 5) {
+            return 5;
+        } else {
             return $grade;
-        }
-
-        function get_unit($student_id, $subject_code, $unit_type)
-        {
-            $credit_unit = Grade::where('student_id', $student_id)
-                ->where('subject_code', $subject_code)
-                ->where('unit_type', $unit_type)
-                ->orderByDesc('school_year')
-                ->orderByDesc('semester')
-                ->select('credit_unit')
-                ->first();
-
-            return $credit_unit;
         }
     }
 }

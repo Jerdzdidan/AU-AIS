@@ -16,8 +16,8 @@ return new class extends Migration
             $table->foreignId('student_id')->constrained()->onDelete('cascade');
             $table->foreignId('subject_id')->constrained()->onDelete('cascade');
 
-            $table->string('lecture_status');
-            $table->string('laboratory_status');
+            $table->string('lecture_status')->nullable();
+            $table->string('laboratory_status')->nullable();
 
             $table->string('lecture_grade')->nullable();
             $table->string('laboratory_grade')->nullable();
