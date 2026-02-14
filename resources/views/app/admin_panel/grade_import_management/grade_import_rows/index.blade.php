@@ -203,7 +203,7 @@ $(document).ready(function() {
             { data: "semester", className: "none" },
             { data: "faculty", className: "none" },
             { data: "credit_unit", className: "none" },
-            { data: "program", className: "none"},
+            { data: "program_code", className: "none"},
             {
                 data: "grade",
                 render: (data, type, row) => {
