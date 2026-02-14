@@ -16,11 +16,14 @@ return new class extends Migration
             $table->foreignId('student_id')->constrained()->onDelete('cascade');
             $table->foreignId('subject_id')->constrained()->onDelete('cascade');
 
-            $table->boolean('lecture_completed')->default(false);
-            $table->boolean('laboratory_completed')->default(false);
+            $table->enum('lecture_completed', ['not_taken', 'taken', 'completed']);
+            $table->enum('laboratory_completed', ['not_taken', 'taken', 'completed']);
 
-            $table->decimal('lecture_grade', 3, 2)->nullable();
-            $table->decimal('laboratory_grade', 3, 2)->nullable();
+            $table->string('lecture_grade')->nullable();
+            $table->string('laboratory_grade')->nullable();
+
+            $table->string('final_grade')->nullable();
+            $table->string('remarks')->nullable();
 
             $table->string('semester_taken')->nullable();
             $table->year('year_taken')->nullable();

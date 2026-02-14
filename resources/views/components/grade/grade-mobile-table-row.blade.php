@@ -1,3 +1,27 @@
+
+@php
+    if ($grade == -1) {
+        $gradeClass = 'text-dark';
+    } elseif ($grade >= 1 && $grade <= 3) {
+        $gradeClass = 'text-success';
+    } else {
+        $gradeClass = 'text-danger';
+    }
+@endphp
+@php
+    if ($grade == -1)
+    {
+        $grade_display = 'DRP';
+    }
+    else if ($grade == 0)
+    {
+        $grade_display = 'INC';
+    }
+    else
+    {
+        $grade_display = $grade;
+    }
+@endphp
 <tr class="subject-row" onclick="toggleDetails(this)">
     <td class="py-2 text-center">
         <span class="toggle-icon">›</span>
@@ -6,8 +30,8 @@
         <div class="fw-semibold">{{ $subjectCode }}</div>
         <div class="small text-muted">{{ $subjectName }}</div>
     </td>
-    <td class="py-2 text-center {{ $grade >= 1 && $grade <= 3 ? 'text-success' : 'text-danger' }}">
-        <span>{{ ($grade < 1 || $grade > 3) && $grade != 5 ? 'INC' : $grade }}</span>
+    <td class="py-2 text-center {{ $gradeClass }}">
+        <span>{{ $grade_display }}</span>
     </td>
 </tr>
 <tr class="details-row">
