@@ -16,8 +16,8 @@ return new class extends Migration
             $table->foreignId('student_id')->constrained()->onDelete('cascade');
             $table->foreignId('subject_id')->constrained()->onDelete('cascade');
 
-            $table->enum('lecture_completed', ['not_taken', 'taken', 'completed']);
-            $table->enum('laboratory_completed', ['not_taken', 'taken', 'completed']);
+            $table->string('lecture_status');
+            $table->string('laboratory_status');
 
             $table->string('lecture_grade')->nullable();
             $table->string('laboratory_grade')->nullable();

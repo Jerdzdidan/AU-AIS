@@ -2,7 +2,9 @@
 
 namespace App\Models;
 
+use App\Enums\GradeStatus;
 use Illuminate\Database\Eloquent\Model;
+use App\Enums\SubjectCategory;
 
 class StudentSubjectProgress extends Model
 {
@@ -12,12 +14,19 @@ class StudentSubjectProgress extends Model
     protected $fillable = [
         'student_id',
         'subject_id',
-        'lecture_completed',
-        'laboratory_completed',
+        'lecture_status',
+        'laboratory_status',
+        'final_grade',
+        'remarks',
         'lecture_grade',
         'laboratory_grade',
         'semester_taken',
         'year_taken',
+    ];
+
+    protected $casts = [
+        'lecture_status' => GradeStatus::class,
+        'laboratory_status' => GradeStatus::class,
     ];
 
     public function student()
@@ -49,5 +58,15 @@ class StudentSubjectProgress extends Model
 
         // Edge case: both units are 0 (shouldn't happen per your store validation, but just in case)
         return false;
+    }
+
+    public function has_lec()
+    {
+        return $this->subject->lec_units > 0;
+    }
+
+    public function has_lab()
+    {
+        return $this->subject->lab_units > 0;
     }
 }

@@ -28,15 +28,17 @@ class AcademicProgress extends Controller
     public function getData(Request $request)
     {
         $query = StudentSubjectProgress::where(
-                'student_id',
-                Auth::user()->student->id
-            )
+            'student_id',
+            Auth::user()->student->id
+        )
             ->with('subject:id,code,name,lec_units,lab_units,prerequisites,subject_category,year_level,semester')
             ->select([
                 'student_subject_progress.id',
                 'student_subject_progress.subject_id',
-                'student_subject_progress.lecture_completed',
-                'student_subject_progress.laboratory_completed',
+                'student_subject_progress.lecture_status',
+                'student_subject_progress.laboratory_status',
+                'student_subject_progress.final_grade',
+                'student_subject_progress.remarks'
             ])
             ->join('subjects', 'student_subject_progress.subject_id', '=', 'subjects.id')
             ->orderBy('subjects.year_level', 'asc')
@@ -45,11 +47,11 @@ class AcademicProgress extends Controller
 
         if ($request->filled('year_level') && $request->year_level !== 'all') {
             if ($request->year_level === 'minor') {
-                $query->whereHas('subject', function($q) {
+                $query->whereHas('subject', function ($q) {
                     $q->where('subject_category', 'Minor');
                 });
             } else {
-                $query->whereHas('subject', function($q) use ($request) {
+                $query->whereHas('subject', function ($q) use ($request) {
                     $q->where('year_level', $request->year_level);
                 });
             }
@@ -79,8 +81,9 @@ class AcademicProgress extends Controller
             ->addColumn('has_lec', fn($row) => $row->subject->lec_units > 0)
             ->addColumn('has_lab', fn($row) => $row->subject->lab_units > 0)
             ->addColumn('is_completed', fn($row) => $row->isCompleted())
-            ->addColumn('total_units', fn($row) =>
-                ($row->subject?->lec_units ?? 0) + ($row->subject?->lab_units ?? 0)
+            ->addColumn(
+                'total_units',
+                fn($row) => ($row->subject?->lec_units ?? 0) + ($row->subject?->lab_units ?? 0)
             )
             ->make(true);
     }
@@ -91,7 +94,7 @@ class AcademicProgress extends Controller
         $student = Auth::user()->student;
 
         $academicProgress = StudentSubjectProgress::where('student_id', $student->id)
-            ->with('subject:id,lec_units,lab_units') 
+            ->with('subject:id,lec_units,lab_units')
             ->get();
 
         $units_completed = $academicProgress->sum(function ($progress) {
@@ -130,9 +133,9 @@ class AcademicProgress extends Controller
         $user = Auth::user();
 
         $allProgress = StudentSubjectProgress::where(
-                'student_id',
-                Auth::user()->student->id
-            )
+            'student_id',
+            Auth::user()->student->id
+        )
             ->with('subject:id,code,name,lec_units,lab_units,prerequisites,subject_category,year_level,semester')
             ->select([
                 'student_subject_progress.id',
