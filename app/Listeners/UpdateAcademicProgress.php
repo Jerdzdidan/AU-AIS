@@ -154,8 +154,6 @@ class UpdateAcademicProgress
                 return "DRP";
             } else if ($lecGrade == 0 || $labGrade == 0) {
                 return "INC";
-            } else if ($lecGrade == 5 || $labGrade == 5) {
-                return 5;
             } else {
                 if ($lecGrade === null) {
                     return round($labGrade / $labUnit);
@@ -180,8 +178,6 @@ class UpdateAcademicProgress
             return "DRP";
         } else if ($grade == 0) {
             return "INC";
-        } else if ($grade == 5) {
-            return 5;
         } else {
             return $grade;
         }

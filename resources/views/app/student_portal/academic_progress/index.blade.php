@@ -253,11 +253,13 @@ $(document).ready(function() {
                         display = '<i class="text-dark">DRP</i>';
                     } else if (row.final_grade === "INC") {
                         display = '<i class="text-warning">INC</i>';
-                    } else if (parseFloat(row.final_grade) === 5.00) {
-                        display = `<i class="text-danger">${parseFloat(row.final_grade).toFixed(2)}</i>`;
                     } else if (parseFloat(row.final_grade) >= 1 && parseFloat(row.final_grade) <= 3) {
                         display = `<i class="text-success">${parseFloat(row.final_grade).toFixed(2)}</i>`;
-                    } else {
+                    }
+                    else if (parseFloat(row.final_grade) < 1 || parseFloat(row.final_grade) > 3) {
+                        display = `<i class="text-danger">${parseFloat(row.final_grade).toFixed(2)}</i>`;
+                    }
+                    else {
                         display = `<i class="text-light">-</i>`;
                     }
 
