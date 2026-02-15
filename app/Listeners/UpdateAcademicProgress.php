@@ -121,7 +121,7 @@ class UpdateAcademicProgress
             return null;
         } else if ($grade == -1) {
             return GradeStatus::DROPPED;
-        } else if ($grade == 0) { // FIXED: was = instead of ==
+        } else if ($grade == 0) {
             return GradeStatus::INCOMPLETE;
         } else if ($grade >= 1 && $grade <= 3) {
             return GradeStatus::COMPLETED;

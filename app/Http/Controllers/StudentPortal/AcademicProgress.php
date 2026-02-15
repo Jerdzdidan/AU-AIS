@@ -139,8 +139,10 @@ class AcademicProgress extends Controller
             ->select([
                 'student_subject_progress.id',
                 'student_subject_progress.subject_id',
-                'student_subject_progress.lecture_completed',
-                'student_subject_progress.laboratory_completed',
+                'student_subject_progress.lecture_status',
+                'student_subject_progress.laboratory_status',
+                'student_subject_progress.final_grade',
+                'student_subject_progress.remarks',
             ])
             ->join('subjects', 'student_subject_progress.subject_id', '=', 'subjects.id')
             ->orderBy('subjects.year_level', 'asc')

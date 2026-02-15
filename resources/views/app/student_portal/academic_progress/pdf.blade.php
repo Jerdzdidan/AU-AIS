@@ -107,14 +107,14 @@
 
         #pdfContent .pdf-table th {
             background-color: #f8f9fa;
-            padding: 8px;
+            padding: 6px;
             border: 1px solid #dee2e6;
             font-weight: 600;
             text-align: left;
         }
 
         #pdfContent .pdf-table td {
-            padding: 6px 8px;
+            padding: 4px 4px;
             border: 1px solid #dee2e6;
         }
 
@@ -214,14 +214,14 @@
                                     <span id="unitsEarnedDisplay">{{ $stats['units_earned'] }}</span>/<span id="unitsRequiredDisplay">{{ $stats['total_units'] }}</span>
                                 </p>
                                 <div class="progress mt-2" style="height: 8px;">
-                                    <div id="unitsProgressBar" class="progress-bar" role="progressbar" 
+                                    <div id="unitsProgressBar" class="progress-bar" role="progressbar"
                                             style="width: {{ $stats['units_progress'] }}%" aria-valuenow="{{ $stats['units_progress'] }}" aria-valuemin="0" aria-valuemax="100"></div>
                                 </div>
                                 <small class="text-white mt-1" id="unitsPercentage">{{ $stats['units_progress'] }}%</small>
                             </div>
                             <div class="align-self-center">
                                 <i class="fa-solid fa-book fa-2x"></i>
-                            </div>      
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -287,12 +287,13 @@
                         <table class="pdf-table">
                             <thead>
                                 <tr>
-                                    <th style="width: 15%;">Code</th>
+                                    <th style="width: 10%;">Code</th>
                                     <th style="width: 30%;">Subject Name</th>
-                                    <th style="width: 10%;">Lec</th>
-                                    <th style="width: 10%;">Lab</th>
-                                    <th style="width: 10%;">Units</th>
-                                    <th style="width: 15%;">Status</th>
+                                    <th class="text-center" style="width: 5%;">Lec</th>
+                                    <th class="text-center" style="width: 5%;">Lab</th>
+                                    <th class="text-center" style="width: 5%;">Units</th>
+                                    <th class="text-center" style="width: 10%;">Grade</th>
+                                    <th style="width: 15%;">Remarks</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -300,20 +301,74 @@
                                     @php
                                         $hasLec = $progress->subject->lec_units > 0;
                                         $hasLab = $progress->subject->lab_units > 0;
-                                        $lecStatus = $hasLec ? ($progress->lecture_completed ? '<i class="fa-solid fa-check-circle text-success"></i>' : '<i class="fa-solid fa-times-circle text-danger"></i>') : '-';
-                                        $labStatus = $hasLab ? ($progress->laboratory_completed ? '<i class="fa-solid fa-check-circle text-success"></i>' : '<i class="fa-solid fa-times-circle text-danger"></i>') : '-';
-                                        $status = $progress->isCompleted() ? 'Completed' : 'Incomplete';
-                                        $statusClass = $progress->isCompleted() ? 'text-success' : 'text-warning';
+
+                                        $lecture_status = $progress->lecture_status?->value;
+                                        if ($lecture_status === "failed") {
+                                            $lec_status_display = '<i class="fa-solid fa-times-circle text-danger"></i>';
+                                        } else if ($lecture_status === "incomplete") {
+                                            $lec_status_display = '<i class="fa-solid fa-minus-circle text-warning"></i>';
+                                        } else if ($lecture_status === "completed") {
+                                            $lec_status_display = '<i class="fa-solid fa-check-circle text-success"></i>';
+                                        } else if ($lecture_status === "dropped") {
+                                            $lec_status_display = '<i class="fa-solid fa-minus-circle text-dark"></i>';
+                                        } else {
+                                            $lec_status_display = '<i class="fa-solid fa-minus-circle text-light"></i>';
+                                        }
+
+                                        $laboratory_status = $progress->laboratory_status?->value;
+                                        if ($laboratory_status == "failed") {
+                                            $lab_status_display = '<i class="fa-solid fa-times-circle text-danger"></i>';
+                                        } else if ($laboratory_status == "incomplete") {
+                                            $lab_status_display = '<i class="fa-solid fa-minus-circle text-warning"></i>';
+                                        } else if ($laboratory_status == "completed") {
+                                            $lab_status_display = '<i class="fa-solid fa-check-circle text-success"></i>';
+                                        } else if ($laboratory_status == "dropped") {
+                                            $lab_status_display = '<i class="fa-solid fa-minus-circle text-dark"></i>';
+                                        } else {
+                                            $lab_status_display = '<i class="fa-solid fa-minus-circle text-light"></i>';
+                                        }
+
+                                        if ($progress->final_grade === null)
+                                        {
+                                            $final_grade_display = '<i class="text-light">-</i>';
+                                        }
+                                        else if ($progress->final_grade === "DRP") {
+                                            $final_grade_display = '<i class="text-dark">DRP</i>';
+                                        } else if ($progress->final_grade === "INC") {
+                                            $final_grade_display = '<i class="text-warning">INC</i>';
+                                        } else if ((float) $progress->final_grade >= 1 && (float) $progress->final_grade <= 3) {
+                                            $grade = number_format((float)$progress->final_grade, 2);
+                                            $final_grade_display = '<i class="text-success">'. $grade .'</i>';
+                                        } else if ((float) $progress->final_grade < 1 || (float) $progress->final_grade > 3) {
+                                            $grade = number_format((float)$progress->final_grade, 2);
+                                            $final_grade_display = '<i class="text-danger">'. $grade .'</i>';
+                                        } else {
+                                            $final_grade_display = '<i class="text-light">-</i>';
+                                        }
+
+                                        if ($progress->remarks === "dropped") {
+                                            $remarks_display = '<span class="text-dark">Dropped</span>';
+                                        } else if ($progress->remarks === "incomplete") {
+                                            $remarks_display = '<span class="text-warning">Incomplete</span>';
+                                        } else if ($progress->remarks === "failed") {
+                                            $remarks_display = '<span class="text-danger">Failed</span>';
+                                        } else if ($progress->remarks === "completed") {
+                                            $remarks_display = '<span class="text-success">Completed</span>';
+                                        } else {
+                                            $remarks_display = '<span class="text-light">-</span>';
+                                        }
+
                                         $units = $progress->subject->lec_units + $progress->subject->lab_units;
                                     @endphp
 
                                     <tr>
                                         <td>{{ $progress->subject->code }}</td>
                                         <td>{{ $progress->subject->name }}</td>
-                                        <td class="text-center">{!! $lecStatus !!}</td>
-                                        <td class="text-center">{!! $labStatus !!}</td>
+                                        <td class="text-center">{!! $lec_status_display !!}</td>
+                                        <td class="text-center">{!! $lab_status_display !!}</td>
                                         <td class="text-center">{{ $units }}</td>
-                                        <td><span class="{{ $statusClass }}">{{ $status }}</span></td>
+                                        <td class="text-center">{!! $final_grade_display !!}</td>
+                                        <td>{!! $remarks_display !!}</td>
                                     </tr>
                                 @endforeach
                             </tbody>
@@ -390,6 +445,6 @@
     <!-- Place this tag before closing body tag for github widget button. -->
     <script async defer src="https://buttons.github.io/buttons.js"></script>
     <!-- html2pdf script -->
-    
+
 </body>
 </html>
