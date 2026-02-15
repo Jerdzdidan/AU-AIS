@@ -99,7 +99,7 @@ class GradeImportRowController extends Controller
 
                 // Join students table to filter by program_id using student_number
                 $gradeImportRows->where('students.program_id', $programId)
-                    ->select('grade_import_rows.*');
+                    ->select('grade_import_rows.*', 'programs.code as program_code');
             }
 
             $gradeImportRows = $gradeImportRows->get();
