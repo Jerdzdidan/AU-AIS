@@ -71,8 +71,34 @@ Academic Progress
             </div>
         </div>
 
+        <div class="mt-0 pb-2">
+            <div class="d-flex flex-wrap justify-content-center gap-4">
+
+                <span>
+                    <i class="fa-solid fa-minus-circle text-light"></i> Not Taken
+                </span>
+
+                <span>
+                    <i class="fa-solid fa-times-circle text-danger"></i> Failed
+                </span>
+
+                <span>
+                    <i class="fa-solid fa-minus-circle text-dark"></i> Dropped
+                </span>
+
+                <span>
+                    <i class="fa-solid fa-minus-circle text-warning"></i> Incomplete
+                </span>
+
+                <span>
+                    <i class="fa-solid fa-check-circle text-success"></i> Completed
+                </span>
+
+            </div>
+        </div>
+
         <!-- Year Level Tabs -->
-        <div class="tab-scroll-wrapper" style="overflow-x: auto; -webkit-overflow-scrolling: touch;">
+        <div class="mb-0 pb-0 tab-scroll-wrapper" style="overflow-x: auto; -webkit-overflow-scrolling: touch;">
             <ul class="nav nav-tabs border-bottom mt-2" id="checklistYearTabs" role="tablist" style="flex-wrap: nowrap; min-width: min-content;">
                 <li class="nav-item" role="presentation">
                     <button class="nav-link active" id="year1-tab" data-bs-toggle="tab" data-bs-target="#year1" type="button" role="tab">

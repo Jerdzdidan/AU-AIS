@@ -261,6 +261,32 @@
 
         </div>
 
+        <div class="mt-4 mb-0" style="margin-bottom: -7px!important;">
+            <div class="d-flex flex-wrap justify-content-center gap-4">
+
+                <span>
+                    <i class="fa-solid fa-minus-circle text-light"></i> Not Taken
+                </span>
+
+                <span>
+                    <i class="fa-solid fa-times-circle text-danger"></i> Failed
+                </span>
+
+                <span>
+                    <i class="fa-solid fa-minus-circle text-dark"></i> Dropped
+                </span>
+
+                <span>
+                    <i class="fa-solid fa-minus-circle text-warning"></i> Incomplete
+                </span>
+
+                <span>
+                    <i class="fa-solid fa-check-circle text-success"></i> Completed
+                </span>
+
+            </div>
+        </div>
+
         <!-- Year Sections -->
         @php
             $yearTitles = [
