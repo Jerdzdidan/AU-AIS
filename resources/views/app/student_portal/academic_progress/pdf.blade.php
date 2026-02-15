@@ -328,11 +328,9 @@
                                             $lab_status_display = '<i class="fa-solid fa-minus-circle text-light"></i>';
                                         }
 
-                                        if ($progress->final_grade === null)
-                                        {
+                                        if ($progress->final_grade === null) {
                                             $final_grade_display = '<i class="text-light">-</i>';
-                                        }
-                                        else if ($progress->final_grade === "DRP") {
+                                        } else if ($progress->final_grade === "DRP") {
                                             $final_grade_display = '<i class="text-dark">DRP</i>';
                                         } else if ($progress->final_grade === "INC") {
                                             $final_grade_display = '<i class="text-warning">INC</i>';
