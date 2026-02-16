@@ -14,6 +14,7 @@ use App\Http\Controllers\AdminPanel\UserController;
 use App\Http\Controllers\Auth\AdminAuthController;
 use App\Http\Controllers\Auth\GlobalLogoutController;
 use App\Http\Controllers\Auth\StudentAuthController;
+use App\Http\Controllers\OfficerPanel\StudentAcademicProgressController;
 use App\Http\Controllers\StudentPortal\AcademicProgress;
 use App\Http\Controllers\StudentPortal\GradeController;
 use App\Http\Middleware\PreventSelfAction;
@@ -161,6 +162,12 @@ Route::prefix('admin')->middleware('auth')->can('is-admin')->group(function () {
     });
 });
 
+Route::prefix('officer')->middleware('auth')->name('officer.')->group(function () {
+    // STUDENT ACADEMIC PROGRESS
+    Route::get('students/{year}', [StudentAcademicProgressController::class, 'index'])->name('students');
+    Route::get('data/{year}', [StudentAcademicProgressController::class, 'getData'])->name('students.data');
+});
+
 
 Route::prefix('student')->middleware('auth', StudentInformationCheck::class)->can('is-student')->group(function () {
 
@@ -181,4 +188,3 @@ Route::prefix('student')->middleware('auth', StudentInformationCheck::class)->ca
     // Help
     Route::view('help', 'app.student_portal.general_information.help')->name('student.help.index');
 });
-

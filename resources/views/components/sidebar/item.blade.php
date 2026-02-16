@@ -1,6 +1,8 @@
 <li class="menu-item {{ $class }} {{ request()->routeIs($route) ? 'active' : '' }}">
     <a href="{{ route($route, $param) }}" class="menu-link">
-        <i class="{{ $icon }}"></i>
+        @if($icon)
+            <i class="{{ $icon }}"></i>
+        @endif
         <div class="text-truncate" data-i18n="{{ Str::title($name) }}">
             {{ $name }}
         </div>
