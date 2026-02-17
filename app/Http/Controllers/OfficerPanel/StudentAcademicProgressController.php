@@ -116,9 +116,7 @@ class StudentAcademicProgressController extends Controller
 
         if ($request->filled('status') && $request->status !== 'All') {
             $academicProgress = $academicProgress->filter(function ($progress) use ($request) {
-                return $request->status === 'Complete'
-                    ? $progress->isCompleted()
-                    : !$progress->isCompleted();
+                return $progress->remarks === $request->status;
             });
         }
 
