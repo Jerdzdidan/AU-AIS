@@ -120,10 +120,8 @@ $(document).ready(function() {
         ],
         statsCards: {
             callback: (table) => {
-                $.get("{{ route('users.stats', 'STUDENT') }}", (data) => {
+                $.get("{{ route('officer.students.stats') }}", (data) => {
                     $('#totalStudents').text(data.total);
-                    $('#activeStudents').text(data.active);
-                    $('#inactiveStudents').text(data.inactive);
                 });
             }
         }

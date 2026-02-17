@@ -167,6 +167,7 @@ Route::prefix('officer')->middleware('auth')->name('officer.')->group(function (
     // STUDENT ACADEMIC PROGRESS
     Route::get('students', [StudentAcademicProgressController::class, 'index'])->name('students');
     Route::get('data', [StudentAcademicProgressController::class, 'getData'])->name('students.data');
+    Route::get('stats', [StudentAcademicProgressController::class, 'getStats'])->name('students.stats');
 
     Route::get('student-progress/{student_id}', [StudentAcademicProgressController::class, 'show'])->name('student.show');
     Route::get('student-progress/data/{student_id}', [StudentAcademicProgressController::class, 'getProgressData'])->name('student.progress.data');

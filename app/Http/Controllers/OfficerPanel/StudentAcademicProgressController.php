@@ -7,6 +7,7 @@ use App\Events\StudentCheckProgress;
 use App\Http\Controllers\Controller;
 use App\Models\Student;
 use App\Models\StudentSubjectProgress;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Crypt;
@@ -45,6 +46,24 @@ class StudentAcademicProgressController extends Controller
                 return Crypt::encryptString($row->user_id);
             })
             ->make(true);
+    }
+
+    public function getStats(Request $request)
+    {
+        $department = auth()->user()->department_id;
+
+        $students_count = Student::with(['user:status', 'program:department_id'])
+            ->whereHas('user', function ($query) {
+                $query->where('status', true);
+            })
+            ->whereHas('program', function ($query) use ($department) {
+                $query->where('department_id', $department);
+            })
+            ->count();
+
+        return response()->json([
+            'total' => $students_count,
+        ]);
     }
 
     public function show($student_id)
