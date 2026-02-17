@@ -171,7 +171,7 @@ Route::prefix('officer')->middleware('auth')->name('officer.')->group(function (
     Route::get('student-progress/{student_id}', [StudentAcademicProgressController::class, 'show'])->name('student.show');
     Route::get('student-progress/data/{student_id}', [StudentAcademicProgressController::class, 'getProgressData'])->name('student.progress.data');
     Route::get('student-progress/stats/{student_id}', [StudentAcademicProgressController::class, 'getProgressStats'])->name('student.progress.stats');
-    Route::get('student-progress/pdf/{student_id}', [StudentAcademicProgressController::class, 'progressDownloadPdf'])->name('student.progress.downlooadPDF');
+    Route::get('student-progress/pdf/{student_id}', [StudentAcademicProgressController::class, 'progressDownloadPdf'])->name('student.progress.pdf');
 });
 
 

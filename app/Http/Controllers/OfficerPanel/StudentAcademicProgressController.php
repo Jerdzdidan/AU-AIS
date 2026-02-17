@@ -55,10 +55,9 @@ class StudentAcademicProgressController extends Controller
         event(new StudentAcademicProgressCreate($student));
         event(new StudentCheckProgress($student));
 
-        $student_name = $student->user->name;
 
         return view('app.officer_panel.student_academic_progress.show', [
-            'student_name' => $student_name,
+            'student' => $student,
             'student_id' => $student_id
         ]);
     }
@@ -166,9 +165,9 @@ class StudentAcademicProgressController extends Controller
     public function progressDownloadPdf($student_id)
     {
         $decrypted = Crypt::decryptString($student_id);
-        $student = Student::where('id', $decrypted);
+        $student = Student::with('user')->findOrFail($decrypted);
 
-        $user = Auth::user();
+        $user = $student->user;
 
         $allProgress = StudentSubjectProgress::where('student_id', $student->id)
             ->with('subject:id,code,name,lec_units,lab_units,prerequisites,subject_category,year_level,semester')
@@ -224,7 +223,7 @@ class StudentAcademicProgressController extends Controller
             return $progress->isCompleted();
         })->count();
 
-        return view('app.student_portal.academic_progress.pdf', [
+        return view('app.officer_panel.student_academic_progress.pdf', [
             'user' => $user,
             'student' => $student,
             'years' => $years,

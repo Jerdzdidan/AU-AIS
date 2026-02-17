@@ -18,8 +18,51 @@ Student Academic Progress
         <!-- Page Header -->
         <x-table.page-header
             title=""
-            subtitle="View student academic progress details"
-        />
+            subtitle=""
+            showBackButton="true"
+            backUrl="{{ route('officer.students') }}">
+        </x-table.page-header>
+
+        <!-- Student Information -->
+        <div class="card border-0 shadow-sm mt-0 mb-4" style="margin-top: -15px!important">
+            <div class="card-body">
+                <h5 class="fw-bold mb-4 text-primary">
+                    <i class="fa-solid fa-user-graduate me-2"></i>Student Information
+                </h5>
+
+                <div class="row g-3"> <div class="col-md-6">
+                        <div class="row mb-2">
+                            <div class="col-sm-4 fw-semibold text-muted">Full Name:</div>
+
+                            <div class="col-sm-8 text-dark">{{ $student->user->name }}</div>
+                        </div>
+                        <div class="row mb-2">
+                            <div class="col-sm-4 fw-semibold text-muted">Student No.:</div>
+                            <div class="col-sm-8 font-monospace">{{ $student->student_number }}</div>
+                        </div>
+                        <div class="row mb-2">
+                            <div class="col-sm-4 fw-semibold text-muted">Year Level:</div>
+                            <div class="col-sm-8">
+                                <span class="badge bg-outline-primary text-white fw-bold">
+                                Yr. {{ $student->year_level }}
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6 border-start-md ps-md-4">
+                        <div class="row mb-2">
+                            <div class="col-sm-4 fw-semibold text-muted">Program:</div>
+                            <div class="col-sm-8">
+                                <div class="fw-bold">{{ $student->program->code ?? 'N/A' }}</div>
+                                <small class="text-muted d-block">{{ $student->program->name ?? 'N/A' }}</small>
+                            </div>
+                        </div>
+                        </div>
+
+                </div>
+            </div>
+        </div>
 
         <!-- Statistics Cards -->
         <div class="row mb-4">
@@ -155,7 +198,7 @@ Student Academic Progress
                         <small class="text-muted">Download the pdf in order to ensure a smooth enrollment process.</small>
                     </div>
                     <div>
-                        <a href="{{ route('student.academic_progress.pdf') }}" class="btn btn-danger" id="btnDownloadPDF" target="_blank">
+                        <a href="{{ route('officer.student.progress.pdf', $student_id) }}" class="btn btn-danger" id="btnDownloadPDF" target="_blank">
                             <i class="fa-solid fa-file-pdf fa-1x me-2"></i>
                             Download PDF
                         </a>
