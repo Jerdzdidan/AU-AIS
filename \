@@ -49,8 +49,8 @@ class StudentAcademicProgressController extends Controller
 
     public function show($student_id)
     {
-        $decrypted = Crypt::decryptString($student_id);
-        $student = Student::with('user')->findOrFail($decrypted);
+        $decrypted = Crypt::decrypt($student_id);
+        $student = Student::where('id', $decrypted);
 
         event(new StudentAcademicProgressCreate($student));
         event(new StudentCheckProgress($student));
@@ -58,14 +58,13 @@ class StudentAcademicProgressController extends Controller
         $student_name = $student->user->name;
 
         return view('app.officer_panel.student_academic_progress.show', [
-            'student_name' => $student_name,
-            'student_id' => $student_id
+            'student_name' => $student_name
         ]);
     }
 
     public function getProgressData(Request $request, $student_id)
     {
-        $decrypted = Crypt::decryptString($student_id);
+        $decrypted = Crypt::decrypt($student_id);
 
         $query = StudentSubjectProgress::where('student_id', $decrypted)
             ->with('subject:id,code,name,lec_units,lab_units,prerequisites,subject_category,year_level,semester')
@@ -126,8 +125,8 @@ class StudentAcademicProgressController extends Controller
 
     public function getProgressStats($student_id)
     {
-        $decrypted = Crypt::decryptString($student_id);
-        $student = Student::findOrFail($decrypted);
+        $decrypted = Crypt::decrypt($student_id);
+        $student = Student::where('id', $decrypted);
 
         $academicProgress = StudentSubjectProgress::where('student_id', $student->id)
             ->with('subject:id,lec_units,lab_units')
@@ -165,7 +164,7 @@ class StudentAcademicProgressController extends Controller
 
     public function progressDownloadPdf($student_id)
     {
-        $decrypted = Crypt::decryptString($student_id);
+        $decrypted = Crypt::decrypt($student_id);
         $student = Student::where('id', $decrypted);
 
         $user = Auth::user();

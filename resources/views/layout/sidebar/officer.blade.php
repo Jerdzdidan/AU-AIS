@@ -9,7 +9,7 @@
     <span class="menu-header-text">Academic Information</span>
 </li>
 
-    <x-sidebar.item route='#' name='Student Progress' icon='fa-solid fa-user-graduate me-2' />
+    <x-sidebar.item route='officer.students' name='Student Progress' icon='fa-solid fa-user-graduate me-2' />
 
     {{-- <li class="menu-item"> --}}
     {{--     <a href="javascript:void(0);" class="menu-link menu-toggle"> --}}
