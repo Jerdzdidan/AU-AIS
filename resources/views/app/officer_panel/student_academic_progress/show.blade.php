@@ -106,7 +106,7 @@ Student Academic Progress
                     icon="fa-solid fa-tags"
                     :options="[
                         ['value' => 'All', 'text' => 'All Status'],
-                        ['value' => '', 'text' => 'Not Taken'],
+                        ['value' => 'not_taken', 'text' => 'Not Taken'],
                         ['value' => 'failed', 'text' => 'Failed'],
                         ['value' => 'dropped', 'text' => 'Dropped'],
                         ['value' => 'incomplete', 'text' => 'Incomplete'],
