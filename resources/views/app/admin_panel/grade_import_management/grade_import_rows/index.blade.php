@@ -334,10 +334,12 @@ $(document).ready(function() {
         }
         else if (data.allValid && !data.allCommited) {
             $('#invalid-records-alert-alt').remove();
+            $('#uncommitAll-section-alt').hide();
             $('#commit-section-alt').show();
         }
         else {
             $('#commit-section-alt').hide();
+            $('#uncommitAll-section-alt').hide();
             $('#invalid-records-alert-alt').show();
         }
     };
@@ -350,10 +352,12 @@ $(document).ready(function() {
         }
         else if (data.allValid && !data.allCommited) {
             $('#invalid-records-alert-alt').hide();
+            $('#uncommitAll-section-alt').hide();
             $('#commit-section-alt').show();
         }
         else {
             $('#commit-section-alt').hide();
+            $('#uncommitAll-section-alt').hide();
             $('#invalid-records-alert-alt').show();
         }
     };
@@ -366,10 +370,12 @@ $(document).ready(function() {
         }
         else if (data.allValid && !data.allCommited) {
             $('#invalid-records-alert-alt').hide();
+            $('#uncommitAll-section-alt').hide();
             $('#commit-section-alt').show();
         }
         else {
             $('#commit-section-alt').hide();
+            $('#uncommitAll-section-alt').hide();
             $('#invalid-records-alert-alt').show();
         }
     };
@@ -402,10 +408,12 @@ $(document).ready(function() {
         }
         else if (data.allValid && !data.allCommited) {
             $('#invalid-records-alert-alt').hide();
+            $('#uncommitAll-section-alt').hide();
             $('#commit-section-alt').show();
         }
         else {
             $('#commit-section-alt').hide();
+            $('#uncommitAll-section-alt').hide();
             $('#invalid-records-alert-alt').show();
         }
     };
