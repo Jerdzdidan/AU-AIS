@@ -63,8 +63,11 @@ Academic Progress
                     icon="fa-solid fa-tags"
                     :options="[
                         ['value' => 'All', 'text' => 'All Status'],
-                        ['value' => 'Complete', 'text' => 'Complete'],
-                        ['value' => 'Incomplete', 'text' => 'Incomplete'],
+                        ['value' => 'not_taken', 'text' => 'Not Taken'],
+                        ['value' => 'failed', 'text' => 'Failed'],
+                        ['value' => 'dropped', 'text' => 'Dropped'],
+                        ['value' => 'incomplete', 'text' => 'Incomplete'],
+                        ['value' => 'completed', 'text' => 'Completed'],
                     ]"
                     placeholder="Select Status"
                 />

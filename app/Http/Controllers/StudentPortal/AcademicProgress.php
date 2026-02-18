@@ -61,9 +61,10 @@ class AcademicProgress extends Controller
 
         if ($request->filled('status') && $request->status !== 'All') {
             $academicProgress = $academicProgress->filter(function ($progress) use ($request) {
-                return $request->status === 'Complete'
-                    ? $progress->isCompleted()
-                    : !$progress->isCompleted();
+                if ($request->status === "not_taken") {
+                    return $progress->remarks === null;
+                }
+                return $progress->remarks === $request->status;
             });
         }
 
