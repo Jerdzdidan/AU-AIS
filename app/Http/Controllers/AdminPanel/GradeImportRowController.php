@@ -658,7 +658,7 @@ class GradeImportRowController extends Controller
         if ($allCommited) {
             $gradeImport->status = "committed";
         } else {
-            $gradeImport->status = "staged";
+            $gradeImport->status = "pending";
         }
 
         $gradeImport->save();
