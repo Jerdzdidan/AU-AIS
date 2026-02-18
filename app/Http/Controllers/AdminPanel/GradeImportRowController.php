@@ -82,8 +82,10 @@ class GradeImportRowController extends Controller
         try {
             $gradeImport = $this->findGradeImport($gradeImportId);
             $gradeImportRows = $gradeImport->rows();
-            $gradeImportRows->join('students', 'students.student_number', '=', 'grade_import_rows.student_number')
-                ->join('programs', 'programs.id', '=', 'students.program_id')
+            $gradeImportRows = $gradeImport->rows()
+                // Use leftJoin so rows remain even if student/program is missing
+                ->leftJoin('students', 'students.student_number', '=', 'grade_import_rows.student_number')
+                ->leftJoin('programs', 'programs.id', '=', 'students.program_id')
                 ->select('grade_import_rows.*', 'programs.code as program_code');
 
             if ($request->filled('status') && $request->status !== 'All') {
@@ -219,13 +221,24 @@ class GradeImportRowController extends Controller
     {
         try {
             $row = $this->findGradeImportRow($gradeImportRowId);
+            $grade = $row->grade;
+
+            if ($grade == -1) {
+                $grade_display = "DRP";
+            } else if ($grade == 0) {
+                $grade_display = "INC";
+            } else if ($grade == 5 || ($grade >= 1 && $grade <= 3)) {
+                $grade_display = round($grade, 2);
+            } else {
+                $grade_display = null;
+            }
 
             return response()->json([
                 'id' => Crypt::encryptString($row->id),
                 'student_number' => $row->student_number,
                 'subject_code' => $row->subject_code,
                 'unit_type' => $row->unit_type,
-                'grade' => $row->grade,
+                'grade' => $grade_display,
                 'faculty' => $row->faculty,
                 'credit_unit' => $row->credit_unit
             ]);

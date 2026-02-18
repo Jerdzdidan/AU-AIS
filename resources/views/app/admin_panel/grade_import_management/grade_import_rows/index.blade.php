@@ -44,6 +44,11 @@
             </a>
         </div>
 
+        <div class="alert alert-danger mt-3" id="invalid-records-alert-alt" role="alert" style="display: none;">
+            <i class="fa-solid fa-triangle-exclamation me-2"></i>
+            There are invalid grade import records that need to be addressed before committing. Please review and correct the errors.
+        </div>
+
         <!-- Status Filter -->
         <div class="row">
             <div class="col-md-2">
@@ -116,11 +121,6 @@
                     </div>
                 </div>
             </div>
-        </div>
-
-        <div class="alert alert-warning mt-3" id="invalid-records-alert-alt" role="alert" style="display: none;">
-            <i class="fa-solid fa-triangle-exclamation me-2"></i>
-            There are invalid grade import records that need to be addressed before committing. Please review and correct the errors.
         </div>
 
         <div class="container" id="uncommitAll-section-alt" style="display: none;">
