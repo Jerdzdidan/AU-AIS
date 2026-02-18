@@ -493,6 +493,9 @@ class GradeImportRowController extends Controller
 
                 $row->status = $this::STATUS_STAGED;
                 $row->save();
+
+                // Update statistics
+                $this->updateGradeImportStatistics($row->gradeImport);
             });
 
             return response()->json([
@@ -637,6 +640,13 @@ class GradeImportRowController extends Controller
             ->count();
 
         $gradeImport->total_rows = $gradeImport->rows()->count();
+        $allCommited = $gradeImport->rows()->where('status', $this::STATUS_STAGED)->count() === 0;
+
+        if ($allCommited) {
+            $gradeImport->status = "committed";
+        } else {
+            $gradeImport->status = "staged";
+        }
 
         $gradeImport->save();
     }
