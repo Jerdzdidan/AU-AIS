@@ -180,7 +180,7 @@ class StudentImportController extends Controller
 
         return response()->json([
             'success' => true,
-            'message' => 'Grade import record deleted successfully.'
+            'message' => 'Student import record deleted successfully.'
         ]);
     }
 }
