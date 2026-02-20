@@ -6,6 +6,8 @@ use App\Models\Grade;
 use App\Models\GradeImport;
 use App\Models\GradeImportRow;
 use App\Models\Student;
+use App\Models\StudentImport;
+use App\Models\StudentImportRow;
 use Illuminate\Support\Collection;
 
 class GradeImportRowValidator
@@ -13,17 +15,17 @@ class GradeImportRowValidator
     /**
      * Validate a grade import row
      *
-     * @param GradeImportRow $row
+     * @param StudentImportRow $row
      * @param Collection $students Keyed by student_number
-     * @param Collection $subjects Keyed by code
-     * @param GradeImport $gradeImport
+     * @param Collection $programs Keyed by code
+     * @param StudentImport $student_import
      * @return array Array of error messages
      */
     public function validateRow(
-        GradeImportRow $row,
+        StudentImportRow $row,
         Collection $students,
-        Collection $subjects,
-        GradeImport $gradeImport
+        Collection $programs,
+        StudentImport $student_import
     ): array {
         $errors = [];
 
@@ -54,22 +56,34 @@ class GradeImportRowValidator
     /**
      * Validate student exists
      */
-    protected function validateStudent(GradeImportRow $row, Collection $students): array
+    protected function validateStudent(StudentImport $row, Collection $students): array
     {
         $errors = [];
 
         if (empty($row->student_number)) {
-            $errors[] = 'Student ID is required';
+            $errors[] = 'Student number is required';
             return $errors;
         }
 
         $student = $students->get($row->student_number);
 
-        if (!$student) {
-            $errors[] = 'Student not found';
+        if ($student) {
+            $errors[] = 'Student already exists';
         } else {
-            // Update the row with the confirmed student number
-            $row->student_number = $student->student_number;
+            if (!preg_match('/^\d{2}-\d{5}$/', $row['student_number'])) {
+                $errors[] = 'Student number format must be nn-nnnnn (e.g., 23-12345)';
+            } else {
+                $year = now()->year;
+                $lastTwo = (int) substr($year, -2);
+
+                $firstTwo = (int) substr($row['student_number'], 0, 2);
+
+                if ($lastTwo - $firstTwo > 5) {
+                    $row['year_level'] = 5;
+                } else {
+                    $row['year_level'] = $lastTwo - $firstTwo;
+                }
+            }
         }
 
         return $errors;
@@ -214,4 +228,3 @@ class GradeImportRowValidator
         return $errors;
     }
 }
-
