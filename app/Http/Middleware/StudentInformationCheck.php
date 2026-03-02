@@ -5,6 +5,7 @@ namespace App\Http\Middleware;
 use App\Events\StudentInformationCheck as StudentInformationCheckEvent;
 use Closure;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\View;
 use Symfony\Component\HttpFoundation\Response;
 
 class StudentInformationCheck
@@ -34,6 +35,10 @@ class StudentInformationCheck
             }
             
             $student->save();
+
+            // Share whether the student has an email with all views
+            $studentHasEmail = !empty(auth()->user()->email);
+            View::share('studentHasEmail', $studentHasEmail);
 
             return $next($request);
         }

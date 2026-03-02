@@ -17,6 +17,7 @@ use App\Http\Controllers\Auth\StudentAuthController;
 use App\Http\Controllers\OfficerPanel\StudentAcademicProgressController;
 use App\Http\Controllers\StudentPortal\AcademicProgress;
 use App\Http\Controllers\StudentPortal\GradeController;
+use App\Http\Controllers\StudentPortal\StudentPortalController;
 use App\Http\Middleware\PreventSelfAction;
 use App\Http\Middleware\StudentInformationCheck;
 use Illuminate\Support\Facades\Route;
@@ -178,6 +179,9 @@ Route::prefix('officer')->middleware('auth')->name('officer.')->group(function (
 
 
 Route::prefix('student')->middleware('auth', StudentInformationCheck::class)->can('is-student')->group(function () {
+
+    // UPDATE EMAIL
+    Route::post('update-email', [StudentPortalController::class, 'updateEmail'])->name('student.update_email');
 
     // ACADEMIC PROGRESS
     Route::get('academic-progress', [AcademicProgress::class, 'index'])->name('student.academic_progress.index');
