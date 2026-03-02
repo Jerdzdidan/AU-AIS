@@ -81,7 +81,7 @@ class StudentsImport implements ToCollection, WithHeadingRow
                     // Fire events (creates user account + academic progress)
                     event(new StudentCreationEvent($student, [
                         'name' => $name,
-                        'password' => $studentNumber, // default password = student number
+                        'password' => "arellano123", // default password = student number
                     ]));
 
                     event(new StudentAcademicProgressCreate($student));
