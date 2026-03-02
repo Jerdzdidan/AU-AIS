@@ -62,6 +62,7 @@ Route::prefix('admin')->middleware('auth')->can('is-admin')->group(function () {
 
         // STUDENT ACCOUNTS MANAGEMENT
         Route::get('students/data', [StudentUserController::class, 'getData'])->name('students.data');
+        Route::post('students/import', [StudentUserController::class, 'importStudents'])->name('students.import');
         Route::resource('students', StudentUserController::class);
 
         // GENERIC USER ROUTES

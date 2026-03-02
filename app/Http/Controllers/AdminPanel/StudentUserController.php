@@ -5,12 +5,15 @@ namespace App\Http\Controllers\AdminPanel;
 use App\Events\StudentAcademicProgressCreate;
 use App\Events\StudentCreationEvent;
 use App\Http\Controllers\Controller;
+use App\Imports\StudentsImport;
 use App\Models\Student;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Validation\ValidationException;
+use Maatwebsite\Excel\Facades\Excel;
 use Yajra\DataTables\DataTables;
 
 class StudentUserController extends Controller
@@ -145,5 +148,37 @@ class StudentUserController extends Controller
             'success' => true,
             'message' => 'Officer deleted successfully.'
         ]);
+    }
+
+    public function importStudents(Request $request)
+    {
+        try {
+            $request->validate([
+                'file' => 'required|file|mimes:csv,xlsx,xls,txt|max:10240',
+            ]);
+
+            $import = new StudentsImport();
+            Excel::import($import, $request->file('file'));
+
+            return response()->json([
+                'success' => true,
+                'imported_count' => $import->getImportedCount(),
+                'failed_count' => $import->getFailedCount(),
+                'failed_rows' => $import->getFailedRows(),
+                'message' => $import->getImportedCount() . ' student(s) imported successfully.' .
+                    ($import->getFailedCount() > 0 ? ' ' . $import->getFailedCount() . ' row(s) failed.' : ''),
+            ]);
+        } catch (ValidationException $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Validation failed: ' . implode(', ', $e->validator->errors()->all()),
+                'errors' => $e->validator->errors()->toArray()
+            ], 422);
+        } catch (Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Import failed: ' . $e->getMessage()
+            ], 500);
+        }
     }
 }

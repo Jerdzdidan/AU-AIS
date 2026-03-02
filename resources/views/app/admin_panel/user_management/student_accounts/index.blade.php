@@ -17,6 +17,10 @@ Student Accounts Management
     <div class="content-container">
         <!-- Page Header -->
         <x-table.page-header title="" subtitle="Manage system accounts">
+            <button class="btn btn-outline-primary me-2" data-bs-toggle="offcanvas" data-bs-target="#import-students-modal">
+                <i class="fa-solid fa-file-import fa-1x me-2"></i>
+                Import Students
+            </button>
             <button class="btn btn-primary" data-bs-toggle="offcanvas" id="btn-add" data-bs-target="#add-or-update-modal">
                 <i class="fa-solid fa-plus fa-1x me-2"></i>
                 Add New Account
@@ -85,6 +89,74 @@ Student Accounts Management
         </x-table.table>
 
         @include('app.admin_panel.user_management.student_accounts.form')
+
+        {{-- Import Students Modal --}}
+        <x-modals.creation-and-update-modal
+            id="import-students-modal"
+            title="Import Students"
+            action=""
+            formId="import-students-form"
+            submitButtonName="Import"
+            enctype="multipart/form-data"
+        >
+            <div class="mb-3">
+                <x-input.file-field
+                    id="import-file"
+                    label="CSV / Excel File"
+                    name="file"
+                    accept=".csv,.xlsx,.xls"
+                    helptext="Required columns: student_number, name, program_code"
+                />
+            </div>
+        </x-modals.creation-and-update-modal>
+
+        {{-- Import Results Modal --}}
+        <div class="modal fade" id="import-results-modal" tabindex="-1" aria-hidden="true">
+            <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title fw-bold">Import Results</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <div class="alert alert-success mb-0">
+                                    <i class="fa-solid fa-check-circle me-2"></i>
+                                    <strong>Imported:</strong> <span id="imported-count">0</span> student(s)
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="alert alert-danger mb-0">
+                                    <i class="fa-solid fa-times-circle me-2"></i>
+                                    <strong>Failed:</strong> <span id="failed-count">0</span> row(s)
+                                </div>
+                            </div>
+                        </div>
+                        <div id="failed-rows-section" style="display: none;">
+                            <h6 class="fw-bold mb-3">Failed Rows:</h6>
+                            <div class="table-responsive">
+                                <table class="table table-bordered table-striped" id="failed-rows-table">
+                                    <thead class="table-dark">
+                                        <tr>
+                                            <th>Row #</th>
+                                            <th>Student No.</th>
+                                            <th>Name</th>
+                                            <th>Program Code</th>
+                                            <th>Error(s)</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody></tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
 
     </div>
 </div>
@@ -248,6 +320,73 @@ $(document).ready(function() {
 
     $('#filter-status').on('change', function() {
         studentsTable.reload();
+    });
+
+    // Import Students
+    $('#import-students-form').on('submit', function(e) {
+        e.preventDefault();
+        const fd = new FormData(this);
+        const $btn = $(this).find('button[type="submit"]');
+        const originalText = $btn.html();
+
+        $btn.prop('disabled', true).html('<i class="fa-solid fa-spinner fa-spin me-2"></i>Importing...');
+
+        $.ajax({
+            url: "{{ route('students.import') }}",
+            method: 'POST',
+            data: fd,
+            processData: false,
+            contentType: false,
+            headers: { 'X-CSRF-TOKEN': '{{ csrf_token() }}' },
+            success: function(data) {
+                // Close import modal
+                const offcanvas = bootstrap.Offcanvas.getInstance(document.getElementById('import-students-modal'));
+                if (offcanvas) offcanvas.hide();
+                $('#import-students-form')[0].reset();
+
+                // Populate results
+                $('#imported-count').text(data.imported_count);
+                $('#failed-count').text(data.failed_count);
+
+                const $tbody = $('#failed-rows-table tbody');
+                $tbody.empty();
+
+                if (data.failed_rows && data.failed_rows.length > 0) {
+                    $('#failed-rows-section').show();
+                    data.failed_rows.forEach(function(row) {
+                        const errors = row.errors.join('<br>');
+                        $tbody.append(`
+                            <tr>
+                                <td>${row.row}</td>
+                                <td>${row.student_number || '—'}</td>
+                                <td>${row.name || '—'}</td>
+                                <td>${row.program_code || '—'}</td>
+                                <td class="text-danger">${errors}</td>
+                            </tr>
+                        `);
+                    });
+                } else {
+                    $('#failed-rows-section').hide();
+                }
+
+                // Show results modal
+                new bootstrap.Modal(document.getElementById('import-results-modal')).show();
+
+                // Refresh table
+                studentsTable.reload();
+
+                if (data.imported_count > 0) {
+                    toastr.success(data.message);
+                }
+            },
+            error: function(xhr) {
+                const msg = xhr.responseJSON?.message || 'Import failed';
+                toastr.error(msg, 'Error');
+            },
+            complete: function() {
+                $btn.prop('disabled', false).html(originalText);
+            }
+        });
     });
 
 });
