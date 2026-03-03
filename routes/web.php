@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AnnouncementController;
+use App\Http\Controllers\HomepageAnnouncementController;
 use App\Http\Controllers\AdminPanel\AcademicPeriodController;
 use App\Http\Controllers\AdminPanel\AdminUserController;
 use App\Http\Controllers\AdminPanel\CurriculumController;
@@ -29,9 +30,8 @@ Route::get('/placeholder', function () {
 })->name('#');
 
 // HOME PAGE
-Route::get('/', function () {
-    return view('home');
-})->middleware('auth')->name('home');
+Route::get('/', [HomepageAnnouncementController::class, 'index'])
+    ->middleware('auth')->name('home');
 
 // DEFAULT ROUTE FOR AUTHENTICATION SELECTION
 Route::view('auth', 'auth.index')->name('auth.index');
@@ -164,13 +164,20 @@ Route::prefix('admin')->middleware('auth')->can('is-admin')->group(function () {
         Route::get('commit/{gradeImport}', [GradeImportController::class, 'commit'])->name('grades.import.commit');
     });
 
-    // ANNOUNCEMENTS
+    // EMAIL ANNOUNCEMENTS
     Route::prefix('announcements')->group(function () {
         Route::get('/', [AnnouncementController::class, 'index'])->name('announcements.index');
         Route::get('data', [AnnouncementController::class, 'getData'])->name('announcements.data');
         Route::post('store', [AnnouncementController::class, 'store'])->name('announcements.store');
         Route::get('count', [AnnouncementController::class, 'getRecipientCount'])->name('announcements.count');
         Route::get('filters', [AnnouncementController::class, 'getFilters'])->name('announcements.filters');
+    });
+
+    // HOMEPAGE ANNOUNCEMENTS
+    Route::prefix('homepage-announcements')->group(function () {
+        Route::post('store', [HomepageAnnouncementController::class, 'store'])->name('homepage-announcements.store');
+        Route::delete('{id}', [HomepageAnnouncementController::class, 'destroy'])->name('homepage-announcements.destroy');
+        Route::post('toggle-pin/{id}', [HomepageAnnouncementController::class, 'togglePin'])->name('homepage-announcements.toggle-pin');
     });
 });
 
