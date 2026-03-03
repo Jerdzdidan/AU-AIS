@@ -165,7 +165,7 @@ DASHBOARD
 
         // Chart color palette
         var colors = [
-            '#696cff', '#8592ad', '#71dd37', '#ff3e1d', '#03c3ec',
+            '#1855a9', '#8592ad', '#71dd37', '#ff3e1d', '#03c3ec',
             '#ffab00', '#9055fd', '#e7515a', '#2196f3', '#4caf50'
         ];
 
