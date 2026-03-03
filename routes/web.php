@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AnnouncementController;
 use App\Http\Controllers\AdminPanel\AcademicPeriodController;
 use App\Http\Controllers\AdminPanel\AdminUserController;
 use App\Http\Controllers\AdminPanel\CurriculumController;
@@ -162,10 +163,19 @@ Route::prefix('admin')->middleware('auth')->can('is-admin')->group(function () {
 
         Route::get('commit/{gradeImport}', [GradeImportController::class, 'commit'])->name('grades.import.commit');
     });
+
+    // ANNOUNCEMENTS
+    Route::prefix('announcements')->group(function () {
+        Route::get('/', [AnnouncementController::class, 'index'])->name('announcements.index');
+        Route::get('data', [AnnouncementController::class, 'getData'])->name('announcements.data');
+        Route::post('store', [AnnouncementController::class, 'store'])->name('announcements.store');
+        Route::get('count', [AnnouncementController::class, 'getRecipientCount'])->name('announcements.count');
+        Route::get('filters', [AnnouncementController::class, 'getFilters'])->name('announcements.filters');
+    });
 });
 
 // Officer Routes
-Route::prefix('officer')->middleware('auth')->name('officer.')->group(function () {
+Route::prefix('officer')->middleware('auth')->can('is-officer')->name('officer.')->group(function () {
     // STUDENT ACADEMIC PROGRESS
     Route::get('students', [StudentAcademicProgressController::class, 'index'])->name('students');
     Route::get('data', [StudentAcademicProgressController::class, 'getData'])->name('students.data');
@@ -175,6 +185,15 @@ Route::prefix('officer')->middleware('auth')->name('officer.')->group(function (
     Route::get('student-progress/data/{student_id}', [StudentAcademicProgressController::class, 'getProgressData'])->name('student.progress.data');
     Route::get('student-progress/stats/{student_id}', [StudentAcademicProgressController::class, 'getProgressStats'])->name('student.progress.stats');
     Route::get('student-progress/pdf/{student_id}', [StudentAcademicProgressController::class, 'progressDownloadPdf'])->name('student.progress.pdf');
+
+    // ANNOUNCEMENTS
+    Route::prefix('announcements')->group(function () {
+        Route::get('/', [AnnouncementController::class, 'index'])->name('announcements.index');
+        Route::get('data', [AnnouncementController::class, 'getData'])->name('announcements.data');
+        Route::post('store', [AnnouncementController::class, 'store'])->name('announcements.store');
+        Route::get('count', [AnnouncementController::class, 'getRecipientCount'])->name('announcements.count');
+        Route::get('filters', [AnnouncementController::class, 'getFilters'])->name('announcements.filters');
+    });
 });
 
 

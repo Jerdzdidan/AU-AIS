@@ -38,4 +38,10 @@
 
 <x-sidebar.item route='admins.index' param='admin' name='Admin accounts' icon='fa-solid fa-user-shield me-2' />
 
+<li class="menu-header small text-uppercase">
+    <span class="menu-header-text">Communications</span>
+</li>
+
+<x-sidebar.item route='announcements.index' name='Announcements' icon='fa-solid fa-bullhorn me-2' />
+
 @endsection

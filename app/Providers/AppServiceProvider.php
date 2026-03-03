@@ -53,5 +53,8 @@ class AppServiceProvider extends ServiceProvider
         Gate::define('is-student', function (User $user) {
             return $user->user_type === 'STUDENT';
         });
+        Gate::define('is-officer', function (User $user) {
+            return $user->user_type === 'OFFICER';
+        });
     }
 }
