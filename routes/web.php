@@ -1,7 +1,7 @@
 <?php
 
 use App\Http\Controllers\AnnouncementController;
-use App\Http\Controllers\HomepageAnnouncementController;
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\AdminPanel\AcademicPeriodController;
 use App\Http\Controllers\AdminPanel\AdminUserController;
 use App\Http\Controllers\AdminPanel\CurriculumController;
@@ -10,12 +10,14 @@ use App\Http\Controllers\AdminPanel\GradeImportController;
 use App\Http\Controllers\AdminPanel\GradeImportRowController;
 use App\Http\Controllers\AdminPanel\OfficerUserController;
 use App\Http\Controllers\AdminPanel\ProgramController;
+use App\Http\Controllers\AdminPanel\ReportController;
 use App\Http\Controllers\AdminPanel\StudentUserController;
 use App\Http\Controllers\AdminPanel\SubjectController;
 use App\Http\Controllers\AdminPanel\UserController;
 use App\Http\Controllers\Auth\AdminAuthController;
 use App\Http\Controllers\Auth\GlobalLogoutController;
 use App\Http\Controllers\Auth\StudentAuthController;
+use App\Http\Controllers\HomepageAnnouncementController;
 use App\Http\Controllers\OfficerPanel\StudentAcademicProgressController;
 use App\Http\Controllers\StudentPortal\AcademicProgress;
 use App\Http\Controllers\StudentPortal\GradeController;
@@ -54,6 +56,10 @@ Route::get('auth/logout/{user_type}', [GlobalLogoutController::class, 'logout'])
 
 // ADMIN PANEL
 Route::prefix('admin')->middleware('auth')->can('is-admin')->group(function () {
+
+    // DASHBOARD
+    Route::get('dashboard', [DashboardController::class, 'adminDashboard'])->name('admin.dashboard');
+    Route::get('dashboard/stats', [DashboardController::class, 'adminStats'])->name('admin.dashboard.stats');
 
     // USER MANAGEMENT
     Route::prefix('users')->group(function () {
@@ -179,10 +185,29 @@ Route::prefix('admin')->middleware('auth')->can('is-admin')->group(function () {
         Route::delete('{id}', [HomepageAnnouncementController::class, 'destroy'])->name('homepage-announcements.destroy');
         Route::post('toggle-pin/{id}', [HomepageAnnouncementController::class, 'togglePin'])->name('homepage-announcements.toggle-pin');
     });
+
+    // REPORTS
+    Route::prefix('reports')->group(function () {
+        // Student Directory
+        Route::get('student-directory', [ReportController::class, 'studentDirectory'])->name('admin.reports.students');
+        Route::get('student-directory/data', [ReportController::class, 'studentDirectoryData'])->name('admin.reports.students.data');
+
+        // Grade Performance
+        Route::get('grade-performance', [ReportController::class, 'gradePerformance'])->name('admin.reports.grades');
+        Route::get('grade-performance/data', [ReportController::class, 'gradePerformanceData'])->name('admin.reports.grades.data');
+
+        // Grade Import History
+        Route::get('grade-import-history', [ReportController::class, 'gradeImportHistory'])->name('admin.reports.imports');
+        Route::get('grade-import-history/data', [ReportController::class, 'gradeImportHistoryData'])->name('admin.reports.imports.data');
+    });
 });
 
 // Officer Routes
 Route::prefix('officer')->middleware('auth')->can('is-officer')->name('officer.')->group(function () {
+    // DASHBOARD
+    Route::get('dashboard', [DashboardController::class, 'officerDashboard'])->name('dashboard');
+    Route::get('dashboard/stats', [DashboardController::class, 'officerStats'])->name('dashboard.stats');
+
     // STUDENT ACADEMIC PROGRESS
     Route::get('students', [StudentAcademicProgressController::class, 'index'])->name('students');
     Route::get('data', [StudentAcademicProgressController::class, 'getData'])->name('students.data');

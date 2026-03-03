@@ -2,7 +2,7 @@
 
 @section('menu_items')
 
-<x-sidebar.item route='#' name='Dashboard' icon='menu-icon tf-icons bx bxs-dashboard' />
+<x-sidebar.item route='admin.dashboard' name='Dashboard' icon='menu-icon tf-icons bx bxs-dashboard' />
 
 <li class="menu-header small text-uppercase">
     <span class="menu-header-text">Core</span>
@@ -19,8 +19,6 @@
 <x-sidebar.item route='programs.index' name='Programs' icon='fa-solid fa-table-list me-2' />
 
 <x-sidebar.item route='curricula.index' name='Curricula' icon='fa-solid fa-file-pen me-2' class="{{ request()->routeIs('subjects.*') ? 'active' : '' }}" />
-
-{{-- <x-sidebar.item route='#' name='Grades' icon='fa-solid fa-book-open me-2' /> --}}
 
 <li class="menu-header small text-uppercase">
     <span class="menu-header-text">Data Imports</span>
@@ -43,5 +41,13 @@
 </li>
 
 <x-sidebar.item route='announcements.index' name='Email Announcements' icon='fa-solid fa-bullhorn me-2' />
+
+<li class="menu-header small text-uppercase">
+    <span class="menu-header-text">Reports</span>
+</li>
+
+<x-sidebar.item route='admin.reports.students' name='Student Directory' icon='fa-solid fa-address-book me-2' />
+<x-sidebar.item route='admin.reports.grades' name='Grade Performance' icon='fa-solid fa-chart-line me-2' />
+<x-sidebar.item route='admin.reports.imports' name='Grade Import History' icon='fa-solid fa-clock-rotate-left me-2' />
 
 @endsection
