@@ -42,12 +42,4 @@
 
 <x-sidebar.item route='announcements.index' name='Email Announcements' icon='fa-solid fa-bullhorn me-2' />
 
-<li class="menu-header small text-uppercase">
-    <span class="menu-header-text">Reports</span>
-</li>
-
-<x-sidebar.item route='admin.reports.students' name='Student Directory' icon='fa-solid fa-address-book me-2' />
-<x-sidebar.item route='admin.reports.grades' name='Grade Performance' icon='fa-solid fa-chart-line me-2' />
-<x-sidebar.item route='admin.reports.imports' name='Grade Import History' icon='fa-solid fa-clock-rotate-left me-2' />
-
 @endsection

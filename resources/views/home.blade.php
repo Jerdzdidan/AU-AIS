@@ -186,6 +186,9 @@ HOME
                         <a href="{{ route('student.faqs.index') }}" class="list-group-item list-group-item-action">
                             <i class="fa-solid fa-question-circle me-2"></i>FAQs
                         </a>
+                        <a href="https://www.arellanolms.com" class="list-group-item list-group-item-action" target="_blank">
+                            <i class="fa-solid fa-school-flag me-2"></i>Arellano LMS
+                        </a>
                         @endif
                     </div>
                 </div>
