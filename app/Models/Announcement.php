@@ -62,6 +62,15 @@ class Announcement extends Model
         // Apply optional filters (program_id, year_level) — only relevant for students
         $filters = $this->filters ?? [];
 
+        if (!empty($filters['department_id'])) {
+            $departmentId = $filters['department_id'];
+            $query->whereHas('student', function ($q) use ($departmentId) {
+                $q->whereHas('program', function ($pq) use ($departmentId) {
+                    $pq->where('department_id', $departmentId);
+                });
+            });
+        }
+
         if (!empty($filters['program_id'])) {
             $programId = $filters['program_id'];
             $query->whereHas('student', function ($q) use ($programId) {

@@ -88,7 +88,12 @@ class AnnouncementController extends Controller
             $rules['recipient_type'] = ['required', 'in:all,students,officers,admins'];
         }
 
-        $rules['program_id'] = ['nullable', 'exists:programs,id'];
+        // Officers: ensure selected program belongs to their department
+        if ($user->user_type === 'OFFICER' && $user->department_id) {
+            $rules['program_id'] = ['nullable', 'exists:programs,id,department_id,' . $user->department_id];
+        } else {
+            $rules['program_id'] = ['nullable', 'exists:programs,id'];
+        }
         $rules['year_level'] = ['nullable', 'integer', 'min:1', 'max:5'];
 
         $validated = $request->validate($rules);
@@ -100,6 +105,11 @@ class AnnouncementController extends Controller
         }
         if (!empty($validated['year_level'])) {
             $filters['year_level'] = $validated['year_level'];
+        }
+
+        // Officers: always scope to their department
+        if ($user->user_type === 'OFFICER' && $user->department_id) {
+            $filters['department_id'] = $user->department_id;
         }
 
         // Determine recipient type
@@ -157,6 +167,9 @@ class AnnouncementController extends Controller
             'filters' => array_filter([
                 'program_id' => $request->get('program_id'),
                 'year_level' => $request->get('year_level'),
+                'department_id' => ($user->user_type === 'OFFICER' && $user->department_id)
+                    ? $user->department_id
+                    : null,
             ]),
         ]);
 
@@ -170,7 +183,16 @@ class AnnouncementController extends Controller
      */
     public function getFilters()
     {
-        $programs = Program::select('id', 'code', 'name')
+        $user = auth()->user();
+
+        $programQuery = Program::select('id', 'code', 'name');
+
+        // Officers only see programs in their department
+        if ($user->user_type === 'OFFICER' && $user->department_id) {
+            $programQuery->where('department_id', $user->department_id);
+        }
+
+        $programs = $programQuery
             ->orderBy('code')
             ->get()
             ->map(function ($program) {
