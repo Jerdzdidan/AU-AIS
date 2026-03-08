@@ -280,7 +280,7 @@ Email Announcements
                 html: 'This will send an email to <strong>' + $('#recipient-count').text() + '</strong> student(s).<br>This action cannot be undone.',
                 icon: 'question',
                 showCancelButton: true,
-                confirmButtonColor: '#696cff',
+                confirmButtonColor: '#1855a9',
                 cancelButtonColor: '#8592a3',
                 confirmButtonText: '<i class="fa-solid fa-paper-plane me-1"></i> Yes, Send',
                 cancelButtonText: 'Cancel'
