@@ -53,7 +53,7 @@ FAQs
             outline: none;
         }
         .faq-search-input:focus {
-            border-color: #696cff;
+            border-color: #1855a9;
             box-shadow: 0 0 0 3px rgba(105, 108, 255, 0.15);
         }
         .faq-search-input::placeholder {
@@ -68,14 +68,14 @@ FAQs
             color: #2c3e50;
             margin-bottom: 16px;
             padding-bottom: 10px;
-            border-bottom: 2px solid #696cff;
+            border-bottom: 2px solid #1855a9;
             font-weight: 600;
             display: flex;
             align-items: center;
             gap: 10px;
         }
         .faq-category-title i {
-            color: #696cff;
+            color: #1855a9;
             font-size: 1.2rem;
         }
 
@@ -100,7 +100,7 @@ FAQs
         }
         .faq-accordion .accordion-button:not(.collapsed) {
             background-color: #f0f0ff;
-            color: #696cff;
+            color: #1855a9;
             box-shadow: none;
         }
         .faq-accordion .accordion-button:focus {
@@ -110,6 +110,7 @@ FAQs
             transition: transform 0.3s ease;
         }
         .faq-accordion .accordion-body {
+            margin-top: 9px;
             font-size: 0.9rem;
             color: #555;
             line-height: 1.7;
@@ -165,8 +166,8 @@ FAQs
 <div class="container-fluid">
     <div class="content-container">
         <!-- Page Header -->
-        <x-table.page-header 
-            title="" 
+        <x-table.page-header
+            title=""
             subtitle="Frequently Asked Questions"
         />
 

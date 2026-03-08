@@ -45,7 +45,7 @@ Help
         .help-card:hover {
             transform: translateY(-4px);
             box-shadow: 0 6px 20px rgba(105, 108, 255, 0.15);
-            border-color: #696cff;
+            border-color: #1855a9;
             color: inherit;
             text-decoration: none;
         }
@@ -60,7 +60,7 @@ Help
             font-size: 1.4rem;
             color: #fff;
         }
-        .help-card-icon.bg-primary { background: linear-gradient(135deg, #696cff, #8b8eff); }
+        .help-card-icon.bg-primary { background: linear-gradient(135deg, #1855a9, #3e81de); }
         .help-card-icon.bg-success { background: linear-gradient(135deg, #71dd37, #8ee660); }
         .help-card-icon.bg-warning { background: linear-gradient(135deg, #ffab00, #ffc233); }
         .help-card-icon.bg-info    { background: linear-gradient(135deg, #03c3ec, #42d8f7); }
@@ -81,14 +81,14 @@ Help
             margin-top: 35px;
             margin-bottom: 16px;
             padding-bottom: 10px;
-            border-bottom: 2px solid #696cff;
+            border-bottom: 2px solid #1855a9;
             font-weight: 600;
             display: flex;
             align-items: center;
             gap: 10px;
         }
         .section-title i {
-            color: #696cff;
+            color: #1855a9;
             font-size: 1.2rem;
         }
 
@@ -113,7 +113,7 @@ Help
         }
         .guide-accordion .accordion-button:not(.collapsed) {
             background-color: #f0f0ff;
-            color: #696cff;
+            color: #1855a9;
             box-shadow: none;
         }
         .guide-accordion .accordion-button:focus {
@@ -124,6 +124,7 @@ Help
             color: #555;
             line-height: 1.7;
             padding: 16px 20px;
+            margin-top: 12px;
         }
 
         /* Steps */
@@ -146,7 +147,7 @@ Help
             width: 28px;
             height: 28px;
             border-radius: 50%;
-            background: linear-gradient(135deg, #696cff, #8b8eff);
+            background: linear-gradient(135deg, #1855a9, #1855a9);
             color: #fff;
             font-size: 0.8rem;
             font-weight: 700;
@@ -175,7 +176,7 @@ Help
             gap: 10px;
         }
         .contact-card h5 i {
-            color: #696cff;
+            color: #1855a9;
         }
         .contact-detail {
             display: flex;
@@ -186,7 +187,7 @@ Help
             color: #555;
         }
         .contact-detail i {
-            color: #696cff;
+            color: #1855a9;
             margin-top: 3px;
             min-width: 16px;
         }
@@ -214,8 +215,8 @@ Help
 <div class="container-fluid">
     <div class="content-container">
         <!-- Page Header -->
-        <x-table.page-header 
-            title="" 
+        <x-table.page-header
+            title=""
             subtitle="Help & Support Center"
         />
 

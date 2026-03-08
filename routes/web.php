@@ -10,7 +10,6 @@ use App\Http\Controllers\AdminPanel\GradeImportController;
 use App\Http\Controllers\AdminPanel\GradeImportRowController;
 use App\Http\Controllers\AdminPanel\OfficerUserController;
 use App\Http\Controllers\AdminPanel\ProgramController;
-use App\Http\Controllers\AdminPanel\ReportController;
 use App\Http\Controllers\AdminPanel\StudentUserController;
 use App\Http\Controllers\AdminPanel\SubjectController;
 use App\Http\Controllers\AdminPanel\UserController;
@@ -184,21 +183,6 @@ Route::prefix('admin')->middleware('auth')->can('is-admin')->group(function () {
         Route::post('store', [HomepageAnnouncementController::class, 'store'])->name('homepage-announcements.store');
         Route::delete('{id}', [HomepageAnnouncementController::class, 'destroy'])->name('homepage-announcements.destroy');
         Route::post('toggle-pin/{id}', [HomepageAnnouncementController::class, 'togglePin'])->name('homepage-announcements.toggle-pin');
-    });
-
-    // REPORTS
-    Route::prefix('reports')->group(function () {
-        // Student Directory
-        Route::get('student-directory', [ReportController::class, 'studentDirectory'])->name('admin.reports.students');
-        Route::get('student-directory/data', [ReportController::class, 'studentDirectoryData'])->name('admin.reports.students.data');
-
-        // Grade Performance
-        Route::get('grade-performance', [ReportController::class, 'gradePerformance'])->name('admin.reports.grades');
-        Route::get('grade-performance/data', [ReportController::class, 'gradePerformanceData'])->name('admin.reports.grades.data');
-
-        // Grade Import History
-        Route::get('grade-import-history', [ReportController::class, 'gradeImportHistory'])->name('admin.reports.imports');
-        Route::get('grade-import-history/data', [ReportController::class, 'gradeImportHistoryData'])->name('admin.reports.imports.data');
     });
 });
 
