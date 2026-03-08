@@ -68,6 +68,7 @@
 <body>
     <div class="email-wrapper">
         <div class="email-header">
+            <img src="{{ $message->embed(public_path('img/logo/arellano_logo.png')) }}" alt="Arellano University Logo" style="height: 60px; margin-bottom: 12px; display: block; margin-left: auto; margin-right: auto;">
             <h1>Arellano University</h1>
             <div class="school-name">Academic Information System</div>
         </div>
