@@ -214,7 +214,7 @@ FAQs
                             </h2>
                             <div id="faq-acc-2" class="accordion-collapse collapse" data-bs-parent="#accordionAccount">
                                 <div class="accordion-body">
-                                    If you have forgotten your password, please contact the <strong>Office of the Registrar</strong> or the <strong>IT Help Desk</strong> at your branch to request a password reset. Make sure to bring a valid school ID for verification.
+                                    If you have forgotten your password, please contact the <strong>IT Help Desk</strong> at your branch to request a password reset. Make sure to bring a valid school ID for verification.
                                 </div>
                             </div>
                         </div>
@@ -226,7 +226,7 @@ FAQs
                             </h2>
                             <div id="faq-acc-3" class="accordion-collapse collapse" data-bs-parent="#accordionAccount">
                                 <div class="accordion-body">
-                                    If you have not yet set your email, the system will automatically prompt you with a modal dialog upon login. Simply enter your email address and click <strong>"Save Email"</strong>. If you need to change your email later, please contact the Office of the Registrar.
+                                    If you have not yet set your email, the system will automatically prompt you with a modal dialog upon login. Simply enter your email address and click <strong>"Save Email"</strong>. If you need to change your email or password later, you can do so from your <strong>My Profile</strong> page.
                                 </div>
                             </div>
                         </div>
@@ -337,7 +337,7 @@ FAQs
                                     If you believe a grade is incorrect, please follow these steps:
                                     <ul>
                                         <li>Contact your <strong>subject instructor</strong> first to verify the grade.</li>
-                                        <li>If there is a discrepancy, ask your instructor to coordinate with the <strong>Office of the Registrar</strong> for a grade correction.</li>
+                                        <li>If there is a discrepancy, ask your instructor to coordinate with the <strong>IT Help Desk</strong> for a grade correction.</li>
                                         <li>Grade corrections must be processed officially and may take several working days to reflect in the system.</li>
                                     </ul>
                                 </div>
