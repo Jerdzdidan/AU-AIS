@@ -62,11 +62,11 @@
             <li>
                 <div class="dropdown-divider my-1"></div>
             </li>
-            <li>
-                <a class="dropdown-item" href="#">
-                <i class="icon-base bx bx-user icon-md me-3"></i><span>My Profile</span>
-                </a>
-            </li>
+            {{-- <li> --}}
+            {{--     <a class="dropdown-item" href="#"> --}}
+            {{--     <i class="icon-base bx bx-user icon-md me-3"></i><span>My Profile</span> --}}
+            {{--     </a> --}}
+            {{-- </li> --}}
             <li>
                 <a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#settingsModal">
                 <i class="icon-base bx bx-cog icon-md me-3"></i><span>Settings</span>

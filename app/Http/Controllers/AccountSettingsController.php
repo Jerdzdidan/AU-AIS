@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Validator;
 
 class AccountSettingsController extends Controller
 {
@@ -35,10 +36,21 @@ class AccountSettingsController extends Controller
      */
     public function updatePassword(Request $request)
     {
-        $request->validate([
+        $validator = Validator::make($request->all(), [
             'current_password' => ['required'],
-            'new_password'     => ['required', 'min:8', 'confirmed'],
+            'new_password'     => ['required', 'min:6', 'confirmed'],
         ]);
+
+        if ($validator->fails()) {
+            $errors = $validator->errors()->toArray();
+
+            // Mirror new_password error to new_password_confirmation
+            if (isset($errors['new_password'])) {
+                $errors['new_password_confirmation'] = $errors['new_password'];
+            }
+
+            return response()->json(['errors' => $errors], 422);
+        }
 
         $user = auth()->user();
 
