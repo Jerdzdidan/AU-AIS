@@ -22,8 +22,15 @@ use App\Http\Controllers\StudentPortal\AcademicProgress;
 use App\Http\Controllers\StudentPortal\GradeController;
 use App\Http\Controllers\StudentPortal\StudentPortalController;
 use App\Http\Middleware\PreventSelfAction;
+use App\Http\Controllers\AccountSettingsController;
 use App\Http\Middleware\StudentInformationCheck;
 use Illuminate\Support\Facades\Route;
+
+// ACCOUNT SETTINGS (all authenticated users)
+Route::prefix('account')->middleware('auth')->group(function () {
+    Route::put('email', [AccountSettingsController::class, 'updateEmail'])->name('account.update-email');
+    Route::put('password', [AccountSettingsController::class, 'updatePassword'])->name('account.update-password');
+});
 
 // PLACEHOLDER ROUTE
 Route::get('/placeholder', function () {

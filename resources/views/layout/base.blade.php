@@ -79,7 +79,7 @@
     <!--? Config:  Mandatory theme config file contain global vars & default theme options, Set your preferred theme option in this file.  -->
 
     <script src="{{ asset('themes/sneat/assets/js/config.js') }}"></script>
-    
+
   </head>
 
   <body>
@@ -148,6 +148,11 @@
     @if(auth()->check() && auth()->user()->user_type === 'STUDENT' && isset($studentHasEmail) && !$studentHasEmail)
       @include('layout.modal.student_email_modal')
     @endif
+
+    {{-- Settings Modal (all authenticated users) --}}
+    @auth
+      @include('layout.modal.settings_modal')
+    @endauth
 
 
     <!-- Core JS -->
@@ -258,8 +263,133 @@
     </script>
     @endif
 
+    {{-- Settings Modal Script --}}
+    @auth
+    <script>
+      $(document).ready(function () {
+
+        // ─── Email Update (Students) ────────────────────────────────
+        @if(auth()->user()->user_type === 'STUDENT')
+        $('#settingsEmailForm').on('submit', function (e) {
+            e.preventDefault();
+
+            var btn = $('#settingsEmailBtn');
+            var spinner = $('#settingsEmailSpinner');
+
+            // Clear previous errors
+            $('#settings_email').removeClass('is-invalid');
+            $('#settings_email_error').text('');
+
+            spinner.removeClass('d-none');
+            btn.prop('disabled', true);
+
+            $.ajax({
+                url: '{{ route("account.update-email") }}',
+                method: 'PUT',
+                data: {
+                    _token: '{{ csrf_token() }}',
+                    email: $('#settings_email').val()
+                },
+                success: function (response) {
+                    spinner.addClass('d-none');
+                    btn.prop('disabled', false);
+                    $('#settingsModal').modal('hide');
+                    toastr.success(response.message);
+                },
+                error: function (xhr) {
+                    spinner.addClass('d-none');
+                    btn.prop('disabled', false);
+
+                    if (xhr.status === 422) {
+                        var errors = xhr.responseJSON.errors;
+                        if (errors && errors.email) {
+                            $('#settings_email').addClass('is-invalid');
+                            $('#settings_email_error').text(errors.email[0]);
+                        }
+                    } else {
+                        toastr.error('Something went wrong. Please try again.');
+                    }
+                }
+            });
+        });
+        @endif
+
+        // ─── Password Update (All Roles) ───────────────────────────
+        $('#settingsPasswordForm').on('submit', function (e) {
+            e.preventDefault();
+
+            var btn = $('#settingsPasswordBtn');
+            var spinner = $('#settingsPasswordSpinner');
+
+            // Clear previous errors
+            $('#settingsPasswordForm .form-control').removeClass('is-invalid');
+            $('#settingsPasswordForm .invalid-feedback').text('');
+
+            spinner.removeClass('d-none');
+            btn.prop('disabled', true);
+
+            $.ajax({
+                url: '{{ route("account.update-password") }}',
+                method: 'PUT',
+                data: {
+                    _token: '{{ csrf_token() }}',
+                    current_password: $('#settings_current_password').val(),
+                    new_password: $('#settings_new_password').val(),
+                    new_password_confirmation: $('#settings_new_password_confirmation').val()
+                },
+                success: function (response) {
+                    spinner.addClass('d-none');
+                    btn.prop('disabled', false);
+                    $('#settingsModal').modal('hide');
+                    toastr.success(response.message);
+
+                    // Clear form
+                    $('#settingsPasswordForm')[0].reset();
+                },
+                error: function (xhr) {
+                    spinner.addClass('d-none');
+                    btn.prop('disabled', false);
+
+                    if (xhr.status === 422) {
+                        var errors = xhr.responseJSON.errors;
+                        if (errors) {
+                            var allMessages = [];
+                            $.each(errors, function (field, messages) {
+                                var inputId = '#settings_' + field;
+                                var errorId = '#settings_' + field + '_error';
+                                $(inputId).addClass('is-invalid');
+                                $(errorId).text(messages[0]);
+                                allMessages.push('<li>' + messages[0] + '</li>');
+                            });
+
+                            var htmlMessage = '<ul style="margin:0; padding-left:20px;">' + allMessages.join('') + '</ul>';
+                            toastr.error(htmlMessage, 'Validation Error:', {
+                                closeButton: true,
+                                progressBar: true,
+                                timeOut: 5000,
+                                extendedTimeOut: 2000,
+                                escapeHtml: false
+                            });
+                        }
+                    } else {
+                        toastr.error('Something went wrong. Please try again.');
+                    }
+                }
+            });
+        });
+
+        // Clear validation errors when modal is closed
+        $('#settingsModal').on('hidden.bs.modal', function () {
+            $('#settingsModal .form-control').removeClass('is-invalid');
+            $('#settingsModal .invalid-feedback').text('');
+        });
+      });
+    </script>
+    @endauth
+
     <!-- Place this tag before closing body tag for github widget button. -->
     <script async defer src="https://buttons.github.io/buttons.js"></script>
   </body>
 
 </html>
+

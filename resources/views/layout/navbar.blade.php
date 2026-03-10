@@ -68,7 +68,7 @@
                 </a>
             </li>
             <li>
-                <a class="dropdown-item" href="#">
+                <a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#settingsModal">
                 <i class="icon-base bx bx-cog icon-md me-3"></i><span>Settings</span>
                 </a>
             </li>
