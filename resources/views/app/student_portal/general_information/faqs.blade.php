@@ -165,12 +165,6 @@ FAQs
 @section('body')
 <div class="container-fluid">
     <div class="content-container">
-        <!-- Page Header -->
-        <x-table.page-header
-            title=""
-            subtitle="Frequently Asked Questions"
-        />
-
         <div class="faq-container">
             <div class="faq-content">
                 <!-- FAQ Header -->

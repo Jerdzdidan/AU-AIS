@@ -61,12 +61,6 @@ Student Manual
 @section('body')
 <div class="container-fluid">
     <div class="content-container">
-        <!-- Page Header -->
-        <x-table.page-header 
-            title="" 
-            subtitle="Official Arellano University Student Handbook"
-        />
-        
         <div class="manual-container">
             <div class="manual-content">
                 <!-- Manual Header -->
@@ -74,25 +68,25 @@ Student Manual
                     <h2>Arellano University Student Manual</h2>
                     <p class="text-muted">2019 Edition</p>
                 </div>
-                
+
                 <!-- Manual Introduction -->
                 <div class="row">
                     <div class="col-md-12">
                         <h3 class="section-title">Welcome to Arellano University</h3>
                         <p>This Student Manual contains the official policies, rules, and regulations of Arellano University. It serves as your guide to understanding university procedures, academic requirements, and student responsibilities.</p>
-                        
+
                         <div class="info-box">
                             <strong>Important:</strong> All enrolled students are required to be familiar with and adhere to the contents of this manual. The manual is for viewing purposes only and cannot be downloaded.
                         </div>
-                        
+
                         <!-- Manual Viewer Section -->
                         <div class="mt-4">
                             <h4 class="section-title">View Student Manual</h4>
                             <p>The complete Student Manual is available for viewing through the link below:</p>
-                            
+
                             <div class="text-center mt-4">
-                                <a href="https://drive.google.com/file/d/1567CqxXNDy2WuQqsnOHZkBxWpV0Yebtc/view" 
-                                   target="_blank" 
+                                <a href="https://drive.google.com/file/d/1567CqxXNDy2WuQqsnOHZkBxWpV0Yebtc/view"
+                                   target="_blank"
                                    class="btn btn-primary btn-lg">
                                     <i class="fa-solid fa-book-open me-2"></i>
                                     View Student Manual
@@ -102,7 +96,7 @@ Student Manual
                                 </p>
                             </div>
                         </div>
-                        
+
                         <!-- Manual Sections Overview -->
                         <div class="mt-5">
                             <h3 class="section-title">Manual Contents Overview</h3>
@@ -128,7 +122,7 @@ Student Manual
                                     </ul>
                                 </div>
                             </div>
-                            
+
                             <div class="row mt-3">
                                 <div class="col-md-6">
                                     <h5>Administrative Procedures</h5>
@@ -152,7 +146,7 @@ Student Manual
                                 </div>
                             </div>
                         </div>
-                        
+
                         <!-- Important Notes -->
                         <div class="info-box mt-4">
                             <h5><i class="fa-solid fa-circle-info me-2"></i>Important Notes:</h5>
@@ -163,7 +157,7 @@ Student Manual
                                 <li>The online version is regularly updated with current policies</li>
                             </ul>
                         </div>
-                        
+
                         <!-- Footer -->
                         <div class="text-center mt-5 pt-4 border-top">
                             <p class="text-muted">

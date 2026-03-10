@@ -214,12 +214,6 @@ Help
 @section('body')
 <div class="container-fluid">
     <div class="content-container">
-        <!-- Page Header -->
-        <x-table.page-header
-            title=""
-            subtitle="Help & Support Center"
-        />
-
         <div class="help-container">
             <div class="help-content">
                 <!-- Help Header -->
