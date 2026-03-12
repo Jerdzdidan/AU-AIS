@@ -36,22 +36,31 @@
                     <h6 class="fw-semibold mb-3"><i class="bx bx-lock-alt me-1"></i>Change Password</h6>
                     <form id="settingsPasswordForm">
                         @csrf
-                        <div class="mb-3">
+                        <div class="mb-3 form-password-toggle">
                             <label for="settings_current_password" class="form-label">Current Password</label>
-                            <input type="password" class="form-control" id="settings_current_password"
-                                   name="current_password" placeholder="Enter current password">
+                            <div class="input-group input-group-merge">
+                                <input type="password" class="form-control" id="settings_current_password"
+                                       name="current_password" placeholder="Enter current password">
+                                <span class="input-group-text cursor-pointer"><i class="icon-base bx bx-hide"></i></span>
+                            </div>
                             <div class="invalid-feedback" id="settings_current_password_error"></div>
                         </div>
-                        <div class="mb-3">
+                        <div class="mb-3 form-password-toggle">
                             <label for="settings_new_password" class="form-label">New Password</label>
-                            <input type="password" class="form-control" id="settings_new_password"
-                                   name="new_password" placeholder="Enter new password">
+                            <div class="input-group input-group-merge">
+                                <input type="password" class="form-control" id="settings_new_password"
+                                       name="new_password" placeholder="Enter new password">
+                                <span class="input-group-text cursor-pointer"><i class="icon-base bx bx-hide"></i></span>
+                            </div>
                             <div class="invalid-feedback" id="settings_new_password_error"></div>
                         </div>
-                        <div class="mb-3">
+                        <div class="mb-3 form-password-toggle">
                             <label for="settings_new_password_confirmation" class="form-label">Confirm New Password</label>
-                            <input type="password" class="form-control" id="settings_new_password_confirmation"
-                                   name="new_password_confirmation" placeholder="Confirm new password">
+                            <div class="input-group input-group-merge">
+                                <input type="password" class="form-control" id="settings_new_password_confirmation"
+                                       name="new_password_confirmation" placeholder="Confirm new password">
+                                <span class="input-group-text cursor-pointer"><i class="icon-base bx bx-hide"></i></span>
+                            </div>
                             <div class="invalid-feedback" id="settings_new_password_confirmation_error"></div>
                         </div>
                         <button type="submit" class="btn btn-primary btn-sm" id="settingsPasswordBtn">
