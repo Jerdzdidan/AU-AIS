@@ -10,7 +10,8 @@ use Illuminate\Support\Facades\Auth;
 class AdminAuthController extends Controller
 {
     //
-    public function index() {
+    public function index()
+    {
         return view('auth.admin.login');
     }
 
@@ -20,7 +21,7 @@ class AdminAuthController extends Controller
             'email' => ['required', 'email'],
             'password' => ['required'],
         ]);
- 
+
         if (Auth::attempt($credentials)) {
             $user = Auth::user();
 
@@ -32,10 +33,9 @@ class AdminAuthController extends Controller
             $request->session()->regenerate();
             return redirect()->route('home');
         }
- 
+
         return back()->withErrors([
-            'email' => 'The provided credentials do not match our records.',
+            'email' => 'Wrong email or password.',
         ])->onlyInput('email');
     }
-
 }

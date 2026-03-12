@@ -12,7 +12,8 @@ use Illuminate\Support\Facades\Hash;
 class StudentAuthController extends Controller
 {
     //
-    public function index() {
+    public function index()
+    {
         return view('auth.student.login');
     }
 
@@ -23,20 +24,22 @@ class StudentAuthController extends Controller
             'password' => ['required'],
         ]);
 
+        $has_error = false;
+
         $student = Student::where('student_number', $request->student_number)->first();
 
         if (!$student) {
-            return back()->withErrors([
-                'student_number' => 'Student number not found.',
-            ]);
+            $has_error = true;
         }
 
         $user = $student->user;
 
         if (!Hash::check($request->password, $user->password)) {
-            return back()->withErrors([
-                'password' => 'Incorrect password.',
-            ]);
+            $has_error = true;
+        }
+
+        if ($has_error) {
+            return back()->with('error', 'Wrong student number or password.');
         }
 
         if (!$user->status) {
